@@ -204,7 +204,7 @@ function simulate(dt) {
     }
 
     if (frog.jumping) {
-      frog.jumpArc = Math.max(0, frog.jumpArc - dt * 4.4);
+      frog.jumpArc = Math.max(0, frog.jumpArc - dt * 2.8);
       if (frog.jumpArc === 0) {
         frog.jumping = false;
         frog.vx = 0;
@@ -428,13 +428,18 @@ function drawHabitatBase() {
 
 function drawFrog(frog) {
   const x = Math.round(frog.x);
-  const y = Math.round(frog.y - frog.jumpArc * 6);
+  const lift = Math.sin(frog.jumpArc * Math.PI) * 10;
+  const squash = frog.jumping ? 1 - Math.sin(frog.jumpArc * Math.PI) * 0.12 : 1;
+  const stretch = frog.jumping ? 1 + Math.sin(frog.jumpArc * Math.PI) * 0.16 : 1;
+  const y = Math.round(frog.y - lift);
   const faceX = frog.facing >= 0 ? x + 11 : x - 1;
   const tongueBaseX = frog.facing >= 0 ? x + 10 : x + 1;
   const tongueBaseY = y + 5;
+  const bodyW = Math.max(10, Math.round(12 * stretch));
+  const bodyH = Math.max(8, Math.round(10 * squash));
 
   if (frog.jumpArc > 0.05) {
-    drawPixelRect(x + 2, y + 11, 8, 2, "rgba(30,20,10,0.18)", "transparent");
+    drawPixelRect(x + 2, Math.round(frog.y + 11), 8, 2, "rgba(30,20,10,0.18)", "transparent");
   }
 
   if (frog.tongueTimer > 0.01) {
@@ -451,18 +456,18 @@ function drawFrog(frog) {
     drawPixelRect(tipX, tipY, 2, 2, "#ffd1da", "transparent");
   }
 
-  drawPixelRect(x, y + 1, 12, 9, "#4d9e49", "transparent");
-  drawPixelRect(x + 1, y, 10, 10, "#73d65f", "#2f6f2a");
-  drawPixelRect(x + 2, y + 2, 8, 4, "#9bf08a", "transparent");
+  drawPixelRect(x, y + 1, bodyW, Math.max(7, bodyH - 1), "#4d9e49", "transparent");
+  drawPixelRect(x + 1, y, Math.max(8, bodyW - 2), bodyH, "#73d65f", "#2f6f2a");
+  drawPixelRect(x + 2, y + 2, Math.max(6, bodyW - 4), Math.max(3, bodyH - 5), "#9bf08a", "transparent");
   drawPixelRect(x + 2, y - 2, 3, 3, "#d6ffbf", "transparent");
-  drawPixelRect(x + 7, y - 2, 3, 3, "#d6ffbf", "transparent");
+  drawPixelRect(x + Math.max(6, bodyW - 5), y - 2, 3, 3, "#d6ffbf", "transparent");
   drawPixelRect(x + 2, y - 1, 2, 2, "#8fef74", "transparent");
-  drawPixelRect(x + 8, y - 1, 2, 2, "#8fef74", "transparent");
+  drawPixelRect(x + Math.max(7, bodyW - 4), y - 1, 2, 2, "#8fef74", "transparent");
   drawPixelRect(faceX, y + 3, 2, 2, "#102313", "transparent");
-  drawPixelRect(x - 1, y + 8, 3, 2, "#5bb04a", "transparent");
-  drawPixelRect(x + 10, y + 8, 3, 2, "#5bb04a", "transparent");
-  drawPixelRect(x + 4, y + 6, 4, 2, "#e9f7d8", "transparent");
-  drawPixelRect(x + 3, y + 1, 6, 1, "#f2ffd8", "transparent");
+  drawPixelRect(x - 1, y + Math.max(6, bodyH - 1), 3, 2, "#5bb04a", "transparent");
+  drawPixelRect(x + Math.max(9, bodyW - 2), y + Math.max(6, bodyH - 1), 3, 2, "#5bb04a", "transparent");
+  drawPixelRect(x + Math.max(3, Math.floor(bodyW / 2) - 2), y + Math.max(4, bodyH - 3), 4, 2, "#e9f7d8", "transparent");
+  drawPixelRect(x + 3, y + 1, Math.max(5, bodyW - 6), 1, "#f2ffd8", "transparent");
 }
 
 function drawCricket(cricket) {
