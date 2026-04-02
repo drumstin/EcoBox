@@ -142,8 +142,8 @@ function spawnFrog(stage = "adult") {
     morph: Math.floor(rand(0, 5)),
     vx: 0,
     vy: 0,
-    hopTimer: rand(0.3, 1.8),
-    restTimer: rand(0.8, 2.4),
+    hopTimer: rand(0.2, 1.2),
+    restTimer: rand(0.5, 1.6),
     jumping: false,
     jumpArc: 0,
     jumpPhase: "idle",
@@ -420,7 +420,7 @@ function simulate(dt) {
         frog.jumpPhase = "idle";
         frog.vx = 0;
         frog.vy = 0;
-        frog.restTimer = rand(0.8, 2.6);
+        frog.restTimer = rand(0.45, 1.4);
       }
     } else if (frog.restTimer <= 0) {
       if (restTargetHide) {
@@ -433,17 +433,17 @@ function simulate(dt) {
         const dy = targetY - frog.y;
         frog.vx = clamp(Math.sign(dx) * rand(0.18, 0.36), -0.38, 0.38);
         frog.vy = clamp(Math.sign(dy) * rand(0.18, 0.36), -0.38, 0.38);
-      } else if (frog.hopTimer <= 0 && Math.random() < 0.28) {
-        frog.vx = rand(-0.22, 0.22);
-        frog.vy = rand(-0.22, 0.22);
+      } else if (frog.hopTimer <= 0 && Math.random() < 0.55) {
+        frog.vx = rand(-0.34, 0.34);
+        frog.vy = rand(-0.34, 0.34);
       }
 
       if (Math.abs(frog.vx) > 0.05 || Math.abs(frog.vy) > 0.05) {
         frog.jumpPhase = "crouch";
         frog.crouchTimer = 1;
-        frog.hopTimer = targetType === "cricket" ? rand(0.55, 1.2) : rand(1.6, 3.2);
+        frog.hopTimer = targetType === "cricket" ? rand(0.35, 0.9) : rand(0.8, 1.8);
       } else {
-        frog.restTimer = rand(1.4, 3.8);
+        frog.restTimer = rand(0.7, 1.8);
       }
     }
 
