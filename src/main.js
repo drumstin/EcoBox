@@ -115,6 +115,10 @@ function spawnPopup(x, y, text) {
   state.popups = state.popups.slice(-10);
 }
 
+function getGroundY(x, y) {
+  return clamp(Math.max(118, y), 118, 182);
+}
+
 function spawnFrog(stage = "adult") {
   return {
     x: rand(56, WORLD_SIZE - 56),
@@ -373,7 +377,9 @@ function simulate(dt) {
     }
 
     if (frog.digestedCrickets >= 3 || frog.digestedPillBugs >= 2 || frog.poopTimer <= 0) {
-      state.droppings.push({ x: frog.x + rand(-4, 4), y: frog.y + rand(4, 8), age: 0 });
+      const dropX = frog.x + rand(-4, 4);
+      const dropY = getGroundY(dropX, frog.y + rand(4, 8));
+      state.droppings.push({ x: dropX, y: dropY, age: 0 });
       frog.poopTimer = rand(18, 34);
       frog.digestedCrickets = 0;
       frog.digestedPillBugs = 0;
@@ -425,7 +431,8 @@ function simulate(dt) {
   for (let i = state.droppings.length - 1; i >= 0; i -= 1) {
     const dropping = state.droppings[i];
     if (dropping.age >= 30) {
-      state.fungusPatches.push({ x: dropping.x, y: dropping.y, size: rand(4, 7) });
+      const fungusY = getGroundY(dropping.x, dropping.y);
+      state.fungusPatches.push({ x: dropping.x, y: fungusY, size: rand(4, 7) });
       state.droppings.splice(i, 1);
       pushEvent("Fungus sprouted", "Neglected droppings turned into fungus.");
     }
