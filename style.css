@@ -137,7 +137,8 @@ p {
 }
 
 .tank-panel {
-  padding: 12px;
+  padding: 14px;
+  background: linear-gradient(180deg, rgba(38, 50, 74, 0.98), rgba(26, 35, 53, 0.98));
 }
 
 .tank-header {
@@ -167,7 +168,8 @@ p {
 }
 
 .hud-strip {
-  padding: 10px;
+  padding: 12px;
+  background: linear-gradient(180deg, rgba(44, 56, 82, 0.96), rgba(29, 39, 58, 0.96));
 }
 
 .hud-strip-header,
@@ -198,7 +200,8 @@ p {
 }
 
 .hud-card {
-  padding: 10px;
+  padding: 12px;
+  background: linear-gradient(180deg, rgba(44, 56, 82, 0.96), rgba(29, 39, 58, 0.96));
 }
 
 .chip-row {
@@ -395,13 +398,13 @@ p {
 
 .pixel-button {
   position: relative;
-  border: 1px solid rgba(9, 14, 21, 0.7);
-  border-radius: 14px;
+  border: 1px solid rgba(9, 14, 21, 0.5);
+  border-radius: 16px;
   color: #10151c;
   padding: 10px 12px;
   min-height: 48px;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 8px 18px rgba(0, 0, 0, 0.18);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.26), 0 10px 20px rgba(0, 0, 0, 0.20);
 }
 
 .save-button {
@@ -572,12 +575,13 @@ p {
   display: inline-flex;
   align-items: center;
   min-height: 20px;
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.26);
-  border: 1px solid rgba(16, 21, 28, 0.14);
+  background: rgba(255, 255, 255, 0.30);
+  border: 1px solid rgba(16, 21, 28, 0.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
   font-size: 0.68rem;
-  color: rgba(16, 21, 28, 0.86);
+  color: rgba(16, 21, 28, 0.90);
   font-weight: 700;
 }
 
