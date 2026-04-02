@@ -680,62 +680,44 @@ function drawHabitatBase() {
 
   const plantLevel = getUpgrade("plants")?.level ?? 0;
   if (plantLevel > 0) {
-    const startX = 172;
-    const startY = 46;
-    const endX = 54;
-    const endY = 164;
-    const spread = plantLevel / 5;
-
     ctx.strokeStyle = "#2c6633";
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(startX, startY);
-    ctx.quadraticCurveTo(150, 82, 132, 108);
-    if (plantLevel >= 2) ctx.quadraticCurveTo(110, 124, 96, 138);
-    if (plantLevel >= 3) ctx.quadraticCurveTo(82, 146, 72, 154);
-    if (plantLevel >= 4) ctx.quadraticCurveTo(64, 160, 58, 162);
-    if (plantLevel >= 5) ctx.quadraticCurveTo(56, 163, endX, endY);
-    ctx.stroke();
+    ctx.lineWidth = 2;
 
-    if (plantLevel >= 2) {
+    const segments = [];
+    segments.push([[164, 44], [156, 62], [146, 84], [140, 104]]);
+    if (plantLevel >= 2) segments.push([[140, 104], [134, 122], [126, 138], [118, 152]]);
+    if (plantLevel >= 3) segments.push([[118, 152], [106, 160], [92, 166], [78, 170]]);
+    if (plantLevel >= 4) segments.push([[140, 106], [152, 118], [166, 132], [178, 144]]);
+    if (plantLevel >= 5) segments.push([[78, 170], [98, 173], [124, 175], [152, 176]]);
+
+    for (const seg of segments) {
       ctx.beginPath();
-      ctx.moveTo(132, 108);
-      ctx.quadraticCurveTo(150, 126, 170, 142);
+      ctx.moveTo(seg[0][0], seg[0][1]);
+      ctx.bezierCurveTo(seg[1][0], seg[1][1], seg[2][0], seg[2][1], seg[3][0], seg[3][1]);
       ctx.stroke();
     }
 
-    if (plantLevel >= 3) {
-      ctx.beginPath();
-      ctx.moveTo(108, 130);
-      ctx.quadraticCurveTo(118, 150, 126, 168);
-      ctx.stroke();
-    }
+    const leafClusters = [
+      [158, 58], [149, 78], [142, 98], [136, 118],
+      [128, 136], [118, 150], [104, 162], [88, 168],
+      [154, 120], [168, 136], [96, 174], [126, 176], [150, 177]
+    ].slice(0, 4 + plantLevel * 2);
 
-    if (plantLevel >= 4) {
+    for (const [lx, ly] of leafClusters) {
+      ctx.fillStyle = "#4d8f4d";
       ctx.beginPath();
-      ctx.moveTo(86, 148);
-      ctx.quadraticCurveTo(94, 164, 102, 178);
-      ctx.stroke();
-    }
-
-    if (plantLevel >= 5) {
+      ctx.moveTo(lx - 5, ly + 2);
+      ctx.lineTo(lx, ly - 2);
+      ctx.lineTo(lx + 5, ly + 2);
+      ctx.lineTo(lx, ly + 5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#6bad62";
       ctx.beginPath();
-      ctx.moveTo(70, 156);
-      ctx.quadraticCurveTo(84, 168, 150, 176);
-      ctx.stroke();
-    }
-
-    ctx.fillStyle = "#4b9250";
-    const leafCount = 8 + plantLevel * 6;
-    for (let leaf = 0; leaf < leafCount; leaf += 1) {
-      const t = leaf / Math.max(1, leafCount - 1);
-      const vineX = startX + (endX - startX) * t;
-      const vineY = startY + (endY - startY) * t * spread + Math.sin(t * Math.PI * 2.3) * 10;
-      ctx.beginPath();
-      ctx.moveTo(vineX - 6, vineY + 2);
-      ctx.lineTo(vineX, vineY - 2);
-      ctx.lineTo(vineX + 6, vineY + 2);
-      ctx.lineTo(vineX, vineY + 6);
+      ctx.moveTo(lx - 3, ly + 1);
+      ctx.lineTo(lx, ly - 1);
+      ctx.lineTo(lx + 3, ly + 1);
+      ctx.lineTo(lx, ly + 3);
       ctx.closePath();
       ctx.fill();
     }
