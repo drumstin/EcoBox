@@ -850,17 +850,36 @@ function drawHabitatBase() {
 
   const plantLevel = getUpgrade("plants")?.level ?? 0;
   if (plantLevel > 0) {
+    const vineSegments = [
+      [[166, 46], [154, 58], [146, 82], [140, 104]],
+      [[140, 104], [134, 126], [124, 144], [114, 158]],
+      [[114, 158], [100, 166], [84, 170], [66, 168]],
+      [[140, 104], [154, 112], [166, 126], [178, 144]],
+      [[126, 138], [138, 150], [156, 162], [174, 170]],
+      [[104, 160], [102, 146], [96, 128], [82, 112]],
+      [[92, 118], [108, 110], [122, 98], [132, 82]],
+      [[72, 166], [92, 176], [122, 178], [154, 176]]
+    ].slice(0, 2 + plantLevel + Math.floor(plantLevel / 2));
+
+    const accentSegments = [
+      [[148, 78], [138, 72], [124, 70], [110, 74]],
+      [[118, 150], [126, 140], [134, 130], [144, 120]],
+      [[86, 114], [76, 104], [68, 92], [64, 80]],
+      [[150, 160], [160, 152], [168, 144], [172, 134]]
+    ].slice(0, Math.max(0, plantLevel - 1));
+
     ctx.strokeStyle = "#2c6633";
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.4;
+    for (const seg of vineSegments) {
+      ctx.beginPath();
+      ctx.moveTo(seg[0][0], seg[0][1]);
+      ctx.bezierCurveTo(seg[1][0], seg[1][1], seg[2][0], seg[2][1], seg[3][0], seg[3][1]);
+      ctx.stroke();
+    }
 
-    const segments = [];
-    segments.push([[164, 44], [156, 62], [146, 84], [140, 104]]);
-    if (plantLevel >= 2) segments.push([[140, 104], [134, 122], [126, 138], [118, 152]]);
-    if (plantLevel >= 3) segments.push([[118, 152], [106, 160], [92, 166], [78, 170]]);
-    if (plantLevel >= 4) segments.push([[140, 106], [152, 118], [166, 132], [178, 144]]);
-    if (plantLevel >= 5) segments.push([[78, 170], [98, 173], [124, 175], [152, 176]]);
-
-    for (const seg of segments) {
+    ctx.strokeStyle = "#3c7a42";
+    ctx.lineWidth = 1.6;
+    for (const seg of accentSegments) {
       ctx.beginPath();
       ctx.moveTo(seg[0][0], seg[0][1]);
       ctx.bezierCurveTo(seg[1][0], seg[1][1], seg[2][0], seg[2][1], seg[3][0], seg[3][1]);
@@ -870,15 +889,16 @@ function drawHabitatBase() {
     const leafClusters = [
       [158, 58], [149, 78], [142, 98], [136, 118],
       [128, 136], [118, 150], [104, 162], [88, 168],
-      [154, 120], [168, 136], [96, 174], [126, 176], [150, 177]
-    ].slice(0, 4 + plantLevel * 2);
+      [154, 120], [168, 136], [96, 174], [126, 176], [150, 177],
+      [106, 112], [86, 114], [72, 96], [146, 156], [170, 167]
+    ].slice(0, 6 + plantLevel * 3);
 
     for (const [lx, ly] of leafClusters) {
       ctx.fillStyle = "#4d8f4d";
       ctx.beginPath();
       ctx.moveTo(lx - 5, ly + 2);
-      ctx.lineTo(lx, ly - 2);
-      ctx.lineTo(lx + 5, ly + 2);
+      ctx.lineTo(lx, ly - 3);
+      ctx.lineTo(lx + 6, ly + 2);
       ctx.lineTo(lx, ly + 5);
       ctx.closePath();
       ctx.fill();
