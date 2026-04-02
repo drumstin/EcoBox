@@ -1030,12 +1030,11 @@ function drawHabitatBase() {
     }
 
     const leafClusters = [
-      [158, 58], [149, 78], [142, 98], [136, 118],
-      [128, 136], [118, 150], [104, 162], [88, 168],
-      [154, 120], [168, 136], [96, 174], [126, 176], [150, 177],
-      [106, 112], [86, 114], [72, 96], [146, 156], [170, 167],
-      [124, 92], [154, 92], [98, 140], [74, 152]
-    ].slice(0, 8 + plantLevel * 4);
+      [158, 58], [149, 78], [142, 98], [90, 162],
+      [82, 170], [72, 174], [154, 120], [168, 136],
+      [96, 176], [126, 178], [150, 179], [72, 96],
+      [170, 167], [124, 92], [154, 92], [64, 146], [178, 154]
+    ].slice(0, 7 + plantLevel * 3);
 
     for (const [lx, ly] of leafClusters) {
       ctx.fillStyle = "#3d8444";
@@ -1083,24 +1082,24 @@ function drawHabitatBase() {
 
   const mistLevel = getUpgrade("mist")?.level ?? 0;
   const mistPaused = mistLevel >= 8 && state.mistPauseTimer > 0;
-  ctx.fillStyle = "#53624f";
-  ctx.fillRect(170, 24, 34, 10);
-  ctx.fillRect(182, 30, 10, 12);
-  ctx.strokeStyle = "rgba(214,226,232,0.72)";
+  ctx.fillStyle = "#4d5a4a";
+  ctx.fillRect(172, 24, 28, 8);
+  ctx.fillRect(182, 30, 8, 10);
+  ctx.strokeStyle = "rgba(186,204,212,0.54)";
   ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.moveTo(187, 40);
-  ctx.bezierCurveTo(184, 58, 182, 74, 180, 90);
+  ctx.moveTo(186, 38);
+  ctx.bezierCurveTo(183, 52, 181, 66, 179, 80);
   ctx.stroke();
   ctx.strokeStyle = "rgba(180,205,214,0.28)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(188, 40);
-  ctx.bezierCurveTo(185, 58, 183, 74, 181, 90);
+  ctx.moveTo(187, 38);
+  ctx.bezierCurveTo(184, 52, 182, 66, 180, 80);
   ctx.stroke();
   ctx.fillStyle = "rgba(245,250,255,0.96)";
   ctx.beginPath();
-  ctx.arc(180, 92, 3, 0, Math.PI * 2);
+  ctx.arc(179, 82, 2.4, 0, Math.PI * 2);
   ctx.fill();
   if (!mistPaused) {
     for (let i = 0; i < mistLevel * 2; i += 1) {
@@ -1192,6 +1191,8 @@ function drawFrog(frog) {
   drawPixelRect(x + 4, y + 7, 8, 3, palette.belly, "transparent");
   drawPixelRect(x + 3, y + 10, 10, 2, palette.accent, "transparent");
   drawPixelRect(x + 5, y + 12, 6, 3, palette.belly, "transparent");
+  drawPixelRect(x + 2, y + 13, 2, 2, palette.dark, "transparent");
+  drawPixelRect(x + 12, y + 13, 2, 2, palette.dark, "transparent");
 
   drawPixelRect(x + 2, y + 1, 2, 4, palette.dark, "transparent");
   drawPixelRect(x + 12, y + 1, 2, 4, palette.dark, "transparent");
@@ -1204,6 +1205,7 @@ function drawFrog(frog) {
   drawPixelRect(x + 10, y - 1, 2, 2, palette.dark, "transparent");
   drawPixelRect(x + 5, y, 1, 1, "#f8fbff", "transparent");
   drawPixelRect(x + 10, y, 1, 1, "#f8fbff", "transparent");
+  drawPixelRect(x + 7, y + 8, 2, 1, "#fff3c2", "transparent");
   drawPixelRect(x + 5, y + 2, 1, 2, palette.accent, "transparent");
   drawPixelRect(x + 10, y + 2, 1, 2, palette.accent, "transparent");
 
