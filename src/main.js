@@ -242,9 +242,14 @@ function simulate(dt) {
       const dist = Math.hypot(dx, dy);
       if (dist < 14) {
         frog.facing = cricket.x >= frog.x ? 1 : -1;
+        const tongueDx = cricket.x - frog.x;
+        const tongueDy = cricket.y - frog.y;
+        const tongueDist = Math.hypot(tongueDx, tongueDy) || 1;
+        const maxTongue = 12;
+        const reach = Math.min(maxTongue, tongueDist);
         frog.tongueTimer = 1;
-        frog.tongueTargetX = cricket.x;
-        frog.tongueTargetY = cricket.y;
+        frog.tongueTargetX = frog.x + (tongueDx / tongueDist) * reach;
+        frog.tongueTargetY = frog.y + (tongueDy / tongueDist) * reach;
         state.crickets.splice(i, 1);
         frog.hunger = Math.max(0, frog.hunger - 18);
         state.coins += 1;
