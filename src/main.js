@@ -189,7 +189,7 @@ function simulate(dt) {
     frog.hunger += dt * 3.2;
     frog.hopTimer -= dt;
     frog.restTimer -= dt;
-    frog.tongueTimer = Math.max(0, frog.tongueTimer - dt * 3.6);
+    frog.tongueTimer = Math.max(0, frog.tongueTimer - dt * 2.8);
 
     let targetCricket = null;
     let closestDist = Infinity;
@@ -241,6 +241,7 @@ function simulate(dt) {
       const dy = cricket.y - frog.y;
       const dist = Math.hypot(dx, dy);
       if (dist < 14) {
+        frog.facing = cricket.x >= frog.x ? 1 : -1;
         frog.tongueTimer = 1;
         frog.tongueTargetX = cricket.x;
         frog.tongueTargetY = cricket.y;
@@ -427,12 +428,17 @@ function drawFrog(frog) {
   }
 
   if (frog.tongueTimer > 0.01) {
-    const targetX = Math.round(frog.tongueTargetX);
-    const targetY = Math.round(frog.tongueTargetY);
-    const midX = Math.round((tongueBaseX + targetX) / 2);
-    const midY = Math.round((tongueBaseY + targetY) / 2);
+    const targetX = frog.tongueTargetX;
+    const targetY = frog.tongueTargetY;
+    const phase = frog.tongueTimer > 0.5 ? (1 - frog.tongueTimer) / 0.5 : frog.tongueTimer / 0.5;
+    const eased = Math.max(0, Math.min(1, phase));
+    const tipX = Math.round(tongueBaseX + (targetX - tongueBaseX) * eased);
+    const tipY = Math.round(tongueBaseY + (targetY - tongueBaseY) * eased);
+    const midX = Math.round((tongueBaseX + tipX) / 2);
+    const midY = Math.round((tongueBaseY + tipY) / 2);
     drawPixelRect(Math.min(tongueBaseX, midX), Math.min(tongueBaseY, midY), Math.max(2, Math.abs(midX - tongueBaseX) + 2), 2, "#f58aa0", "transparent");
-    drawPixelRect(Math.min(midX, targetX), Math.min(midY, targetY), Math.max(2, Math.abs(targetX - midX) + 2), 2, "#ff9db0", "transparent");
+    drawPixelRect(Math.min(midX, tipX), Math.min(midY, tipY), Math.max(2, Math.abs(tipX - midX) + 2), 2, "#ff9db0", "transparent");
+    drawPixelRect(tipX, tipY, 2, 2, "#ffd1da", "transparent");
   }
 
   drawPixelRect(x, y, 12, 10, "#73d65f", "#2f6f2a");
