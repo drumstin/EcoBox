@@ -502,13 +502,13 @@ function simulate(dt) {
       pillBug.vy = clamp(Math.sign(dy) * 0.12, -0.12, 0.12);
       pillBug.x += pillBug.vx * dt * 42;
       pillBug.y += pillBug.vy * dt * 42;
-    } else if (nearestFungus && nearestFungusDist < 90) {
+    } else if (nearestFungus && nearestFungusDist < 120) {
       const dx = nearestFungus.x - pillBug.x;
       const dy = nearestFungus.y - pillBug.y;
-      pillBug.vx = clamp(Math.sign(dx) * 0.14, -0.14, 0.14);
-      pillBug.vy = clamp(Math.sign(dy) * 0.1, -0.1, 0.1);
-      pillBug.x += pillBug.vx * dt * 36;
-      pillBug.y += pillBug.vy * dt * 36;
+      pillBug.vx = clamp(Math.sign(dx) * 0.18, -0.18, 0.18);
+      pillBug.vy = clamp(Math.sign(dy) * 0.12, -0.12, 0.12);
+      pillBug.x += pillBug.vx * dt * 44;
+      pillBug.y += pillBug.vy * dt * 44;
     } else {
       if (pillBug.restTimer <= 0 && pillBug.scootTimer <= 0) {
         pillBug.vx = rand(-0.2, 0.2);
@@ -550,9 +550,10 @@ function simulate(dt) {
       const dx = fungus.x - pillBug.x;
       const dy = fungus.y - pillBug.y;
       const dist = Math.hypot(dx, dy);
-      if (dist < 8) {
+      if (dist < 10) {
         state.fungusPatches.splice(i, 1);
-        state.waste = Math.max(0, state.waste - 0.3);
+        state.waste = Math.max(0, state.waste - 0.4);
+        spawnPopup(pillBug.x, pillBug.y - 6, "mushroom");
         break;
       }
     }
@@ -1059,18 +1060,25 @@ function drawDroppingsAndFungus() {
   }
 
   for (const fungus of state.fungusPatches) {
-    ctx.fillStyle = "#d8c7ff";
-    ctx.beginPath();
-    ctx.arc(fungus.x, fungus.y, fungus.size * 0.45, 0, Math.PI * 2);
-    ctx.arc(fungus.x + fungus.size * 0.4, fungus.y - 1, fungus.size * 0.3, 0, Math.PI * 2);
-    ctx.arc(fungus.x - fungus.size * 0.35, fungus.y + 0.5, fungus.size * 0.26, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "#9a86cf";
+    ctx.strokeStyle = "#f7f0dc";
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(fungus.x, fungus.y);
-    ctx.lineTo(fungus.x, fungus.y + fungus.size * 0.6);
+    ctx.moveTo(fungus.x, fungus.y + fungus.size * 0.1);
+    ctx.lineTo(fungus.x, fungus.y + fungus.size * 0.75);
     ctx.stroke();
+
+    ctx.fillStyle = "#cf2e2e";
+    ctx.beginPath();
+    ctx.arc(fungus.x, fungus.y, fungus.size * 0.5, Math.PI, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#fff7ea";
+    ctx.beginPath();
+    ctx.arc(fungus.x - fungus.size * 0.16, fungus.y - 1, 0.9, 0, Math.PI * 2);
+    ctx.arc(fungus.x + fungus.size * 0.1, fungus.y - 2, 0.8, 0, Math.PI * 2);
+    ctx.arc(fungus.x + fungus.size * 0.26, fungus.y - 0.2, 0.7, 0, Math.PI * 2);
+    ctx.fill();
   }
 }
 
