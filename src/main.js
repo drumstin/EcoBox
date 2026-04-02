@@ -1,5 +1,11 @@
 const WORLD_SIZE = 240;
-const SAVE_KEY = "ecobox-save-v2";
+const SAVE_KEY = "ecobox-save-v3";
+
+const SPECIES = [
+  { key: "glider", color: "#ffd866", eye: "#fff8d6", speed: 0.34, size: 8 },
+  { key: "snout", color: "#ff9f6e", eye: "#fff1d6", speed: 0.28, size: 9 },
+  { key: "mote", color: "#f7f1c7", eye: "#ffffff", speed: 0.22, size: 6 }
+];
 
 const state = {
   tick: 0,
@@ -11,6 +17,7 @@ const state = {
   waste: 18,
   level: 1,
   boostTimer: 0,
+  decorationsPlaced: 0,
   events: [
     { label: "EcoBox online", detail: "Top-down tank initialized." },
     { label: "Starter biome", detail: "Moss pads, snails, and micro-swimmers added." }
@@ -19,7 +26,8 @@ const state = {
     { id: "aerator", name: "Corner Aerator", description: "Keeps water oxygenated", cost: 15, level: 0, maxLevel: 8 },
     { id: "reedbed", name: "Reed Bed", description: "Passively cleans waste", cost: 18, level: 0, maxLevel: 8 },
     { id: "broodlight", name: "Brood Light", description: "Improves population growth", cost: 22, level: 0, maxLevel: 6 },
-    { id: "autofeeder", name: "Auto Feeder", description: "Increases algae production", cost: 20, level: 0, maxLevel: 8 }
+    { id: "autofeeder", name: "Auto Feeder", description: "Increases algae production", cost: 20, level: 0, maxLevel: 8 },
+    { id: "decor", name: "Pixel Decor", description: "Adds rocks, logs, and cover", cost: 16, level: 0, maxLevel: 6 }
   ],
   critters: []
 };
@@ -49,33 +57,39 @@ function rand(min, max) {
   return Math.random() * (max - min) + min;
 }
 
+function choice(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
 function pushEvent(label, detail) {
   state.events.unshift({ label, detail });
   state.events = state.events.slice(0, 14);
 }
 
+function spawnCritter() {
+  const species = choice(SPECIES);
+  return {
+    species: species.key,
+    x: rand(44, WORLD_SIZE - 44),
+    y: rand(44, WORLD_SIZE - 44),
+    vx: rand(-species.speed, species.speed),
+    vy: rand(-species.speed, species.speed),
+    color: species.color,
+    eye: species.eye,
+    size: species.size
+  };
+}
+
 function createCritters(count) {
-  state.critters = Array.from({ length: count }, (_, index) => ({
-    x: rand(38, WORLD_SIZE - 38),
-    y: rand(38, WORLD_SIZE - 38),
-    vx: rand(-0.25, 0.25),
-    vy: rand(-0.25, 0.25),
-    hue: index % 3 === 0 ? "#ffd866" : index % 3 === 1 ? "#ff9f6e" : "#f7f1c7"
-  }));
+  state.critters = Array.from({ length: count }, () => spawnCritter());
 }
 
 function syncCritterCount() {
-  const target = Math.max(3, Math.min(28, Math.floor(state.population)));
+  const target = Math.max(3, Math.min(30, Math.floor(state.population)));
   if (state.critters.length < target) {
     const needed = target - state.critters.length;
     for (let i = 0; i < needed; i += 1) {
-      state.critters.push({
-        x: rand(38, WORLD_SIZE - 38),
-        y: rand(38, WORLD_SIZE - 38),
-        vx: rand(-0.25, 0.25),
-        vy: rand(-0.25, 0.25),
-        hue: i % 2 === 0 ? "#ffd866" : "#ff9f6e"
-      });
+      state.critters.push(spawnCritter());
     }
   } else if (state.critters.length > target) {
     state.critters.length = target;
@@ -93,6 +107,7 @@ function saveGame() {
     waste: state.waste,
     level: state.level,
     boostTimer: state.boostTimer,
+    decorationsPlaced: state.decorationsPlaced,
     events: state.events,
     upgrades: state.upgrades
   }));
@@ -130,15 +145,16 @@ function simulate(dt) {
   const reedbed = getUpgrade("reedbed")?.level ?? 0;
   const broodlight = getUpgrade("broodlight")?.level ?? 0;
   const autofeeder = getUpgrade("autofeeder")?.level ?? 0;
+  const decor = getUpgrade("decor")?.level ?? 0;
   const boostMultiplier = state.boostTimer > 0 ? 2 : 1;
 
   state.algae += (0.55 + autofeeder * 0.18) * dt * boostMultiplier;
-  state.energy += (0.42 + state.population * 0.05) * dt * boostMultiplier;
+  state.energy += (0.42 + state.population * 0.05 + decor * 0.03) * dt * boostMultiplier;
   state.oxygen += (0.18 + aerator * 0.18) * dt;
   state.cleanliness -= (0.14 + state.population * 0.02) * dt;
   state.cleanliness += reedbed * 0.13 * dt;
   state.waste += (0.18 + state.population * 0.016) * dt;
-  state.waste -= (0.1 + reedbed * 0.12) * dt;
+  state.waste -= (0.1 + reedbed * 0.12 + decor * 0.03) * dt;
 
   if (state.algae > 4) {
     state.population += (0.018 + broodlight * 0.008) * dt;
@@ -164,7 +180,7 @@ function simulate(dt) {
   state.population = clamp(state.population, 0, 999);
   state.algae = clamp(state.algae, 0, 200);
   state.waste = clamp(state.waste, 0, 100);
-  state.level = clamp(1 + Math.floor((state.energy + state.population * 4) / 65), 1, 99);
+  state.level = clamp(1 + Math.floor((state.energy + state.population * 4 + decor * 6) / 65), 1, 99);
 
   for (const critter of state.critters) {
     critter.x += critter.vx * dt * 60;
@@ -178,10 +194,10 @@ function simulate(dt) {
     critter.vx = clamp(critter.vx, -0.45, 0.45);
     critter.vy = clamp(critter.vy, -0.45, 0.45);
 
-    if (critter.x < 26 || critter.x > WORLD_SIZE - 26) critter.vx *= -1;
-    if (critter.y < 26 || critter.y > WORLD_SIZE - 26) critter.vy *= -1;
-    critter.x = clamp(critter.x, 26, WORLD_SIZE - 26);
-    critter.y = clamp(critter.y, 26, WORLD_SIZE - 26);
+    if (critter.x < 30 || critter.x > WORLD_SIZE - 30) critter.vx *= -1;
+    if (critter.y < 30 || critter.y > WORLD_SIZE - 30) critter.vy *= -1;
+    critter.x = clamp(critter.x, 30, WORLD_SIZE - 30);
+    critter.y = clamp(critter.y, 30, WORLD_SIZE - 30);
   }
 
   syncCritterCount();
@@ -197,68 +213,108 @@ function drawPixelRect(x, y, w, h, fill, stroke = "#000") {
   }
 }
 
-function drawTankBase() {
-  drawPixelRect(0, 0, WORLD_SIZE, WORLD_SIZE, "#183b47", "#071218");
-  drawPixelRect(14, 14, WORLD_SIZE - 28, WORLD_SIZE - 28, "#2d7d7d", "#0a1c21");
-  drawPixelRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48, "#5bc0be", "#184c55");
+function drawPixelCircle(cx, cy, r, fill, stroke = "transparent") {
+  ctx.fillStyle = fill;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
+  if (stroke !== "transparent") {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+}
 
-  for (let i = 0; i < 7; i += 1) {
-    const lilyX = 30 + i * 28 + ((i % 2) * 7);
-    const lilyY = 34 + (i % 3) * 46;
-    drawPixelRect(lilyX, lilyY, 14, 10, "#2d8f4a", "#164a25");
-    drawPixelRect(lilyX + 5, lilyY + 2, 3, 3, "#8cff96", "transparent");
+function drawTankBase() {
+  drawPixelRect(0, 0, WORLD_SIZE, WORLD_SIZE, "#193542", "#081118");
+  drawPixelRect(14, 14, WORLD_SIZE - 28, WORLD_SIZE - 28, "#2b6578", "#0a1c21");
+  drawPixelRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48, "#68cdd0", "#1c5d67");
+
+  drawPixelRect(31, 31, WORLD_SIZE - 62, WORLD_SIZE - 62, "rgba(255,255,255,0.08)", "transparent");
+
+  const algaeClusters = 5 + Math.floor(state.algae / 8);
+  for (let i = 0; i < algaeClusters; i += 1) {
+    const x = 42 + ((i * 37) % 138) + (i % 2) * 9;
+    const y = 42 + ((i * 29) % 132) + ((i + 1) % 3) * 7;
+    drawPixelCircle(x, y, 9, "#2f8f4a");
+    drawPixelCircle(x + 5, y - 4, 6, "#5edb7b");
+    drawPixelCircle(x - 6, y + 4, 5, "#21753a");
+  }
+
+  const decorLevel = getUpgrade("decor")?.level ?? 0;
+  for (let i = 0; i < decorLevel; i += 1) {
+    const x = 44 + ((i * 26) % 120);
+    const y = 150 + ((i * 17) % 34);
+    drawPixelRect(x, y, 12, 8, "#8c6a42", "#4c3518");
+    drawPixelRect(x + 8, y - 8, 5, 8, "#6fd37a", "transparent");
   }
 
   const reedbedLevel = getUpgrade("reedbed")?.level ?? 0;
   for (let i = 0; i < reedbedLevel; i += 1) {
-    const x = 36 + (i % 4) * 18;
-    const y = WORLD_SIZE - 52 - Math.floor(i / 4) * 14;
-    drawPixelRect(x, y, 3, 14, "#6fd37a", "transparent");
-    drawPixelRect(x + 3, y + 3, 3, 11, "#509d57", "transparent");
+    const x = 42 + (i % 4) * 20;
+    const y = 176 - Math.floor(i / 4) * 16;
+    drawPixelRect(x, y, 3, 16, "#6fd37a", "transparent");
+    drawPixelRect(x + 4, y + 3, 3, 13, "#4ea85a", "transparent");
   }
 
   const aeratorLevel = getUpgrade("aerator")?.level ?? 0;
+  drawPixelRect(184, 182, 16, 16, "#5c6e79", "#2e3a42");
   for (let i = 0; i < 3 + aeratorLevel * 2; i += 1) {
-    const baseX = WORLD_SIZE - 42 + (i % 2) * 8;
-    const rise = ((state.tick * 18) + i * 13) % 140;
-    drawPixelRect(baseX, WORLD_SIZE - 34 - rise, 4, 4, "#d8fbff", "#5e9db0");
+    const bob = ((state.tick * 18) + i * 13) % 116;
+    drawPixelRect(190 + (i % 2) * 8, 174 - bob, 4, 4, "#d8fbff", "#5e9db0");
   }
 
   const autofeederLevel = getUpgrade("autofeeder")?.level ?? 0;
   for (let i = 0; i < autofeederLevel; i += 1) {
-    const x = WORLD_SIZE - 62 - i * 10;
-    drawPixelRect(x, 28, 8, 8, "#f4c96f", "#8f6112");
-    drawPixelRect(x + 2, 36, 4, 6, "#7ce38b", "transparent");
+    const x = 168 - i * 12;
+    drawPixelRect(x, 34, 9, 9, "#f4c96f", "#8f6112");
+    drawPixelRect(x + 2, 43, 4, 5, "#7ce38b", "transparent");
   }
 
   const broodlightLevel = getUpgrade("broodlight")?.level ?? 0;
   for (let i = 0; i < broodlightLevel; i += 1) {
-    const x = 42 + i * 14;
-    drawPixelRect(x, 26, 8, 4, "#fff1b8", "#8f6112");
+    const x = 54 + i * 16;
+    drawPixelRect(x, 30, 9, 4, "#fff1b8", "#8f6112");
+  }
+}
+
+function drawCritter(critter) {
+  const x = Math.round(critter.x);
+  const y = Math.round(critter.y);
+
+  if (critter.species === "glider") {
+    drawPixelRect(x, y, 10, 7, critter.color, "#55371d");
+    drawPixelRect(x + 7, y + 2, 4, 2, critter.eye, "transparent");
+    drawPixelRect(x - 2, y + 2, 2, 2, "#c98f26", "transparent");
+  } else if (critter.species === "snout") {
+    drawPixelRect(x, y, 9, 9, critter.color, "#704024");
+    drawPixelRect(x + 6, y + 3, 4, 2, critter.eye, "transparent");
+    drawPixelRect(x + 2, y - 2, 3, 2, "#ffcf9e", "transparent");
+  } else {
+    drawPixelRect(x, y, 6, 6, critter.color, "#77704a");
+    drawPixelRect(x + 4, y + 2, 2, 2, critter.eye, "transparent");
   }
 }
 
 function drawCritters() {
   for (const critter of state.critters) {
-    drawPixelRect(Math.round(critter.x), Math.round(critter.y), 8, 8, critter.hue, "#55371d");
-    drawPixelRect(Math.round(critter.x + 6), Math.round(critter.y + 3), 3, 2, "#fff8d6", "transparent");
+    drawCritter(critter);
   }
 }
 
 function drawWaste() {
   const wastePatches = Math.floor(state.waste / 7);
   for (let i = 0; i < wastePatches; i += 1) {
-    const x = 28 + ((i * 31) % 170);
-    const y = 34 + ((i * 19) % 170);
+    const x = 36 + ((i * 31) % 146);
+    const y = 42 + ((i * 19) % 138);
     drawPixelRect(x, y, 6, 6, "rgba(102, 73, 31, 0.55)", "transparent");
   }
 }
 
 function renderTank() {
   const width = elements.canvas.width;
-  const height = elements.canvas.height;
   ctx.imageSmoothingEnabled = false;
-  ctx.clearRect(0, 0, width, height);
+  ctx.clearRect(0, 0, width, width);
 
   const scale = width / WORLD_SIZE;
   ctx.save();
@@ -270,12 +326,12 @@ function renderTank() {
 
   if (state.cleanliness < 40) {
     ctx.fillStyle = `rgba(57, 44, 22, ${Math.min(0.3, (40 - state.cleanliness) / 100)})`;
-    ctx.fillRect(14, 14, WORLD_SIZE - 28, WORLD_SIZE - 28);
+    ctx.fillRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48);
   }
 
   if (state.boostTimer > 0) {
     ctx.fillStyle = "rgba(255, 216, 102, 0.12)";
-    ctx.fillRect(14, 14, WORLD_SIZE - 28, WORLD_SIZE - 28);
+    ctx.fillRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48);
   }
 
   ctx.restore();
@@ -354,6 +410,9 @@ function renderHud() {
       if (state.energy < cost || upgrade.level >= upgrade.maxLevel) return;
       state.energy -= cost;
       upgrade.level += 1;
+      if (upgrade.id === "decor") {
+        state.decorationsPlaced += 1;
+      }
       pushEvent("Upgrade bought", `${upgrade.name} upgraded to level ${upgrade.level}.`);
       renderHud();
     });
@@ -413,6 +472,7 @@ function tick() {
       waste: state.waste,
       level: state.level,
       boostTimer: state.boostTimer,
+      decorationsPlaced: state.decorationsPlaced,
       events: state.events,
       upgrades: state.upgrades
     }));
