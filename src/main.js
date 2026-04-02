@@ -30,6 +30,7 @@ const state = {
   decorationsPlaced: 0,
   frogs: [],
   frogEggs: [],
+  tadpoles: [],
   crickets: [],
   pillBugs: [],
   pillBugEggs: [],
@@ -181,6 +182,7 @@ function saveGame() {
     upgrades: state.upgrades,
     frogs: state.frogs,
     frogEggs: state.frogEggs,
+    tadpoles: state.tadpoles,
     crickets: state.crickets,
     pillBugs: state.pillBugs,
     pillBugEggs: state.pillBugEggs,
@@ -412,13 +414,12 @@ function simulate(dt) {
 
   const readyFrogs = state.frogs.filter((frog) => frog.stage === "adult" && frog.breedReady && !frog.inHide);
   if (readyFrogs.length >= 2) {
-    const cave = FROG_HIDE_CAVES[0];
-    for (let egg = 0; egg < 4; egg += 1) {
-      state.frogEggs.push({ x: cave.x + rand(1, cave.w - 1), y: cave.y + rand(1, cave.h - 1), age: 0, hatchTimer: 8 });
+    for (let egg = 0; egg < 5; egg += 1) {
+      state.frogEggs.push({ x: 88 + rand(-10, 10), y: 170 + rand(-5, 5), age: 0, hatchTimer: 8 });
     }
     readyFrogs[0].breedReady = false;
     readyFrogs[1].breedReady = false;
-    pushEvent("Frog eggs", "A pair of frogs laid eggs in the log cave.");
+    pushEvent("Frog eggs", "A pair of frogs laid eggs in the pond.");
   }
 
   for (const dropping of state.droppings) {
@@ -584,13 +585,26 @@ function simulate(dt) {
     egg.age += dt;
     egg.hatchTimer -= dt;
     if (egg.hatchTimer <= 0) {
+      state.tadpoles.push({ x: egg.x + rand(-2, 2), y: egg.y + rand(-2, 2), age: 0, wiggle: rand(0, Math.PI * 2) });
+      state.frogEggs.splice(e, 1);
+      spawnPopup(egg.x, egg.y - 8, "hatch");
+    }
+  }
+
+  for (let t = state.tadpoles.length - 1; t >= 0; t -= 1) {
+    const tadpole = state.tadpoles[t];
+    tadpole.age += dt;
+    tadpole.wiggle += dt * 6;
+    tadpole.x = clamp(tadpole.x + Math.sin(tadpole.wiggle) * 0.18, 74, 102);
+    tadpole.y = clamp(tadpole.y + Math.cos(tadpole.wiggle * 0.8) * 0.12, 162, 178);
+    if (tadpole.age >= 45) {
       const froglet = spawnFrog("froglet");
-      froglet.x = egg.x + rand(-2, 2);
-      froglet.y = egg.y + rand(-2, 2);
+      froglet.x = tadpole.x;
+      froglet.y = tadpole.y;
       froglet.hunger = 12;
       state.frogs.push(froglet);
-      state.frogEggs.splice(e, 1);
-      spawnPopup(froglet.x, froglet.y - 8, "hatch");
+      state.tadpoles.splice(t, 1);
+      spawnPopup(froglet.x, froglet.y - 8, "froglet");
     }
   }
 
@@ -682,6 +696,15 @@ function drawHabitatBase() {
   ctx.beginPath();
   ctx.ellipse(70, 66, 20, 9, -0.12, 0, Math.PI * 2);
   ctx.ellipse(170, 64, 18, 8, 0.12, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#6fb8b8";
+  ctx.beginPath();
+  ctx.ellipse(88, 170, 16, 8, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(210,255,255,0.35)";
+  ctx.beginPath();
+  ctx.ellipse(84, 168, 8, 3, -0.18, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#7c5d3b";
@@ -1003,6 +1026,19 @@ function drawDroppingsAndFungus() {
     ctx.beginPath();
     ctx.arc(egg.x, egg.y, 1.1, 0, Math.PI * 2);
     ctx.fill();
+  }
+
+  for (const tadpole of state.tadpoles) {
+    ctx.fillStyle = "#34322c";
+    ctx.beginPath();
+    ctx.ellipse(tadpole.x, tadpole.y, 2.2, 1.4, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#4d493f";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(tadpole.x + 2, tadpole.y);
+    ctx.lineTo(tadpole.x + 5, tadpole.y + Math.sin(tadpole.wiggle) * 1.5);
+    ctx.stroke();
   }
 
   for (const egg of state.pillBugEggs) {
@@ -1521,6 +1557,7 @@ function tick() {
 loadGame();
 state.frogs = Array.isArray(state.frogs) ? state.frogs : [];
 state.frogEggs = Array.isArray(state.frogEggs) ? state.frogEggs : [];
+state.tadpoles = Array.isArray(state.tadpoles) ? state.tadpoles : [];
 state.crickets = Array.isArray(state.crickets) ? state.crickets : [];
 state.pillBugs = Array.isArray(state.pillBugs) ? state.pillBugs : [];
 state.pillBugEggs = Array.isArray(state.pillBugEggs) ? state.pillBugEggs : [];
