@@ -1010,15 +1010,9 @@ function drawHabitatBase() {
       [[72, 166], [92, 176], [122, 178], [154, 176]]
     ].slice(0, 2 + plantLevel + Math.floor(plantLevel / 2));
 
-    const accentSegments = [
-      [[148, 78], [138, 72], [124, 70], [110, 74]],
-      [[118, 150], [126, 140], [134, 130], [144, 120]],
-      [[86, 114], [76, 104], [68, 92], [64, 80]],
-      [[150, 160], [160, 152], [168, 144], [172, 134]]
-    ].slice(0, Math.max(0, plantLevel - 1));
-
-    ctx.strokeStyle = "#2c6633";
-    ctx.lineWidth = 2.4;
+    ctx.strokeStyle = "#2f7b3e";
+    ctx.lineWidth = 4.2;
+    ctx.lineCap = "round";
     for (const seg of vineSegments) {
       ctx.beginPath();
       ctx.moveTo(seg[0][0], seg[0][1]);
@@ -1026,9 +1020,9 @@ function drawHabitatBase() {
       ctx.stroke();
     }
 
-    ctx.strokeStyle = "#3c7a42";
-    ctx.lineWidth = 1.6;
-    for (const seg of accentSegments) {
+    ctx.strokeStyle = "#4fa25a";
+    ctx.lineWidth = 2.2;
+    for (const seg of vineSegments.slice(0, Math.max(1, plantLevel))) {
       ctx.beginPath();
       ctx.moveTo(seg[0][0], seg[0][1]);
       ctx.bezierCurveTo(seg[1][0], seg[1][1], seg[2][0], seg[2][1], seg[3][0], seg[3][1]);
@@ -1039,25 +1033,21 @@ function drawHabitatBase() {
       [158, 58], [149, 78], [142, 98], [136, 118],
       [128, 136], [118, 150], [104, 162], [88, 168],
       [154, 120], [168, 136], [96, 174], [126, 176], [150, 177],
-      [106, 112], [86, 114], [72, 96], [146, 156], [170, 167]
-    ].slice(0, 6 + plantLevel * 3);
+      [106, 112], [86, 114], [72, 96], [146, 156], [170, 167],
+      [124, 92], [154, 92], [98, 140], [74, 152]
+    ].slice(0, 8 + plantLevel * 4);
 
     for (const [lx, ly] of leafClusters) {
-      ctx.fillStyle = "#4d8f4d";
+      ctx.fillStyle = "#3d8444";
       ctx.beginPath();
-      ctx.moveTo(lx - 5, ly + 2);
-      ctx.lineTo(lx, ly - 3);
-      ctx.lineTo(lx + 6, ly + 2);
-      ctx.lineTo(lx, ly + 5);
-      ctx.closePath();
+      ctx.ellipse(lx, ly, 8, 5, -0.2, 0, Math.PI * 2);
+      ctx.ellipse(lx + 6, ly - 2, 7, 4.5, 0.3, 0, Math.PI * 2);
+      ctx.ellipse(lx - 5, ly + 2, 6, 4, -0.4, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = "#6bad62";
+      ctx.fillStyle = "#6fd06d";
       ctx.beginPath();
-      ctx.moveTo(lx - 3, ly + 1);
-      ctx.lineTo(lx, ly - 1);
-      ctx.lineTo(lx + 3, ly + 1);
-      ctx.lineTo(lx, ly + 3);
-      ctx.closePath();
+      ctx.ellipse(lx + 2, ly - 1, 5, 3.2, -0.12, 0, Math.PI * 2);
+      ctx.ellipse(lx - 4, ly + 1, 4, 2.8, 0.2, 0, Math.PI * 2);
       ctx.fill();
     }
   }
