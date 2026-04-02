@@ -139,6 +139,7 @@ function spawnFrog(stage = "adult") {
   return {
     x: rand(56, WORLD_SIZE - 56),
     y: rand(56, WORLD_SIZE - 56),
+    morph: Math.floor(rand(0, 5)),
     vx: 0,
     vy: 0,
     hopTimer: rand(0.3, 1.8),
@@ -228,17 +229,27 @@ function loadGame() {
 
 function openAlbum() {
   if (!elements.albumModal || !elements.albumList) return;
+  const seenMorphs = new Set(state.frogs.map((frog) => frog.morph ?? 0));
+  const frogIconClass = seenMorphs.has(3)
+    ? "album-icon-frog-red"
+    : seenMorphs.has(2)
+      ? "album-icon-frog-orange"
+      : seenMorphs.has(1)
+        ? "album-icon-frog-blue"
+        : seenMorphs.has(4)
+          ? "album-icon-frog-yellow"
+          : "album-icon-frog-green";
   const entries = [
-    { name: "Tree Frog", icon: "🐸", unlocked: state.frogs.some((frog) => frog.stage === "adult"), count: state.frogs.filter((frog) => frog.stage === "adult").length, note: "Main terrarium frogs." },
-    { name: "Froglet", icon: "🐸", unlocked: state.frogs.some((frog) => frog.stage === "froglet"), count: state.frogs.filter((frog) => frog.stage === "froglet").length, note: "Young frogs growing out of the pond." },
-    { name: "Tadpole", icon: "~", unlocked: state.tadpoles.length > 0 || state.frogEggs.length > 0, count: state.tadpoles.length, note: "Wiggling pond babies." },
-    { name: "Cricket", icon: "🦗", unlocked: state.crickets.length > 0 || state.cricketFarm.boxes.some((box) => box.type !== "pillbug" && box.crickets > 0), count: state.crickets.length, note: "Feeder insects in the habitat." },
-    { name: "Pill Bug", icon: "◔", unlocked: state.pillBugs.length > 0 || state.cricketFarm.boxes.some((box) => box.type === "pillbug" && box.crickets > 0), count: state.pillBugs.length, note: "Cleanup crew on the substrate." }
+    { name: "Tree Frog", iconClass: frogIconClass, icon: "🐸", unlocked: state.frogs.some((frog) => frog.stage === "adult"), count: state.frogs.filter((frog) => frog.stage === "adult").length, note: "Main terrarium frogs." },
+    { name: "Froglet", iconClass: frogIconClass, icon: "🐸", unlocked: state.frogs.some((frog) => frog.stage === "froglet"), count: state.frogs.filter((frog) => frog.stage === "froglet").length, note: "Young frogs growing out of the pond." },
+    { name: "Tadpole", iconClass: "album-icon-tadpole", icon: "~", unlocked: state.tadpoles.length > 0 || state.frogEggs.length > 0, count: state.tadpoles.length, note: "Wiggling pond babies." },
+    { name: "Cricket", iconClass: "album-icon-cricket", icon: "🦗", unlocked: state.crickets.length > 0 || state.cricketFarm.boxes.some((box) => box.type !== "pillbug" && box.crickets > 0), count: state.crickets.length, note: "Feeder insects in the habitat." },
+    { name: "Pill Bug", iconClass: "album-icon-pillbug", icon: "◔", unlocked: state.pillBugs.length > 0 || state.cricketFarm.boxes.some((box) => box.type === "pillbug" && box.crickets > 0), count: state.pillBugs.length, note: "Cleanup crew on the substrate." }
   ];
   elements.albumList.innerHTML = entries.map((entry) => `
     <article class="album-entry ${entry.unlocked ? "" : "album-entry-locked"}">
       <div class="album-entry-top">
-        <span class="album-icon">${entry.unlocked ? entry.icon : "?"}</span>
+        <span class="album-icon ${entry.unlocked ? entry.iconClass : ""}">${entry.unlocked ? entry.icon : "?"}</span>
         <div>
           <strong>${entry.unlocked ? entry.name : "Locked"}</strong>
           <div>${entry.unlocked ? `Seen now: ${entry.count}` : "Discover this critter"}</div>
@@ -1133,7 +1144,7 @@ function drawHabitatBase() {
 
 function drawFrog(frog) {
   const x = Math.round(frog.x);
-  const paletteShift = Math.abs(Math.floor((frog.x + frog.y) % 5));
+  const paletteShift = typeof frog.morph === "number" ? frog.morph % 5 : Math.abs(Math.floor((frog.x + frog.y) % 5));
   const palettes = [
     { dark: "#1d6a39", mid: "#3ecf67", light: "#8af29e", belly: "#dff6c8", stripe: "#0f2d18" },
     { dark: "#0e4f7a", mid: "#23a4e0", light: "#7edfff", belly: "#d7f3ff", stripe: "#06263d" },
