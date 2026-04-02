@@ -559,6 +559,14 @@ p {
   font-weight: 700;
 }
 
+.action-price {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: rgba(16, 21, 28, 0.72);
+  font-weight: 700;
+}
+
 .pixel-button.secondary {
   background: var(--blue);
 }

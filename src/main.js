@@ -55,11 +55,17 @@ const elements = {
   addCricketBoxButton: document.getElementById("add-cricket-box-button"),
   multiBuyTabs: document.getElementById("multi-buy-tabs"),
   buyFrogButton: document.getElementById("buy-frog-button"),
+  buyFrogPrice: document.getElementById("buy-frog-price"),
   buyPillBugButton: document.getElementById("buy-pillbug-button"),
+  buyPillBugPrice: document.getElementById("buy-pillbug-price"),
   collectButton: document.getElementById("collect-button"),
+  collectPrice: document.getElementById("collect-price"),
   feedButton: document.getElementById("feed-button"),
+  feedPrice: document.getElementById("feed-price"),
   cleanButton: document.getElementById("clean-button"),
+  cleanPrice: document.getElementById("clean-price"),
   boostButton: document.getElementById("boost-button"),
+  boostPrice: document.getElementById("boost-price"),
   tankChips: document.getElementById("tank-chips"),
   statusGrid: document.getElementById("status-grid"),
   milestones: document.getElementById("milestones"),
@@ -1027,6 +1033,15 @@ function renderCricketFarm() {
   });
 }
 
+function renderQuickActionPrices() {
+  if (elements.buyFrogPrice) elements.buyFrogPrice.textContent = `${FROG_COST * state.multiBuyAmount} coins`;
+  if (elements.feedPrice) elements.feedPrice.textContent = `${CRICKET_COST * state.multiBuyAmount} coins`;
+  if (elements.buyPillBugPrice) elements.buyPillBugPrice.textContent = `${PILL_BUG_COST * state.multiBuyAmount} coins`;
+  if (elements.collectPrice) elements.collectPrice.textContent = `free`;
+  if (elements.cleanPrice) elements.cleanPrice.textContent = `free`;
+  if (elements.boostPrice) elements.boostPrice.textContent = `3 coins`;
+}
+
 function bindUi() {
   elements.toggleFarmButton?.addEventListener("click", () => {
     state.cricketFarmOpen = !state.cricketFarmOpen;
@@ -1070,6 +1085,7 @@ function bindUi() {
     button.addEventListener("click", () => {
       state.multiBuyAmount = Number(button.dataset.multibuy) || 5;
       elements.multiBuyTabs.querySelectorAll("[data-multibuy]").forEach((tab) => tab.classList.toggle("active", tab === button));
+      renderQuickActionPrices();
     });
   });
 
@@ -1194,6 +1210,7 @@ resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("orientationchange", resizeCanvas);
 renderHud();
+renderQuickActionPrices();
 renderCricketFarm();
 renderHabitat();
 requestAnimationFrame(tick);
