@@ -21,7 +21,7 @@ const state = {
   droppings: [],
   fungusPatches: [],
   cricketFarmOpen: false,
-  multiBuyAmount: 5,
+  multiBuyAmount: 1,
   cricketFarm: {
     carrots: 0,
     potatoes: 0,
