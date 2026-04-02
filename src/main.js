@@ -417,7 +417,7 @@ function simulate(dt) {
   const readyFrogs = state.frogs.filter((frog) => frog.stage === "adult" && frog.breedReady && !frog.inHide);
   if (readyFrogs.length >= 2) {
     for (let egg = 0; egg < 5; egg += 1) {
-      state.frogEggs.push({ x: 88 + rand(-10, 10), y: 170 + rand(-5, 5), age: 0, hatchTimer: 8 });
+      state.frogEggs.push({ x: 60 + rand(-10, 10), y: 150 + rand(-5, 5), age: 0, hatchTimer: 8 });
     }
     readyFrogs[0].breedReady = false;
     readyFrogs[1].breedReady = false;
@@ -603,8 +603,8 @@ function simulate(dt) {
     const tadpole = state.tadpoles[t];
     tadpole.age += dt;
     tadpole.wiggle += dt * 6;
-    tadpole.x = clamp(tadpole.x + Math.sin(tadpole.wiggle) * 0.18, 74, 102);
-    tadpole.y = clamp(tadpole.y + Math.cos(tadpole.wiggle * 0.8) * 0.12, 162, 178);
+    tadpole.x = clamp(tadpole.x + Math.sin(tadpole.wiggle) * 0.18, 44, 76);
+    tadpole.y = clamp(tadpole.y + Math.cos(tadpole.wiggle * 0.8) * 0.12, 142, 158);
     if (tadpole.age >= 45) {
       const froglet = spawnFrog("froglet");
       froglet.x = tadpole.x;
@@ -706,13 +706,17 @@ function drawHabitatBase() {
   ctx.ellipse(170, 64, 18, 8, 0.12, 0, Math.PI * 2);
   ctx.fill();
 
+  ctx.fillStyle = "#5b4b34";
+  ctx.beginPath();
+  ctx.ellipse(60, 150, 24, 14, 0, 0, Math.PI * 2);
+  ctx.fill();
   ctx.fillStyle = "#6fb8b8";
   ctx.beginPath();
-  ctx.ellipse(88, 170, 16, 8, 0, 0, Math.PI * 2);
+  ctx.ellipse(60, 150, 20, 10, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "rgba(210,255,255,0.35)";
+  ctx.fillStyle = "rgba(210,255,255,0.38)";
   ctx.beginPath();
-  ctx.ellipse(84, 168, 8, 3, -0.18, 0, Math.PI * 2);
+  ctx.ellipse(54, 147, 10, 4, -0.12, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#7c5d3b";
