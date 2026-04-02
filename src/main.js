@@ -650,40 +650,44 @@ function drawHabitatBase() {
 
   const plantLevel = getUpgrade("plants")?.level ?? 0;
   for (let i = 0; i < plantLevel; i += 1) {
-    const startX = 178 - (i % 3) * 16;
-    const startY = 34 + (i % 2) * 6;
-    const vineLength = 24 + i * 8;
-    const sway = (i % 2 === 0 ? 1 : -1) * (6 + i * 1.5);
+    const startX = 176 - (i % 3) * 14;
+    const startY = 34 + (i % 2) * 5;
+    const vineLength = 34 + i * 12;
+    const sway = (i % 2 === 0 ? 1 : -1) * (8 + i * 2.2);
 
-    ctx.strokeStyle = i % 2 === 0 ? "#67c86f" : "#58b85f";
+    ctx.strokeStyle = i % 2 === 0 ? "#2e6a34" : "#255a2d";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(startX, startY);
-    ctx.quadraticCurveTo(startX + sway, startY + vineLength * 0.35, startX - sway * 0.6, startY + vineLength);
+    ctx.quadraticCurveTo(startX + sway, startY + vineLength * 0.28, startX - sway * 0.45, startY + vineLength * 0.62);
+    ctx.quadraticCurveTo(startX - sway * 0.7, startY + vineLength * 0.82, startX - sway * 0.35, startY + vineLength);
     ctx.stroke();
 
-    if (i >= 2) {
+    if (i >= 1) {
       ctx.beginPath();
-      ctx.moveTo(startX - 2, startY + 10);
-      ctx.quadraticCurveTo(startX - 20, startY + 20, startX - 28, startY + 34);
+      ctx.moveTo(startX - 1, startY + 12);
+      ctx.quadraticCurveTo(startX - 16, startY + 24, startX - 24, startY + 40);
       ctx.stroke();
     }
 
-    if (i >= 4) {
+    if (i >= 3) {
       ctx.beginPath();
-      ctx.moveTo(startX + 3, startY + 16);
-      ctx.quadraticCurveTo(startX + 18, startY + 28, startX + 24, startY + 46);
+      ctx.moveTo(startX + 2, startY + 20);
+      ctx.quadraticCurveTo(startX + 16, startY + 32, startX + 22, startY + 52);
       ctx.stroke();
     }
 
-    ctx.fillStyle = i % 2 === 0 ? "#8ef08b" : "#6fdb78";
-    for (let leaf = 0; leaf < 4 + i; leaf += 1) {
-      const t = leaf / Math.max(1, 3 + i);
-      const leafX = startX + Math.sin(t * Math.PI * 2) * sway * 0.4;
-      const leafY = startY + t * vineLength;
+    ctx.fillStyle = i % 2 === 0 ? "#5ea85c" : "#4a8e4e";
+    for (let leaf = 0; leaf < 5 + i; leaf += 1) {
+      const t = leaf / Math.max(1, 4 + i);
+      const flowX = startX + Math.sin(t * Math.PI * 1.3) * sway * 0.38;
+      const flowY = startY + t * vineLength;
       ctx.beginPath();
-      ctx.ellipse(leafX - 4, leafY + 2, 4.5, 2.5, -0.4, 0, Math.PI * 2);
-      ctx.ellipse(leafX + 4, leafY + 4, 4.5, 2.5, 0.45, 0, Math.PI * 2);
+      ctx.moveTo(flowX - 5, flowY + 2);
+      ctx.lineTo(flowX, flowY - 1.5);
+      ctx.lineTo(flowX + 4.8, flowY + 2.2);
+      ctx.lineTo(flowX, flowY + 5.2);
+      ctx.closePath();
       ctx.fill();
     }
   }
