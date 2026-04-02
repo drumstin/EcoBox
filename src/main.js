@@ -29,6 +29,7 @@ const state = {
   mistBurstTimer: 60,
   decorationsPlaced: 0,
   frogs: [],
+  frogEggs: [],
   crickets: [],
   pillBugs: [],
   pillBugEggs: [],
@@ -112,7 +113,7 @@ function spawnPopup(x, y, text) {
   state.popups = state.popups.slice(-10);
 }
 
-function spawnFrog() {
+function spawnFrog(stage = "adult") {
   return {
     x: rand(56, WORLD_SIZE - 56),
     y: rand(56, WORLD_SIZE - 56),
@@ -134,7 +135,10 @@ function spawnFrog() {
     digestedPillBugs: 0,
     sleepTimer: 0,
     totalCricketsEaten: 0,
-    inHide: false
+    inHide: false,
+    stage,
+    age: 0,
+    breedReady: false
   };
 }
 
@@ -176,6 +180,7 @@ function saveGame() {
     events: state.events,
     upgrades: state.upgrades,
     frogs: state.frogs,
+    frogEggs: state.frogEggs,
     crickets: state.crickets,
     pillBugs: state.pillBugs,
     pillBugEggs: state.pillBugEggs,
@@ -251,6 +256,13 @@ function simulate(dt) {
   }
 
   for (const frog of state.frogs) {
+    frog.age += dt;
+    if (frog.stage === "froglet" && frog.age >= 90) {
+      frog.stage = "adult";
+      frog.age = 0;
+      spawnPopup(frog.x, frog.y - 8, "grown");
+    }
+
     if (frog.inHide) {
       frog.sleepTimer = Math.max(0, frog.sleepTimer - dt);
       if (frog.sleepTimer === 0) {
@@ -260,6 +272,7 @@ function simulate(dt) {
         frog.y = cave.exitY;
         frog.hunger = 8;
         frog.totalCricketsEaten = 0;
+        frog.breedReady = true;
         spawnPopup(frog.x, frog.y - 8, "awake");
       }
       continue;
@@ -395,6 +408,17 @@ function simulate(dt) {
     if (frog.y < 36 || frog.y > WORLD_SIZE - 36) frog.vy *= -1;
     frog.x = clamp(frog.x, 36, WORLD_SIZE - 36);
     frog.y = clamp(frog.y, 36, WORLD_SIZE - 36);
+  }
+
+  const readyFrogs = state.frogs.filter((frog) => frog.stage === "adult" && frog.breedReady && !frog.inHide);
+  if (readyFrogs.length >= 2) {
+    const cave = FROG_HIDE_CAVES[0];
+    for (let egg = 0; egg < 4; egg += 1) {
+      state.frogEggs.push({ x: cave.x + rand(1, cave.w - 1), y: cave.y + rand(1, cave.h - 1), age: 0, hatchTimer: 8 });
+    }
+    readyFrogs[0].breedReady = false;
+    readyFrogs[1].breedReady = false;
+    pushEvent("Frog eggs", "A pair of frogs laid eggs in the log cave.");
   }
 
   for (const dropping of state.droppings) {
@@ -552,6 +576,21 @@ function simulate(dt) {
       juvenile.y = egg.y;
       state.pillBugs.push(juvenile);
       state.pillBugEggs.splice(e, 1);
+    }
+  }
+
+  for (let e = state.frogEggs.length - 1; e >= 0; e -= 1) {
+    const egg = state.frogEggs[e];
+    egg.age += dt;
+    egg.hatchTimer -= dt;
+    if (egg.hatchTimer <= 0) {
+      const froglet = spawnFrog("froglet");
+      froglet.x = egg.x + rand(-2, 2);
+      froglet.y = egg.y + rand(-2, 2);
+      froglet.hunger = 12;
+      state.frogs.push(froglet);
+      state.frogEggs.splice(e, 1);
+      spawnPopup(froglet.x, froglet.y - 8, "hatch");
     }
   }
 
@@ -955,6 +994,17 @@ function drawPillBug(pillBug) {
 }
 
 function drawDroppingsAndFungus() {
+  for (const egg of state.frogEggs) {
+    ctx.fillStyle = "rgba(220,255,240,0.88)";
+    ctx.beginPath();
+    ctx.arc(egg.x, egg.y, 2.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(150,205,180,0.55)";
+    ctx.beginPath();
+    ctx.arc(egg.x, egg.y, 1.1, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   for (const egg of state.pillBugEggs) {
     ctx.fillStyle = "rgba(255,255,255,0.92)";
     ctx.beginPath();
@@ -1006,6 +1056,18 @@ function drawCreatures() {
   }
   for (const frog of state.frogs) {
     if (frog.inHide) continue;
+    if (frog.stage === "froglet") {
+      ctx.fillStyle = "#8fe77c";
+      ctx.beginPath();
+      ctx.ellipse(frog.x + 4, frog.y + 4, 4.2, 3.2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#d9ffc8";
+      ctx.beginPath();
+      ctx.arc(frog.x + 3, frog.y + 2.8, 1.2, 0, Math.PI * 2);
+      ctx.arc(frog.x + 5.4, frog.y + 2.8, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+      continue;
+    }
     drawFrog(frog);
     if (frogUpgradeLevel >= 8) {
       ctx.fillStyle = "rgba(255,245,180,0.16)";
@@ -1458,6 +1520,7 @@ function tick() {
 
 loadGame();
 state.frogs = Array.isArray(state.frogs) ? state.frogs : [];
+state.frogEggs = Array.isArray(state.frogEggs) ? state.frogEggs : [];
 state.crickets = Array.isArray(state.crickets) ? state.crickets : [];
 state.pillBugs = Array.isArray(state.pillBugs) ? state.pillBugs : [];
 state.pillBugEggs = Array.isArray(state.pillBugEggs) ? state.pillBugEggs : [];
