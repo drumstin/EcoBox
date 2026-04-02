@@ -1133,11 +1133,20 @@ function drawHabitatBase() {
 
 function drawFrog(frog) {
   const x = Math.round(frog.x);
-  const paletteShift = Math.abs(Math.floor((frog.x + frog.y) % 3));
-  const bodyDark = ["#3f8b3d", "#4a7f3c", "#517a33"][paletteShift];
-  const bodyMid = ["#73d65f", "#7ccc63", "#88cf58"][paletteShift];
-  const bodyLight = ["#8dea76", "#98e57a", "#a5e680"][paletteShift];
-  const belly = ["#e9f7d8", "#f2f7d2", "#edf3c8"][paletteShift];
+  const paletteShift = Math.abs(Math.floor((frog.x + frog.y) % 5));
+  const palettes = [
+    { dark: "#1d6a39", mid: "#3ecf67", light: "#8af29e", belly: "#dff6c8", stripe: "#0f2d18" },
+    { dark: "#0e4f7a", mid: "#23a4e0", light: "#7edfff", belly: "#d7f3ff", stripe: "#06263d" },
+    { dark: "#8c3a14", mid: "#ff7a2f", light: "#ffb066", belly: "#fff0d6", stripe: "#4a1f0a" },
+    { dark: "#6f1d1d", mid: "#e63f3f", light: "#ff8c8c", belly: "#ffe0d1", stripe: "#351010" },
+    { dark: "#6b5a10", mid: "#d6bf2f", light: "#f3e37a", belly: "#f8f2c8", stripe: "#342c08" }
+  ];
+  const palette = palettes[paletteShift];
+  const bodyDark = palette.dark;
+  const bodyMid = palette.mid;
+  const bodyLight = palette.light;
+  const belly = palette.belly;
+  const stripe = palette.stripe;
   const crouchWave = frog.jumpPhase === "crouch" ? Math.sin((1 - frog.crouchTimer) * Math.PI * 0.5) : 0;
   const jumpWave = Math.sin(frog.jumpArc * Math.PI);
   const lift = jumpWave * 18;
@@ -1181,7 +1190,14 @@ function drawFrog(frog) {
   drawPixelRect(x, y + 1, bodyW, Math.max(7, bodyH - 1), bodyDark, "transparent");
   drawPixelRect(x + 1, y, Math.max(10, bodyW - 2), bodyH, bodyMid, "#2f6f2a");
   drawPixelRect(x + 2, y + 1, Math.max(8, bodyW - 4), Math.max(4, bodyH - 4), bodyLight, "transparent");
-  drawPixelRect(x + 3, y + 3, Math.max(6, bodyW - 8), 2, "#baf7a0", "transparent");
+  drawPixelRect(x + 3, y + 3, Math.max(6, bodyW - 8), 2, bodyLight, "transparent");
+  if (paletteShift >= 1) {
+    drawPixelRect(x + 4, y + 2, Math.max(4, bodyW - 10), 1, stripe, "transparent");
+  }
+  if (paletteShift === 2 || paletteShift === 4) {
+    drawPixelRect(x + 2, y + 5, 2, 2, stripe, "transparent");
+    drawPixelRect(x + Math.max(8, bodyW - 4), y + 5, 2, 2, stripe, "transparent");
+  }
 
   drawPixelRect(x + 2, y - 2, 3, 3, "#d6ffbf", "transparent");
   drawPixelRect(x + Math.max(7, bodyW - 6), y - 2, 3, 3, "#d6ffbf", "transparent");
