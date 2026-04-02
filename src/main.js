@@ -433,7 +433,7 @@ function simulate(dt) {
     pillBug.restTimer -= dt;
     pillBug.age += dt;
 
-    if (pillBug.stage === "adult" && pillBug.age >= 160) {
+    if (pillBug.stage === "adult" && pillBug.age >= 600) {
       state.waste = Math.min(100, state.waste + 0.4);
       state.pillBugs.splice(p, 1);
       continue;
