@@ -27,12 +27,11 @@ body {
 body {
   min-height: 100vh;
   min-height: 100dvh;
-  font-family: "Courier New", monospace;
+  font-family: "Trebuchet MS", "Verdana", sans-serif;
   background:
     radial-gradient(circle at top, rgba(117, 216, 255, 0.16), transparent 28%),
     linear-gradient(180deg, #121927 0%, var(--bg) 100%);
   color: var(--text);
-  image-rendering: pixelated;
 }
 
 button,
@@ -49,7 +48,7 @@ canvas {
   background: #4c3b25;
   border: 4px solid var(--panel-edge);
   border-radius: 8px;
-  image-rendering: pixelated;
+  image-rendering: auto;
 }
 
 .app-shell {

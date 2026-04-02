@@ -499,7 +499,7 @@ function drawWaste() {
 
 function renderHabitat() {
   const width = elements.canvas.width;
-  ctx.imageSmoothingEnabled = false;
+  ctx.imageSmoothingEnabled = true;
   ctx.clearRect(0, 0, width, width);
 
   const scale = width / WORLD_SIZE;
