@@ -1,5 +1,5 @@
 const WORLD_SIZE = 240;
-const SAVE_KEY = "ecobox-save-v8";
+const SAVE_KEY = "ecobox-save-v9";
 const FROG_COST = 5;
 const CRICKET_COST = 1;
 const PILL_BUG_COST = 1;
