@@ -269,15 +269,16 @@ function drawPixelCircle(cx, cy, r, fill, stroke = "transparent") {
 function drawHabitatBase() {
   drawPixelRect(0, 0, WORLD_SIZE, WORLD_SIZE, "#2c2418", "#110d09");
   drawPixelRect(14, 14, WORLD_SIZE - 28, WORLD_SIZE - 28, "#4b3a24", "#23180f");
-  drawPixelRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48, "#6f5938", "#342415");
-  drawPixelRect(31, 31, WORLD_SIZE - 62, WORLD_SIZE - 62, "rgba(255,255,255,0.04)", "transparent");
+  drawPixelRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48, "#655033", "#342415");
+  drawPixelRect(31, 31, WORLD_SIZE - 62, WORLD_SIZE - 62, "rgba(255,255,255,0.025)", "transparent");
 
-  drawPixelRect(36, 32, 168, 74, "#5b7f41", "#2d4420");
-  drawPixelRect(44, 110, 152, 84, "#6c5232", "#392513");
-  drawPixelRect(40, 140, 78, 28, "#725737", "#412917");
-  drawPixelRect(126, 126, 34, 18, "#58412c", "#2e1e14");
-  drawPixelRect(54, 66, 14, 44, "#8a6a45", "#53371c");
-  drawPixelRect(62, 84, 48, 9, "#8a6a45", "#53371c");
+  drawPixelRect(34, 30, 172, 70, "#496534", "#26391b");
+  drawPixelRect(42, 106, 156, 90, "#5e472d", "#342112");
+  drawPixelRect(38, 144, 84, 30, "#6b5131", "#3b2414");
+  drawPixelRect(128, 126, 40, 20, "#523a27", "#2b1a10");
+  drawPixelRect(54, 64, 14, 50, "#8a6a45", "#53371c");
+  drawPixelRect(62, 84, 52, 10, "#8a6a45", "#53371c");
+  drawPixelRect(150, 58, 26, 8, "#7a6040", "#49311c");
 
   const mossClusters = 5 + Math.floor(state.moss / 8);
   for (let i = 0; i < mossClusters; i += 1) {
@@ -286,6 +287,15 @@ function drawHabitatBase() {
     drawPixelCircle(x, y, 10, "#3f9a48");
     drawPixelCircle(x + 6, y - 4, 6, "#6add6f");
     drawPixelCircle(x - 6, y + 4, 5, "#246c31");
+    drawPixelCircle(x + 10, y + 1, 3, "#8ef08b");
+  }
+
+  for (let i = 0; i < 7; i += 1) {
+    const fernX = 40 + i * 22;
+    const fernY = 102 + (i % 2) * 8;
+    drawPixelRect(fernX, fernY, 3, 16, "#5ab55f", "transparent");
+    drawPixelRect(fernX - 4, fernY + 4, 4, 3, "#77d67c", "transparent");
+    drawPixelRect(fernX + 3, fernY + 8, 4, 3, "#4f9f56", "transparent");
   }
 
   const plantLevel = getUpgrade("plants")?.level ?? 0;
