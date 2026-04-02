@@ -76,6 +76,8 @@ function spawnFrog() {
     restTimer: rand(0.8, 2.4),
     jumping: false,
     jumpArc: 0,
+    jumpPhase: "idle",
+    crouchTimer: 0,
     facing: Math.random() < 0.5 ? -1 : 1,
     hunger: rand(25, 50),
     tongueTimer: 0,
@@ -229,10 +231,18 @@ function simulate(dt) {
       }
     }
 
-    if (frog.jumping) {
+    if (frog.jumpPhase === "crouch") {
+      frog.crouchTimer = Math.max(0, frog.crouchTimer - dt * 3.4);
+      if (frog.crouchTimer === 0) {
+        frog.jumpPhase = "air";
+        frog.jumping = true;
+        frog.jumpArc = 1;
+      }
+    } else if (frog.jumping) {
       frog.jumpArc = Math.max(0, frog.jumpArc - dt * 1.9);
       if (frog.jumpArc === 0) {
         frog.jumping = false;
+        frog.jumpPhase = "idle";
         frog.vx = 0;
         frog.vy = 0;
         frog.restTimer = rand(0.8, 2.6);
@@ -254,8 +264,8 @@ function simulate(dt) {
       }
 
       if (Math.abs(frog.vx) > 0.05 || Math.abs(frog.vy) > 0.05) {
-        frog.jumping = true;
-        frog.jumpArc = 1;
+        frog.jumpPhase = "crouch";
+        frog.crouchTimer = 1;
         frog.hopTimer = targetType === "cricket" ? rand(0.55, 1.2) : rand(1.6, 3.2);
       } else {
         frog.restTimer = rand(1.4, 3.8);
@@ -586,12 +596,25 @@ function drawHabitatBase() {
 
 function drawFrog(frog) {
   const x = frog.x;
+  const crouchWave = frog.jumpPhase === "crouch" ? Math.sin((1 - frog.crouchTimer) * Math.PI * 0.5) : 0;
   const jumpWave = Math.sin(frog.jumpArc * Math.PI);
   const lift = jumpWave * 18;
-  const squash = frog.jumping ? 1 - jumpWave * 0.18 : 1;
-  const stretch = frog.jumping ? 1 + jumpWave * 0.24 : 1;
-  const y = frog.y - lift;
-  const spread = frog.jumping ? 3 + jumpWave * 4 : 1;
+  const squash = frog.jumpPhase === "crouch"
+    ? 1 - crouchWave * 0.24
+    : frog.jumping
+      ? 1 - jumpWave * 0.18
+      : 1;
+  const stretch = frog.jumpPhase === "crouch"
+    ? 1 + crouchWave * 0.08
+    : frog.jumping
+      ? 1 + jumpWave * 0.24
+      : 1;
+  const y = frog.y - lift + crouchWave * 3;
+  const spread = frog.jumpPhase === "crouch"
+    ? 5 + crouchWave * 3
+    : frog.jumping
+      ? 3 + jumpWave * 4
+      : 1;
   const faceDir = frog.facing >= 0 ? 1 : -1;
   const tongueBaseX = x + (faceDir > 0 ? 10 : 2);
   const tongueBaseY = y + 6;
