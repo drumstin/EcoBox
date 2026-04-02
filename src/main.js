@@ -587,28 +587,43 @@ function drawHabitatBase() {
   }
 
   const plantLevel = getUpgrade("plants")?.level ?? 0;
-  for (let i = 0; i < plantLevel * 2; i += 1) {
-    const x = 154 + (i % 4) * 12;
-    const y = 38 + (i * 11) % 66;
+  for (let i = 0; i < plantLevel; i += 1) {
+    const startX = 178 - (i % 3) * 16;
+    const startY = 34 + (i % 2) * 6;
+    const vineLength = 24 + i * 8;
+    const sway = (i % 2 === 0 ? 1 : -1) * (6 + i * 1.5);
+
     ctx.strokeStyle = i % 2 === 0 ? "#67c86f" : "#58b85f";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(x, y + 28);
-    ctx.lineTo(x, y);
-    ctx.moveTo(x, y + 8);
-    ctx.lineTo(x - 7, y + 11);
-    ctx.moveTo(x, y + 14);
-    ctx.lineTo(x + 8, y + 17);
-    ctx.moveTo(x, y + 20);
-    ctx.lineTo(x - 5, y + 24);
+    ctx.moveTo(startX, startY);
+    ctx.quadraticCurveTo(startX + sway, startY + vineLength * 0.35, startX - sway * 0.6, startY + vineLength);
     ctx.stroke();
 
+    if (i >= 2) {
+      ctx.beginPath();
+      ctx.moveTo(startX - 2, startY + 10);
+      ctx.quadraticCurveTo(startX - 20, startY + 20, startX - 28, startY + 34);
+      ctx.stroke();
+    }
+
+    if (i >= 4) {
+      ctx.beginPath();
+      ctx.moveTo(startX + 3, startY + 16);
+      ctx.quadraticCurveTo(startX + 18, startY + 28, startX + 24, startY + 46);
+      ctx.stroke();
+    }
+
     ctx.fillStyle = i % 2 === 0 ? "#8ef08b" : "#6fdb78";
-    ctx.beginPath();
-    ctx.ellipse(x - 6, y + 11, 5, 3, -0.2, 0, Math.PI * 2);
-    ctx.ellipse(x + 6, y + 17, 5.5, 3, 0.3, 0, Math.PI * 2);
-    ctx.ellipse(x, y + 5, 4, 2.6, 0.1, 0, Math.PI * 2);
-    ctx.fill();
+    for (let leaf = 0; leaf < 4 + i; leaf += 1) {
+      const t = leaf / Math.max(1, 3 + i);
+      const leafX = startX + Math.sin(t * Math.PI * 2) * sway * 0.4;
+      const leafY = startY + t * vineLength;
+      ctx.beginPath();
+      ctx.ellipse(leafX - 4, leafY + 2, 4.5, 2.5, -0.4, 0, Math.PI * 2);
+      ctx.ellipse(leafX + 4, leafY + 4, 4.5, 2.5, 0.45, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   const decorLevel = getUpgrade("decor")?.level ?? 0;
