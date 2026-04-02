@@ -240,11 +240,11 @@ function openAlbum() {
           ? "album-icon-frog-yellow"
           : "album-icon-frog-green";
   const entries = [
-    { name: "Tree Frog", iconClass: frogIconClass, icon: "🐸", unlocked: state.frogs.some((frog) => frog.stage === "adult"), count: state.frogs.filter((frog) => frog.stage === "adult").length, note: "Main terrarium frogs." },
-    { name: "Froglet", iconClass: frogIconClass, icon: "🐸", unlocked: state.frogs.some((frog) => frog.stage === "froglet"), count: state.frogs.filter((frog) => frog.stage === "froglet").length, note: "Young frogs growing out of the pond." },
+    { name: "Tree Frog", iconClass: frogIconClass, icon: "▣", unlocked: state.frogs.some((frog) => frog.stage === "adult"), count: state.frogs.filter((frog) => frog.stage === "adult").length, note: "Main terrarium frogs." },
+    { name: "Froglet", iconClass: frogIconClass, icon: "▪", unlocked: state.frogs.some((frog) => frog.stage === "froglet"), count: state.frogs.filter((frog) => frog.stage === "froglet").length, note: "Young frogs growing out of the pond." },
     { name: "Tadpole", iconClass: "album-icon-tadpole", icon: "~", unlocked: state.tadpoles.length > 0 || state.frogEggs.length > 0, count: state.tadpoles.length, note: "Wiggling pond babies." },
-    { name: "Cricket", iconClass: "album-icon-cricket", icon: "🦗", unlocked: state.crickets.length > 0 || state.cricketFarm.boxes.some((box) => box.type !== "pillbug" && box.crickets > 0), count: state.crickets.length, note: "Feeder insects in the habitat." },
-    { name: "Pill Bug", iconClass: "album-icon-pillbug", icon: "◔", unlocked: state.pillBugs.length > 0 || state.cricketFarm.boxes.some((box) => box.type === "pillbug" && box.crickets > 0), count: state.pillBugs.length, note: "Cleanup crew on the substrate." }
+    { name: "Cricket", iconClass: "album-icon-cricket", icon: "✣", unlocked: state.crickets.length > 0 || state.cricketFarm.boxes.some((box) => box.type !== "pillbug" && box.crickets > 0), count: state.crickets.length, note: "Feeder insects in the habitat." },
+    { name: "Pill Bug", iconClass: "album-icon-pillbug", icon: "◼", unlocked: state.pillBugs.length > 0 || state.cricketFarm.boxes.some((box) => box.type === "pillbug" && box.crickets > 0), count: state.pillBugs.length, note: "Cleanup crew on the substrate." }
   ];
   elements.albumList.innerHTML = entries.map((entry) => `
     <article class="album-entry ${entry.unlocked ? "" : "album-entry-locked"}">

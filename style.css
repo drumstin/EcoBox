@@ -98,25 +98,26 @@ canvas {
 }
 
 .album-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
   display: grid;
   place-items: center;
-  background: rgba(255,255,255,0.08);
-  font-size: 1.1rem;
+  background: rgba(255,255,255,0.05);
+  font-size: 0.8rem;
   position: relative;
   overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
-.album-icon-frog-green { background: linear-gradient(180deg, #3ecf67, #1d6a39); }
-.album-icon-frog-blue { background: linear-gradient(180deg, #23a4e0, #0e4f7a); }
-.album-icon-frog-orange { background: linear-gradient(180deg, #ff7a2f, #8c3a14); }
-.album-icon-frog-red { background: linear-gradient(180deg, #e63f3f, #6f1d1d); }
-.album-icon-frog-yellow { background: linear-gradient(180deg, #d6bf2f, #6b5a10); }
-.album-icon-cricket { background: linear-gradient(180deg, #5a4634, #2b2118); }
-.album-icon-pillbug { background: linear-gradient(180deg, #78716a, #4d4842); }
-.album-icon-tadpole { background: linear-gradient(180deg, #7ac6d6, #355a64); }
+.album-icon-frog-green { background: #2f8c49; }
+.album-icon-frog-blue { background: #1d6ea0; }
+.album-icon-frog-orange { background: #c95f20; }
+.album-icon-frog-red { background: #b53333; }
+.album-icon-frog-yellow { background: #b59a1d; }
+.album-icon-cricket { background: #4e3d2c; }
+.album-icon-pillbug { background: #666058; }
+.album-icon-tadpole { background: #548a98; }
 
 .album-entry-locked {
   opacity: 0.72;
