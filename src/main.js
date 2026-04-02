@@ -461,7 +461,7 @@ function simulate(dt) {
   const readyFrogs = state.frogs.filter((frog) => frog.stage === "adult" && frog.breedReady && !frog.inHide);
   if (readyFrogs.length >= 2) {
     for (let egg = 0; egg < 5; egg += 1) {
-      state.frogEggs.push({ x: 60 + rand(-10, 10), y: 150 + rand(-5, 5), age: 0, hatchTimer: 8 });
+      state.frogEggs.push({ x: 58 + rand(-14, 14), y: 150 + rand(-8, 8), age: 0, hatchTimer: 8 });
     }
     readyFrogs[0].breedReady = false;
     readyFrogs[1].breedReady = false;
@@ -647,8 +647,8 @@ function simulate(dt) {
     const tadpole = state.tadpoles[t];
     tadpole.age += dt;
     tadpole.wiggle += dt * 6;
-    tadpole.x = clamp(tadpole.x + Math.sin(tadpole.wiggle) * 0.18, 44, 76);
-    tadpole.y = clamp(tadpole.y + Math.cos(tadpole.wiggle * 0.8) * 0.12, 142, 158);
+    tadpole.x = clamp(tadpole.x + Math.sin(tadpole.wiggle) * 0.34, 34, 84);
+    tadpole.y = clamp(tadpole.y + Math.cos(tadpole.wiggle * 0.8) * 0.24, 138, 162);
     if (tadpole.age >= 45) {
       const froglet = spawnFrog("froglet");
       froglet.x = tadpole.x;
@@ -760,22 +760,41 @@ function drawHabitatBase() {
   ctx.ellipse(128, 56, 22, 11, 0.04, 0, Math.PI * 2);
   ctx.fill();
 
+  ctx.fillStyle = "#4d3f2c";
+  ctx.beginPath();
+  ctx.ellipse(58, 150, 31, 19, -0.04, 0, Math.PI * 2);
+  ctx.fill();
   ctx.fillStyle = "#5b4b34";
   ctx.beginPath();
-  ctx.ellipse(60, 150, 24, 14, 0, 0, Math.PI * 2);
+  ctx.ellipse(58, 150, 27, 16, -0.04, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = "#6fb8b8";
   ctx.beginPath();
-  ctx.ellipse(60, 150, 20, 10, 0, 0, Math.PI * 2);
+  ctx.ellipse(58, 150, 23, 12, -0.04, 0, Math.PI * 2);
   ctx.fill();
+  ctx.fillStyle = "rgba(60,120,130,0.28)";
+  ctx.beginPath();
+  ctx.ellipse(58, 150, 24, 13, -0.04, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(190,255,255,0.24)";
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
   ctx.fillStyle = "rgba(210,255,255,0.38)";
   ctx.beginPath();
-  ctx.ellipse(54, 147, 10, 4, -0.12, 0, Math.PI * 2);
+  ctx.ellipse(50, 146, 12, 5, -0.18, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#7cc96c";
+  ctx.beginPath();
+  ctx.ellipse(44, 154, 2.5, 1.8, 0.2, 0, Math.PI * 2);
+  ctx.ellipse(70, 145, 2.2, 1.6, -0.1, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#7c5d3b";
+  ctx.fillStyle = "#6f5437";
   ctx.beginPath();
-  ctx.ellipse(110, 154, 46, 16, -0.06, 0, Math.PI * 2);
+  ctx.ellipse(110, 154, 52, 19, -0.06, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(52, 34, 18, 0.16)";
+  ctx.beginPath();
+  ctx.ellipse(112, 156, 46, 15, -0.04, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#916f47";
@@ -845,6 +864,24 @@ function drawHabitatBase() {
   ctx.fillStyle = "#7c5a38";
   ctx.fillRect(58, 155, 12, 4);
   ctx.fillRect(164, 150, 10, 4);
+
+  for (let i = 0; i < 18; i += 1) {
+    const pebbleX = 42 + ((i * 17) % 146);
+    const pebbleY = 86 + ((i * 13) % 86);
+    ctx.fillStyle = i % 3 === 0 ? "rgba(86,72,56,0.40)" : "rgba(58,46,34,0.32)";
+    ctx.beginPath();
+    ctx.ellipse(pebbleX, pebbleY, 2.2, 1.5, (i % 4) * 0.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  for (let i = 0; i < 10; i += 1) {
+    const mossX = 48 + ((i * 19) % 124);
+    const mossY = 92 + ((i * 23) % 70);
+    ctx.fillStyle = i % 2 === 0 ? "rgba(72,132,64,0.22)" : "rgba(104,164,80,0.18)";
+    ctx.beginPath();
+    ctx.ellipse(mossX, mossY, 8, 5, (i % 3) * 0.24, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
   const coverPatches = 6 + Math.floor(state.groundCover / 7);
   for (let i = 0; i < coverPatches; i += 1) {
@@ -1037,13 +1074,31 @@ function drawHabitatBase() {
     ctx.fillRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48);
   }
 
-  for (let i = 0; i < 5; i += 1) {
-    drawPixelCircle(48 + i * 28, 36 + (i % 2) * 6, 2, "rgba(255,255,255,0.22)");
+  const glassSheen = ctx.createLinearGradient(28, 28, 110, 120);
+  glassSheen.addColorStop(0, "rgba(255,255,255,0.16)");
+  glassSheen.addColorStop(0.35, "rgba(255,255,255,0.04)");
+  glassSheen.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = glassSheen;
+  ctx.fillRect(30, 30, 52, 132);
+
+  ctx.fillStyle = "rgba(190,230,255,0.08)";
+  ctx.fillRect(26, 26, WORLD_SIZE - 52, 6);
+  ctx.fillRect(26, 26, 6, WORLD_SIZE - 52);
+  ctx.fillStyle = "rgba(10,16,22,0.18)";
+  ctx.fillRect(24, 24, WORLD_SIZE - 48, 4);
+
+  for (let i = 0; i < 8; i += 1) {
+    drawPixelCircle(40 + i * 20, 34 + (i % 2) * 4, 1.6, "rgba(255,255,255,0.18)");
   }
 }
 
 function drawFrog(frog) {
   const x = Math.round(frog.x);
+  const paletteShift = Math.abs(Math.floor((frog.x + frog.y) % 3));
+  const bodyDark = ["#3f8b3d", "#4a7f3c", "#517a33"][paletteShift];
+  const bodyMid = ["#73d65f", "#7ccc63", "#88cf58"][paletteShift];
+  const bodyLight = ["#8dea76", "#98e57a", "#a5e680"][paletteShift];
+  const belly = ["#e9f7d8", "#f2f7d2", "#edf3c8"][paletteShift];
   const crouchWave = frog.jumpPhase === "crouch" ? Math.sin((1 - frog.crouchTimer) * Math.PI * 0.5) : 0;
   const jumpWave = Math.sin(frog.jumpArc * Math.PI);
   const lift = jumpWave * 18;
@@ -1084,9 +1139,9 @@ function drawFrog(frog) {
     drawPixelRect(tipX, tipY, 2, 2, "#ffd1da", "transparent");
   }
 
-  drawPixelRect(x, y + 1, bodyW, Math.max(7, bodyH - 1), "#3f8b3d", "transparent");
-  drawPixelRect(x + 1, y, Math.max(10, bodyW - 2), bodyH, "#73d65f", "#2f6f2a");
-  drawPixelRect(x + 2, y + 1, Math.max(8, bodyW - 4), Math.max(4, bodyH - 4), "#8dea76", "transparent");
+  drawPixelRect(x, y + 1, bodyW, Math.max(7, bodyH - 1), bodyDark, "transparent");
+  drawPixelRect(x + 1, y, Math.max(10, bodyW - 2), bodyH, bodyMid, "#2f6f2a");
+  drawPixelRect(x + 2, y + 1, Math.max(8, bodyW - 4), Math.max(4, bodyH - 4), bodyLight, "transparent");
   drawPixelRect(x + 3, y + 3, Math.max(6, bodyW - 8), 2, "#baf7a0", "transparent");
 
   drawPixelRect(x + 2, y - 2, 3, 3, "#d6ffbf", "transparent");
@@ -1095,7 +1150,8 @@ function drawFrog(frog) {
   drawPixelRect(x + Math.max(8, bodyW - 5), y - 1, 2, 2, "#8fef74", "transparent");
 
   drawPixelRect(faceDir > 0 ? x + Math.max(9, bodyW - 3) : x + 1, y + 4, 2, 2, "#102313", "transparent");
-  drawPixelRect(x + Math.max(4, Math.floor(bodyW / 2) - 1), y + Math.max(5, bodyH - 3), 3, 2, "#e9f7d8", "transparent");
+  drawPixelRect(x + Math.max(4, Math.floor(bodyW / 2) - 1), y + Math.max(5, bodyH - 3), 3, 2, belly, "transparent");
+  drawPixelRect(faceDir > 0 ? x + Math.max(9, bodyW - 3) : x + 1, y + 4, 1, 1, "#f8fbff", "transparent");
 
   drawPixelRect(x - spread, y + Math.max(7, bodyH - 1), 3 + spread, 2, "#5bb04a", "transparent");
   drawPixelRect(x + Math.max(9, bodyW - 2), y + Math.max(7, bodyH - 1), 3 + spread, 2, "#5bb04a", "transparent");
