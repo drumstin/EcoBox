@@ -389,6 +389,7 @@ p {
 }
 
 .pixel-button {
+  position: relative;
   border: 1px solid rgba(9, 14, 21, 0.7);
   border-radius: 14px;
   color: #10151c;
@@ -560,10 +561,18 @@ p {
 }
 
 .action-price {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.72rem;
-  color: rgba(16, 21, 28, 0.72);
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.26);
+  border: 1px solid rgba(16, 21, 28, 0.14);
+  font-size: 0.68rem;
+  color: rgba(16, 21, 28, 0.86);
   font-weight: 700;
 }
 
