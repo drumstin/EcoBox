@@ -1272,6 +1272,7 @@ function bindUi() {
       renderHud();
       return;
     }
+    spawnPopup(120, 120, `+${bought} frog${bought === 1 ? "" : "s"}`);
     pushEvent("New frogs", `${bought} tree frog${bought === 1 ? "" : "s"} joined the habitat.`);
     renderHud();
   });
@@ -1290,6 +1291,7 @@ function bindUi() {
       renderHud();
       return;
     }
+    spawnPopup(132, 144, `+${bought} pill bug${bought === 1 ? "" : "s"}`);
     pushEvent("Cleanup crew", `${bought} pill bug${bought === 1 ? "" : "s"} joined the habitat floor.`);
     renderHud();
   });
@@ -1297,6 +1299,7 @@ function bindUi() {
   elements.collectButton.addEventListener("click", () => {
     const gained = Math.max(1, state.frogs.length + Math.floor((getUpgrade("decor")?.level ?? 0) / 2));
     state.coins += gained;
+    spawnPopup(60, 48, `+${gained} coins`);
     pushEvent("Coins collected", `You collected ${gained} coins from habitat visitors.`);
     renderHud();
   });
@@ -1313,6 +1316,7 @@ function bindUi() {
       renderHud();
       return;
     }
+    spawnPopup(182, 82, `+${bought} crickets`);
     pushEvent("Crickets released", `${bought} feeder cricket${bought === 1 ? "" : "s"} were added.`);
     renderHud();
   });
@@ -1320,6 +1324,7 @@ function bindUi() {
   elements.cleanButton.addEventListener("click", () => {
     state.cleanliness = clamp(state.cleanliness + 18, 0, 100);
     state.waste = clamp(state.waste - 16, 0, 100);
+    spawnPopup(118, 164, "cleaned");
     pushEvent("Habitat cleaned", "Bark, glass, and substrate were tidied.");
     renderHud();
   });
@@ -1331,6 +1336,7 @@ function bindUi() {
       return;
     }
     state.lampTimer = 20;
+    spawnPopup(150, 38, "sun lamp");
     pushEvent("Sun lamp", "Warm light brightens the terrarium for 20 seconds.");
     renderHud();
   });
