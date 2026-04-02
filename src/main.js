@@ -479,21 +479,24 @@ function drawHabitatBase() {
 }
 
 function drawFrog(frog) {
-  const x = Math.round(frog.x);
+  const x = frog.x;
   const jumpWave = Math.sin(frog.jumpArc * Math.PI);
   const lift = jumpWave * 18;
   const squash = frog.jumping ? 1 - jumpWave * 0.18 : 1;
   const stretch = frog.jumping ? 1 + jumpWave * 0.24 : 1;
-  const y = Math.round(frog.y - lift);
-  const spread = frog.jumping ? Math.round(3 + jumpWave * 4) : 1;
-  const faceX = frog.facing >= 0 ? x + 11 : x - 1;
-  const tongueBaseX = frog.facing >= 0 ? x + 10 : x + 1;
-  const tongueBaseY = y + 5;
-  const bodyW = Math.max(10, Math.round(12 * stretch));
-  const bodyH = Math.max(8, Math.round(10 * squash));
+  const y = frog.y - lift;
+  const spread = frog.jumping ? 3 + jumpWave * 4 : 1;
+  const faceDir = frog.facing >= 0 ? 1 : -1;
+  const tongueBaseX = x + (faceDir > 0 ? 10 : 2);
+  const tongueBaseY = y + 6;
+  const bodyW = 14 * stretch;
+  const bodyH = 10 * squash;
 
   if (frog.jumpArc > 0.05) {
-    drawPixelRect(x + 2, Math.round(frog.y + 11), 8, 2, "rgba(30,20,10,0.18)", "transparent");
+    ctx.fillStyle = "rgba(30,20,10,0.16)";
+    ctx.beginPath();
+    ctx.ellipse(x + 7, frog.y + 11, 7, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   if (frog.tongueTimer > 0.01) {
@@ -501,47 +504,105 @@ function drawFrog(frog) {
     const targetY = frog.tongueTargetY;
     const phase = frog.tongueTimer > 0.5 ? (1 - frog.tongueTimer) / 0.5 : frog.tongueTimer / 0.5;
     const eased = Math.max(0, Math.min(1, phase));
-    const tipX = Math.round(tongueBaseX + (targetX - tongueBaseX) * eased);
-    const tipY = Math.round(tongueBaseY + (targetY - tongueBaseY) * eased);
-    const midX = Math.round((tongueBaseX + tipX) / 2);
-    const midY = Math.round((tongueBaseY + tipY) / 2);
-    drawPixelRect(Math.min(tongueBaseX, midX), Math.min(tongueBaseY, midY), Math.max(2, Math.abs(midX - tongueBaseX) + 2), 2, "#f58aa0", "transparent");
-    drawPixelRect(Math.min(midX, tipX), Math.min(midY, tipY), Math.max(2, Math.abs(tipX - midX) + 2), 2, "#ff9db0", "transparent");
-    drawPixelRect(tipX, tipY, 2, 2, "#ffd1da", "transparent");
+    const tipX = tongueBaseX + (targetX - tongueBaseX) * eased;
+    const tipY = tongueBaseY + (targetY - tongueBaseY) * eased;
+    ctx.strokeStyle = "#f58aa0";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(tongueBaseX, tongueBaseY);
+    ctx.quadraticCurveTo((tongueBaseX + tipX) / 2, (tongueBaseY + tipY) / 2 - 1.5, tipX, tipY);
+    ctx.stroke();
+    ctx.fillStyle = "#ffd1da";
+    ctx.beginPath();
+    ctx.arc(tipX, tipY, 1.6, 0, Math.PI * 2);
+    ctx.fill();
   }
 
-  drawPixelRect(x, y + 1, bodyW, Math.max(7, bodyH - 1), "#4d9e49", "transparent");
-  drawPixelRect(x + 1, y, Math.max(8, bodyW - 2), bodyH, "#73d65f", "#2f6f2a");
-  drawPixelRect(x + 2, y + 2, Math.max(6, bodyW - 4), Math.max(3, bodyH - 5), "#9bf08a", "transparent");
-  drawPixelRect(x + 2, y - 2, 3, 3, "#d6ffbf", "transparent");
-  drawPixelRect(x + Math.max(6, bodyW - 5), y - 2, 3, 3, "#d6ffbf", "transparent");
-  drawPixelRect(x + 2, y - 1, 2, 2, "#8fef74", "transparent");
-  drawPixelRect(x + Math.max(7, bodyW - 4), y - 1, 2, 2, "#8fef74", "transparent");
-  drawPixelRect(faceX, y + 3, 2, 2, "#102313", "transparent");
-  drawPixelRect(x - spread, y + Math.max(6, bodyH - 1), 3 + spread, 2, "#5bb04a", "transparent");
-  drawPixelRect(x + Math.max(9, bodyW - 2), y + Math.max(6, bodyH - 1), 3 + spread, 2, "#5bb04a", "transparent");
-  drawPixelRect(x + Math.max(3, Math.floor(bodyW / 2) - 2), y + Math.max(4, bodyH - 3), 4, 2, "#e9f7d8", "transparent");
-  drawPixelRect(x + 3, y + 1, Math.max(5, bodyW - 6), 1, "#f2ffd8", "transparent");
+  ctx.fillStyle = "#4d9e49";
+  ctx.beginPath();
+  ctx.ellipse(x + 7, y + 7, bodyW * 0.52, bodyH * 0.46, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#73d65f";
+  ctx.beginPath();
+  ctx.ellipse(x + 7, y + 6, bodyW * 0.48, bodyH * 0.42, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#9bf08a";
+  ctx.beginPath();
+  ctx.ellipse(x + 7, y + 6.5, bodyW * 0.32, bodyH * 0.2, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#d6ffbf";
+  ctx.beginPath();
+  ctx.arc(x + 4.5, y + 1.8, 2, 0, Math.PI * 2);
+  ctx.arc(x + 9.5, y + 1.8, 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#102313";
+  ctx.beginPath();
+  ctx.arc(x + (faceDir > 0 ? 10.4 : 3.6), y + 5.2, 1.1, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = "#5bb04a";
+  ctx.lineWidth = 2.2;
+  ctx.beginPath();
+  ctx.moveTo(x + 2, y + 9);
+  ctx.lineTo(x - spread, y + 10.5);
+  ctx.moveTo(x + 12, y + 9);
+  ctx.lineTo(x + 14 + spread, y + 10.5);
+  ctx.stroke();
+
+  ctx.fillStyle = "#e9f7d8";
+  ctx.beginPath();
+  ctx.ellipse(x + 7, y + 7.8, 2.4, 1.2, 0, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 function drawCricket(cricket) {
-  const x = Math.round(cricket.x);
-  const y = Math.round(cricket.y);
-  drawPixelRect(x, y, 4, 4, "#392d25", "transparent");
-  drawPixelRect(x + 4, y + 1, 2, 2, "#5a4735", "transparent");
-  drawPixelRect(x + 1, y - 1, 1, 2, "#7f6a57", "transparent");
+  const x = cricket.x;
+  const y = cricket.y;
+  ctx.fillStyle = "#392d25";
+  ctx.beginPath();
+  ctx.ellipse(x + 2.2, y + 2.1, 2.4, 1.8, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#6c5641";
+  ctx.beginPath();
+  ctx.arc(x + 4.5, y + 2.1, 1.1, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#8d7760";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x + 1, y + 1);
+  ctx.lineTo(x, y - 1);
+  ctx.moveTo(x + 3, y + 1);
+  ctx.lineTo(x + 2, y - 1);
+  ctx.stroke();
 }
 
 function drawPillBug(pillBug) {
-  const x = Math.round(pillBug.x);
-  const y = Math.round(pillBug.y);
-  drawPixelRect(x, y + 1, 7, 4, "#55504a", "transparent");
-  drawPixelRect(x, y, 7, 5, "#6a645d", "#3f3a35");
-  drawPixelRect(x + 1, y + 1, 5, 1, "#b8b0a4", "transparent");
-  drawPixelRect(x + 1, y + 2, 5, 1, "#8e867c", "transparent");
-  drawPixelRect(x + 2, y + 5, 1, 2, "#4a443e", "transparent");
-  drawPixelRect(x + 5, y + 5, 1, 2, "#4a443e", "transparent");
-  drawPixelRect(x + 3, y + 2, 1, 2, "#d8d0c4", "transparent");
+  const x = pillBug.x;
+  const y = pillBug.y;
+  ctx.fillStyle = "#55504a";
+  ctx.beginPath();
+  ctx.ellipse(x + 4, y + 4.2, 4.2, 2.8, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#6a645d";
+  ctx.beginPath();
+  ctx.ellipse(x + 4, y + 3.4, 4.1, 2.6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#8e867c";
+  ctx.lineWidth = 1;
+  for (let i = -2; i <= 2; i += 1) {
+    ctx.beginPath();
+    ctx.moveTo(x + 4 + i, y + 1.5);
+    ctx.lineTo(x + 4 + i, y + 5.3);
+    ctx.stroke();
+  }
+  ctx.fillStyle = "#d8d0c4";
+  ctx.beginPath();
+  ctx.arc(x + 4, y + 2.8, 0.9, 0, Math.PI * 2);
+  ctx.fill();
 }
 
 function drawCreatures() {
