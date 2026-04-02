@@ -676,36 +676,38 @@ function drawPixelCircle(cx, cy, r, fill, stroke = "transparent") {
 }
 
 function drawHabitatBase() {
-  const glow = ctx.createRadialGradient(92, 58, 10, 96, 64, 120);
-  glow.addColorStop(0, "rgba(255, 244, 194, 0.16)");
+  const glow = ctx.createRadialGradient(118, 112, 12, 120, 118, 120);
+  glow.addColorStop(0, "rgba(255, 244, 194, 0.12)");
   glow.addColorStop(1, "rgba(255, 244, 194, 0)");
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, WORLD_SIZE, WORLD_SIZE);
 
-  const wallGrad = ctx.createLinearGradient(0, 0, 0, WORLD_SIZE);
-  wallGrad.addColorStop(0, "#3f2f21");
+  const wallGrad = ctx.createRadialGradient(120, 120, 36, 120, 120, 170);
+  wallGrad.addColorStop(0, "#705333");
   wallGrad.addColorStop(1, "#241910");
   ctx.fillStyle = wallGrad;
   ctx.fillRect(0, 0, WORLD_SIZE, WORLD_SIZE);
 
-  const canopyGrad = ctx.createLinearGradient(0, 30, 0, 92);
-  canopyGrad.addColorStop(0, "#587740");
-  canopyGrad.addColorStop(1, "#355028");
-  ctx.fillStyle = canopyGrad;
-  ctx.beginPath();
-  ctx.ellipse(120, 52, 60, 20, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  const floorGrad = ctx.createLinearGradient(0, 100, 0, WORLD_SIZE);
-  floorGrad.addColorStop(0, "#7d613d");
+  const floorGrad = ctx.createRadialGradient(118, 122, 22, 118, 122, 92);
+  floorGrad.addColorStop(0, "#8a6a42");
   floorGrad.addColorStop(1, "#4a3621");
   ctx.fillStyle = floorGrad;
-  ctx.fillRect(24, 98, WORLD_SIZE - 48, WORLD_SIZE - 122);
+  ctx.beginPath();
+  ctx.ellipse(118, 120, 88, 72, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(50, 34, 21, 0.34)";
+  ctx.beginPath();
+  ctx.ellipse(118, 120, 92, 76, 0, 0, Math.PI * 2);
+  ctx.strokeStyle = "rgba(130, 98, 60, 0.35)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
   ctx.fillStyle = "#476534";
   ctx.beginPath();
-  ctx.ellipse(70, 66, 20, 9, -0.12, 0, Math.PI * 2);
-  ctx.ellipse(170, 64, 18, 8, 0.12, 0, Math.PI * 2);
+  ctx.ellipse(76, 74, 18, 10, -0.12, 0, Math.PI * 2);
+  ctx.ellipse(166, 70, 16, 9, 0.12, 0, Math.PI * 2);
+  ctx.ellipse(128, 56, 22, 11, 0.04, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#5b4b34";
@@ -786,8 +788,8 @@ function drawHabitatBase() {
 
   const coverPatches = 6 + Math.floor(state.groundCover / 7);
   for (let i = 0; i < coverPatches; i += 1) {
-    const x = 42 + ((i * 23) % 146);
-    const y = 40 + ((i * 17) % 50);
+    const x = 52 + ((i * 23) % 128);
+    const y = 58 + ((i * 21) % 98);
     ctx.fillStyle = "#4f8d46";
     ctx.beginPath();
     ctx.ellipse(x, y, 10, 6, 0.18, 0, Math.PI * 2);
@@ -803,8 +805,8 @@ function drawHabitatBase() {
   }
 
   for (let i = 0; i < 12; i += 1) {
-    const leafX = 44 + (i * 14) % 154;
-    const leafY = 118 + ((i % 4) * 10);
+    const leafX = 50 + (i * 14) % 142;
+    const leafY = 88 + ((i % 5) * 16);
     ctx.fillStyle = i % 2 === 0 ? "#9f7d4d" : "#765636";
     ctx.beginPath();
     ctx.ellipse(leafX, leafY, 5, 2.3, (i % 3) * 0.24, 0, Math.PI * 2);
@@ -812,8 +814,8 @@ function drawHabitatBase() {
   }
 
   for (let i = 0; i < 8; i += 1) {
-    const fernX = 38 + i * 22;
-    const fernY = 102 + (i % 2) * 8;
+    const fernX = 46 + i * 20;
+    const fernY = 86 + (i % 3) * 18;
     ctx.strokeStyle = "#4f9f56";
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -891,33 +893,33 @@ function drawHabitatBase() {
 
   const mistLevel = getUpgrade("mist")?.level ?? 0;
   ctx.fillStyle = "#4d5a48";
-  ctx.fillRect(182, 30, 24, 8);
-  ctx.fillRect(193, 38, 6, 10);
+  ctx.fillRect(170, 24, 34, 10);
+  ctx.fillRect(182, 30, 10, 12);
   ctx.strokeStyle = "rgba(242,248,255,0.92)";
   ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.moveTo(196, 48);
-  ctx.bezierCurveTo(197, 72, 195, 104, 194, 144);
+  ctx.moveTo(187, 40);
+  ctx.bezierCurveTo(184, 58, 182, 74, 180, 90);
   ctx.stroke();
   ctx.strokeStyle = "rgba(220,235,245,0.45)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(197, 50);
-  ctx.bezierCurveTo(198, 74, 196, 106, 195, 142);
+  ctx.moveTo(188, 40);
+  ctx.bezierCurveTo(185, 58, 183, 74, 181, 90);
   ctx.stroke();
   ctx.fillStyle = "rgba(245,250,255,0.96)";
   ctx.beginPath();
-  ctx.arc(194, 146, 3, 0, Math.PI * 2);
+  ctx.arc(180, 92, 3, 0, Math.PI * 2);
   ctx.fill();
   for (let i = 0; i < mistLevel * 2; i += 1) {
     ctx.fillStyle = "rgba(220,240,255,0.20)";
-    ctx.fillRect(178 - i * 4, 32 + (i % 3) * 4, 4, 10);
+    ctx.fillRect(166 - i * 4, 24 + (i % 3) * 4, 4, 8);
   }
   for (let i = 0; i < 4 + mistLevel * 8; i += 1) {
     const drift = ((state.tick * 7) + i * 10) % (44 + mistLevel * 6);
     const spread = 10 + mistLevel * 4;
-    const puffX = 190 - drift * 0.8;
-    const puffY = 146 + Math.sin((state.tick * 0.8) + i) * 4 + (i % 3) * 6;
+    const puffX = 180 - drift * 0.72;
+    const puffY = 92 + Math.sin((state.tick * 0.8) + i) * 4 + (i % 3) * 5;
     const radius = 4 + mistLevel * 0.5;
     ctx.fillStyle = `rgba(235,245,238,${0.10 + mistLevel * 0.015})`;
     ctx.beginPath();
@@ -929,14 +931,14 @@ function drawHabitatBase() {
 
   if (mistLevel > 0 && state.mistBurstTimer > 52) {
     const mistProgress = Math.min(1, (60 - state.mistBurstTimer) / 8);
-    const nozzleX = 194;
-    const nozzleY = 146;
+    const nozzleX = 180;
+    const nozzleY = 92;
     const plumeSize = 42 + mistLevel * 10;
-    const plume = ctx.createRadialGradient(nozzleX, nozzleY + 4, 2, nozzleX - 36, nozzleY + 10, plumeSize);
+    const plume = ctx.createRadialGradient(nozzleX, nozzleY + 2, 2, nozzleX - 34, nozzleY + 8, plumeSize);
     plume.addColorStop(0, `rgba(235,245,238,${(0.16 + mistLevel * 0.03) * mistProgress})`);
     plume.addColorStop(1, "rgba(235,245,238,0)");
     ctx.fillStyle = plume;
-    ctx.fillRect(118, 122, 110, 72);
+    ctx.fillRect(106, 70, 110, 72);
     ctx.fillStyle = `rgba(235,245,238,${(0.08 + mistLevel * 0.015) * mistProgress})`;
     ctx.fillRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48);
   }
