@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>EcoBox</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar panel pixel-frame">
+      <div>
+        <p class="eyebrow">8-BIT IDLE ECOSYSTEM</p>
+        <h1>EcoBox</h1>
+      </div>
+      <button id="save-button" class="pixel-button secondary" type="button">Save</button>
+    </header>
+
+    <section class="game-layout">
+      <section class="tank-panel panel pixel-frame">
+        <div class="tank-header">
+          <div>
+            <h2>Tank View</h2>
+            <p>Keep the box balanced and growing.</p>
+          </div>
+          <div class="chip-row" id="tank-chips"></div>
+        </div>
+        <canvas id="tank-canvas" width="960" height="640" aria-label="EcoBox tank"></canvas>
+        <div class="quick-actions">
+          <button id="collect-button" class="pixel-button">Collect</button>
+          <button id="feed-button" class="pixel-button">Feed</button>
+          <button id="clean-button" class="pixel-button">Clean</button>
+          <button id="boost-button" class="pixel-button accent">Boost</button>
+        </div>
+      </section>
+
+      <aside class="hud panel pixel-frame">
+        <section>
+          <h2>Status</h2>
+          <div id="status-grid" class="status-grid"></div>
+        </section>
+
+        <section>
+          <h2>Progress</h2>
+          <div id="milestones" class="milestones"></div>
+        </section>
+
+        <section>
+          <h2>Upgrades</h2>
+          <div id="upgrade-list" class="upgrade-list"></div>
+        </section>
+
+        <section>
+          <h2>Event Log</h2>
+          <div id="event-log" class="event-log"></div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
