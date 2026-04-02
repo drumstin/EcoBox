@@ -4,6 +4,14 @@ const FROG_COST = 5;
 const CRICKET_COST = 1;
 const PILL_BUG_COST = 1;
 const PILL_BUG_BITE_RANGE = 12;
+const LOG_OBSTACLES = [
+  { x: 86, y: 134, w: 50, h: 18 },
+  { x: 118, y: 146, w: 24, h: 12 },
+  { x: 70, y: 88, w: 44, h: 10 },
+  { x: 150, y: 72, w: 28, h: 8 },
+  { x: 56, y: 156, w: 16, h: 10 },
+  { x: 164, y: 150, w: 14, h: 9 }
+];
 
 const state = {
   tick: 0,
@@ -368,6 +376,19 @@ function simulate(dt) {
       frog.digestedPillBugs = 0;
     }
 
+    for (const obstacle of LOG_OBSTACLES) {
+      const insideX = frog.x > obstacle.x && frog.x < obstacle.x + obstacle.w;
+      const insideY = frog.y > obstacle.y && frog.y < obstacle.y + obstacle.h;
+      if (insideX && insideY) {
+        if (frog.vx >= 0) frog.x = obstacle.x - 2;
+        else frog.x = obstacle.x + obstacle.w + 2;
+        if (frog.vy >= 0) frog.y = obstacle.y - 2;
+        else frog.y = obstacle.y + obstacle.h + 2;
+        frog.vx *= -0.4;
+        frog.vy *= -0.4;
+      }
+    }
+
     if (frog.x < 36 || frog.x > WORLD_SIZE - 36) frog.vx *= -1;
     if (frog.y < 36 || frog.y > WORLD_SIZE - 36) frog.vy *= -1;
     frog.x = clamp(frog.x, 36, WORLD_SIZE - 36);
@@ -605,6 +626,15 @@ function drawHabitatBase() {
   ctx.beginPath();
   ctx.ellipse(126, 152, 16, 8, 0, 0, Math.PI * 2);
   ctx.fill();
+
+  ctx.fillStyle = "#65472d";
+  ctx.beginPath();
+  ctx.ellipse(64, 160, 10, 5, 0.1, 0, Math.PI * 2);
+  ctx.ellipse(170, 154, 8, 4.5, -0.12, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#7c5a38";
+  ctx.fillRect(58, 155, 12, 4);
+  ctx.fillRect(164, 150, 10, 4);
 
   const coverPatches = 6 + Math.floor(state.groundCover / 7);
   for (let i = 0; i < coverPatches; i += 1) {
