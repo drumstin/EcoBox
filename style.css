@@ -591,6 +591,11 @@ p {
   background: linear-gradient(180deg, #ffd59a, #d78b39);
 }
 
+.action-album {
+  background: linear-gradient(180deg, #9fc2ff, #6b7dff);
+  color: #0f1735;
+}
+
 .action-feed {
   background: linear-gradient(180deg, #ffc37d, #f39b43);
 }
