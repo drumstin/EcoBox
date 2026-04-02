@@ -324,8 +324,8 @@ function drawPixelRect(x, y, w, h, fill, stroke = "#000") {
   ctx.fillRect(x, y, w, h);
   if (stroke !== "transparent") {
     ctx.strokeStyle = stroke;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x + 0.5, y + 0.5, Math.max(0, w - 1), Math.max(0, h - 1));
   }
 }
 
@@ -429,7 +429,7 @@ function drawFrog(frog) {
   const tongueBaseY = y + 5;
 
   if (frog.jumpArc > 0.05) {
-    drawPixelRect(x + 2, y + 11, 8, 2, "rgba(30,20,10,0.25)", "transparent");
+    drawPixelRect(x + 2, y + 11, 8, 2, "rgba(30,20,10,0.18)", "transparent");
   }
 
   if (frog.tongueTimer > 0.01) {
@@ -446,15 +446,18 @@ function drawFrog(frog) {
     drawPixelRect(tipX, tipY, 2, 2, "#ffd1da", "transparent");
   }
 
-  drawPixelRect(x, y, 12, 10, "#73d65f", "#2f6f2a");
-  drawPixelRect(x + 1, y + 2, 10, 5, "#91ec79", "transparent");
-  drawPixelRect(x + 2, y - 2, 3, 3, "#b8ff9f", "transparent");
-  drawPixelRect(x + 7, y - 2, 3, 3, "#b8ff9f", "transparent");
+  drawPixelRect(x, y + 1, 12, 9, "#4d9e49", "transparent");
+  drawPixelRect(x + 1, y, 10, 10, "#73d65f", "#2f6f2a");
+  drawPixelRect(x + 2, y + 2, 8, 4, "#9bf08a", "transparent");
+  drawPixelRect(x + 2, y - 2, 3, 3, "#d6ffbf", "transparent");
+  drawPixelRect(x + 7, y - 2, 3, 3, "#d6ffbf", "transparent");
+  drawPixelRect(x + 2, y - 1, 2, 2, "#8fef74", "transparent");
+  drawPixelRect(x + 8, y - 1, 2, 2, "#8fef74", "transparent");
   drawPixelRect(faceX, y + 3, 2, 2, "#102313", "transparent");
-  drawPixelRect(x - 2, y + 8, 3, 3, "#5bb04a", "transparent");
-  drawPixelRect(x + 11, y + 8, 3, 3, "#5bb04a", "transparent");
-  drawPixelRect(x + 4, y + 6, 4, 2, "#dbf3c4", "transparent");
-  drawPixelRect(x + 3, y + 1, 6, 1, "#d7ffbe", "transparent");
+  drawPixelRect(x - 1, y + 8, 3, 2, "#5bb04a", "transparent");
+  drawPixelRect(x + 10, y + 8, 3, 2, "#5bb04a", "transparent");
+  drawPixelRect(x + 4, y + 6, 4, 2, "#e9f7d8", "transparent");
+  drawPixelRect(x + 3, y + 1, 6, 1, "#f2ffd8", "transparent");
 }
 
 function drawCricket(cricket) {
