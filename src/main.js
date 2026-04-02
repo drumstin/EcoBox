@@ -1064,8 +1064,8 @@ function drawHabitatBase() {
 
   const decorLevel = getUpgrade("decor")?.level ?? 0;
   for (let i = 0; i < decorLevel; i += 1) {
-    const x = 136 + ((i * 16) % 34);
-    const y = 138 + ((i * 11) % 26);
+    const x = 128 + ((i * 22) % 52);
+    const y = 132 + ((i * 15) % 34);
     const width = 18 + (i % 2) * 4;
     ctx.save();
     ctx.translate(x, y);
@@ -1093,16 +1093,16 @@ function drawHabitatBase() {
 
   const mistLevel = getUpgrade("mist")?.level ?? 0;
   const mistPaused = mistLevel >= 8 && state.mistPauseTimer > 0;
-  ctx.fillStyle = "#4d5a48";
+  ctx.fillStyle = "#53624f";
   ctx.fillRect(170, 24, 34, 10);
   ctx.fillRect(182, 30, 10, 12);
-  ctx.strokeStyle = "rgba(242,248,255,0.92)";
+  ctx.strokeStyle = "rgba(214,226,232,0.72)";
   ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.moveTo(187, 40);
   ctx.bezierCurveTo(184, 58, 182, 74, 180, 90);
   ctx.stroke();
-  ctx.strokeStyle = "rgba(220,235,245,0.45)";
+  ctx.strokeStyle = "rgba(180,205,214,0.28)";
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(188, 40);
@@ -1168,11 +1168,11 @@ function drawFrog(frog) {
   const x = Math.round(frog.x);
   const paletteShift = typeof frog.morph === "number" ? frog.morph % 5 : Math.abs(Math.floor((frog.x + frog.y) % 5));
   const palettes = [
-    { dark: "#1d6a39", mid: "#3ecf67", light: "#8af29e", belly: "#dff6c8", stripe: "#0f2d18" },
-    { dark: "#0e4f7a", mid: "#23a4e0", light: "#7edfff", belly: "#d7f3ff", stripe: "#06263d" },
-    { dark: "#8c3a14", mid: "#ff7a2f", light: "#ffb066", belly: "#fff0d6", stripe: "#4a1f0a" },
-    { dark: "#6f1d1d", mid: "#e63f3f", light: "#ff8c8c", belly: "#ffe0d1", stripe: "#351010" },
-    { dark: "#6b5a10", mid: "#d6bf2f", light: "#f3e37a", belly: "#f8f2c8", stripe: "#342c08" }
+    { dark: "#15522d", mid: "#2dcb5e", light: "#95f7aa", belly: "#dff6c8", stripe: "#071e10" },
+    { dark: "#0a3f67", mid: "#1497de", light: "#8ae4ff", belly: "#d7f3ff", stripe: "#031b2d" },
+    { dark: "#7a2f0c", mid: "#ff6b1c", light: "#ffb366", belly: "#fff0d6", stripe: "#3b1707" },
+    { dark: "#5a1010", mid: "#e12d2d", light: "#ff7a7a", belly: "#ffe0d1", stripe: "#260707" },
+    { dark: "#5d4a00", mid: "#d5b400", light: "#f5ea69", belly: "#f8f2c8", stripe: "#2b2200" }
   ];
   const palette = palettes[paletteShift];
   const bodyDark = palette.dark;
