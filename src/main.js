@@ -2,7 +2,7 @@ const WORLD_SIZE = 240;
 const SAVE_KEY = "ecobox-save-v7";
 const FROG_COST = 5;
 const CRICKET_COST = 1;
-const PILL_BUG_COST = 2;
+const PILL_BUG_COST = 1;
 
 const state = {
   tick: 0,
@@ -191,7 +191,9 @@ function simulate(dt) {
     frog.restTimer -= dt;
     frog.tongueTimer = Math.max(0, frog.tongueTimer - dt * 2.8);
 
-    let targetCricket = null;
+    let targetType = null;
+    let targetX = 0;
+    let targetY = 0;
     let closestDist = Infinity;
     for (const cricket of state.crickets) {
       const dx = cricket.x - frog.x;
@@ -199,7 +201,22 @@ function simulate(dt) {
       const dist = Math.hypot(dx, dy);
       if (dist < closestDist) {
         closestDist = dist;
-        targetCricket = cricket;
+        targetType = "cricket";
+        targetX = cricket.x;
+        targetY = cricket.y;
+      }
+    }
+    if (!targetType || Math.random() < 0.18) {
+      for (const pillBug of state.pillBugs) {
+        const dx = pillBug.x - frog.x;
+        const dy = pillBug.y - frog.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < closestDist + 6) {
+          closestDist = dist;
+          targetType = "pillbug";
+          targetX = pillBug.x;
+          targetY = pillBug.y;
+        }
       }
     }
 
@@ -212,20 +229,27 @@ function simulate(dt) {
         frog.restTimer = rand(0.8, 2.6);
       }
     } else if (frog.restTimer <= 0) {
-      if (targetCricket && closestDist < 70) {
-        const dx = targetCricket.x - frog.x;
-        const dy = targetCricket.y - frog.y;
-        frog.vx = clamp(Math.sign(dx) * rand(0.16, 0.34), -0.36, 0.36);
-        frog.vy = clamp(Math.sign(dy) * rand(0.16, 0.34), -0.36, 0.36);
-      } else if (frog.hopTimer <= 0) {
-        frog.vx = rand(-0.3, 0.3);
-        frog.vy = rand(-0.3, 0.3);
+      if (targetType === "cricket" && closestDist < 78) {
+        const dx = targetX - frog.x;
+        const dy = targetY - frog.y;
+        frog.vx = clamp(Math.sign(dx) * rand(0.18, 0.36), -0.38, 0.38);
+        frog.vy = clamp(Math.sign(dy) * rand(0.18, 0.36), -0.38, 0.38);
+      } else if (targetType === "pillbug" && closestDist < 44 && Math.random() < 0.22) {
+        const dx = targetX - frog.x;
+        const dy = targetY - frog.y;
+        frog.vx = clamp(Math.sign(dx) * rand(0.14, 0.24), -0.28, 0.28);
+        frog.vy = clamp(Math.sign(dy) * rand(0.14, 0.24), -0.28, 0.28);
+      } else if (frog.hopTimer <= 0 && Math.random() < 0.28) {
+        frog.vx = rand(-0.22, 0.22);
+        frog.vy = rand(-0.22, 0.22);
       }
 
       if (Math.abs(frog.vx) > 0.05 || Math.abs(frog.vy) > 0.05) {
         frog.jumping = true;
         frog.jumpArc = 1;
-        frog.hopTimer = rand(0.6, 1.8);
+        frog.hopTimer = targetType === "cricket" ? rand(0.55, 1.2) : rand(1.6, 3.2);
+      } else {
+        frog.restTimer = rand(1.4, 3.8);
       }
     }
 
@@ -430,10 +454,10 @@ function drawFrog(frog) {
   const x = Math.round(frog.x);
   const jumpWave = Math.sin(frog.jumpArc * Math.PI);
   const lift = jumpWave * 18;
-  const landingBounce = frog.jumping ? 0 : 0;
   const squash = frog.jumping ? 1 - jumpWave * 0.18 : 1;
   const stretch = frog.jumping ? 1 + jumpWave * 0.24 : 1;
   const y = Math.round(frog.y - lift);
+  const spread = frog.jumping ? Math.round(3 + jumpWave * 4) : 1;
   const faceX = frog.facing >= 0 ? x + 11 : x - 1;
   const tongueBaseX = frog.facing >= 0 ? x + 10 : x + 1;
   const tongueBaseY = y + 5;
@@ -466,8 +490,8 @@ function drawFrog(frog) {
   drawPixelRect(x + 2, y - 1, 2, 2, "#8fef74", "transparent");
   drawPixelRect(x + Math.max(7, bodyW - 4), y - 1, 2, 2, "#8fef74", "transparent");
   drawPixelRect(faceX, y + 3, 2, 2, "#102313", "transparent");
-  drawPixelRect(x - 1, y + Math.max(6, bodyH - 1), 3, 2, "#5bb04a", "transparent");
-  drawPixelRect(x + Math.max(9, bodyW - 2), y + Math.max(6, bodyH - 1), 3, 2, "#5bb04a", "transparent");
+  drawPixelRect(x - spread, y + Math.max(6, bodyH - 1), 3 + spread, 2, "#5bb04a", "transparent");
+  drawPixelRect(x + Math.max(9, bodyW - 2), y + Math.max(6, bodyH - 1), 3 + spread, 2, "#5bb04a", "transparent");
   drawPixelRect(x + Math.max(3, Math.floor(bodyW / 2) - 2), y + Math.max(4, bodyH - 3), 4, 2, "#e9f7d8", "transparent");
   drawPixelRect(x + 3, y + 1, Math.max(5, bodyW - 6), 1, "#f2ffd8", "transparent");
 }

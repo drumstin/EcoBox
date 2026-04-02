@@ -220,17 +220,17 @@ p {
   margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 10px;
 }
 
 .pixel-button {
   border: 1px solid rgba(9, 14, 21, 0.7);
-  border-radius: 12px;
+  border-radius: 14px;
   color: #10151c;
   padding: 10px 12px;
   min-height: 48px;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 6px 16px rgba(0, 0, 0, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 8px 18px rgba(0, 0, 0, 0.18);
 }
 
 .save-button {
@@ -238,19 +238,19 @@ p {
 }
 
 .action-collect {
-  background: var(--green);
+  background: linear-gradient(180deg, #8ff0a0, #52c86d);
 }
 
 .action-feed {
-  background: var(--orange);
+  background: linear-gradient(180deg, #ffc37d, #f39b43);
 }
 
 .action-clean {
-  background: #8fe3ff;
+  background: linear-gradient(180deg, #b8eeff, #72cce9);
 }
 
 .action-boost {
-  background: var(--gold);
+  background: linear-gradient(180deg, #ffe58e, #f0bf46);
 }
 
 .pixel-button.secondary {
