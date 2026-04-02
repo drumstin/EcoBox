@@ -1227,12 +1227,12 @@ function renderHud() {
   ].join("");
 
   const mainStatItems = [
-    { label: "Coins", value: `${Math.floor(state.coins)}¢` },
-    { label: "Humidity", value: `${Math.floor(state.humidity)}%` },
-    { label: "Clean", value: `${Math.floor(state.cleanliness)}%` },
-    { label: "Frogs", value: `${state.frogs.length}` },
-    { label: "Pill Bugs", value: `${state.pillBugs.length}` },
-    { label: "Crickets", value: `${state.crickets.length}` }
+    { label: "COIN", value: `${Math.floor(state.coins)}` },
+    { label: "HUM", value: `${Math.floor(state.humidity)}%` },
+    { label: "CLEAN", value: `${Math.floor(state.cleanliness)}%` },
+    { label: "FROGS", value: `${state.frogs.length}` },
+    { label: "BUGS", value: `${state.pillBugs.length}` },
+    { label: "CRICK", value: `${state.crickets.length}` }
   ];
 
   if (elements.tankLiveReadout) {
@@ -1244,24 +1244,9 @@ function renderHud() {
     `).join("");
   }
 
-  const statusItems = [
-    { label: "Coins", value: state.coins, max: 40, suffix: "¢" },
-    { label: "Humidity", value: state.humidity, max: 100, suffix: "%" },
-    { label: "Cleanliness", value: state.cleanliness, max: 100, suffix: "%" },
-    { label: "Frogs", value: state.frogs.length, max: 8, suffix: " frogs" },
-    { label: "Pill Bugs", value: state.pillBugs.length, max: 10, suffix: " bugs" }
-  ];
-
-  elements.statusGrid.innerHTML = statusItems.map((item) => {
-    const percent = clamp((item.value / item.max) * 100, 0, 100);
-    return `
-      <article class="status-card">
-        <div class="status-name">${item.label}</div>
-        <div class="bar"><span style="width:${percent}%"></span></div>
-        <div class="status-value">${Math.floor(item.value)}${item.suffix}</div>
-      </article>
-    `;
-  }).join("");
+  if (elements.statusGrid) {
+    elements.statusGrid.innerHTML = "";
+  }
 
   const milestoneData = [
     { title: "First Frog", done: state.frogs.length >= 1, text: "Buy your first frog for 5 coins." },
