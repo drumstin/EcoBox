@@ -7,6 +7,17 @@
   <link rel="stylesheet" href="style.css?v=a6aa79b" />
 </head>
 <body>
+  <div id="album-modal" class="confirm-modal" hidden>
+    <div class="confirm-card pixel-frame album-card">
+      <h2>Critter Album</h2>
+      <p>Tracked creatures in your habitat.</p>
+      <div id="album-list" class="album-list"></div>
+      <div class="confirm-actions">
+        <button id="close-album-button" class="pixel-button secondary save-button" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
   <div id="confirm-modal" class="confirm-modal" hidden>
     <div class="confirm-card pixel-frame">
       <h2>Reset EcoBox?</h2>
@@ -26,6 +37,7 @@
         <p class="subcopy">Build a cozy frog habitat with moss, hides, feeder crickets, and visitor coins.</p>
       </div>
       <div class="topbar-actions">
+        <button id="album-button" class="pixel-button secondary save-button" type="button">Album</button>
         <button id="save-button" class="pixel-button secondary save-button" type="button">Save</button>
         <button id="reset-button" class="pixel-button reset-button" type="button">Reset</button>
       </div>

@@ -70,6 +70,10 @@ const elements = {
   canvas: document.getElementById("tank-canvas"),
   overlay: document.getElementById("tank-overlay"),
   tankFx: document.getElementById("tank-fx"),
+  albumButton: document.getElementById("album-button"),
+  albumModal: document.getElementById("album-modal"),
+  albumList: document.getElementById("album-list"),
+  closeAlbumButton: document.getElementById("close-album-button"),
   saveButton: document.getElementById("save-button"),
   resetButton: document.getElementById("reset-button"),
   confirmModal: document.getElementById("confirm-modal"),
@@ -220,6 +224,32 @@ function loadGame() {
   } catch {
     pushEvent("Load failed", "Starting with a fresh habitat.");
   }
+}
+
+function openAlbum() {
+  if (!elements.albumModal || !elements.albumList) return;
+  const entries = [
+    { name: "Tree Frog", count: state.frogs.filter((frog) => frog.stage === "adult").length, note: "Main terrarium frogs." },
+    { name: "Froglet", count: state.frogs.filter((frog) => frog.stage === "froglet").length, note: "Young frogs growing out of the pond." },
+    { name: "Tadpole", count: state.tadpoles.length, note: "Wiggling pond babies." },
+    { name: "Cricket", count: state.crickets.length, note: "Feeder insects in the habitat." },
+    { name: "Pill Bug", count: state.pillBugs.length, note: "Cleanup crew on the substrate." }
+  ];
+  elements.albumList.innerHTML = entries.map((entry) => `
+    <article class="album-entry">
+      <strong>${entry.name}</strong>
+      <div>Seen now: ${entry.count}</div>
+      <div>${entry.note}</div>
+    </article>
+  `).join("");
+  elements.albumModal.hidden = false;
+  elements.albumModal.style.display = "grid";
+}
+
+function closeAlbum() {
+  if (!elements.albumModal) return;
+  elements.albumModal.hidden = true;
+  elements.albumModal.style.display = "none";
 }
 
 function openResetConfirm() {
@@ -1781,6 +1811,8 @@ function bindUi() {
     renderHud();
   });
 
+  elements.albumButton.addEventListener("click", openAlbum);
+  elements.closeAlbumButton.addEventListener("click", closeAlbum);
   elements.saveButton.addEventListener("click", saveGame);
   elements.resetButton.addEventListener("click", openResetConfirm);
   elements.confirmResetButton.addEventListener("click", resetGame);
@@ -1832,6 +1864,7 @@ state.pillBugEggs = Array.isArray(state.pillBugEggs) ? state.pillBugEggs : [];
 state.droppings = Array.isArray(state.droppings) ? state.droppings : [];
 state.fungusPatches = Array.isArray(state.fungusPatches) ? state.fungusPatches : [];
 bindUi();
+closeAlbum();
 closeResetConfirm();
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
