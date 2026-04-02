@@ -267,6 +267,12 @@ function simulate(dt) {
       spawnPopup(frog.x, frog.y - 8, "grown");
     }
 
+    if (frog.stage === "adult" && frog.age >= 300) {
+      state.frogs.splice(state.frogs.indexOf(frog), 1);
+      spawnPopup(frog.x, frog.y - 8, "rip");
+      continue;
+    }
+
     if (frog.inHide) {
       frog.sleepTimer = Math.max(0, frog.sleepTimer - dt);
       if (frog.sleepTimer === 0) {
