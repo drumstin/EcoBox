@@ -3,6 +3,7 @@ const SAVE_KEY = "ecobox-save-v7";
 const FROG_COST = 5;
 const CRICKET_COST = 1;
 const PILL_BUG_COST = 1;
+const PILL_BUG_BITE_RANGE = 12;
 
 const state = {
   tick: 0,
@@ -261,6 +262,7 @@ function simulate(dt) {
       frog.facing = frog.vx >= 0 ? 1 : -1;
     }
 
+    let ateSomething = false;
     for (let i = state.crickets.length - 1; i >= 0; i -= 1) {
       const cricket = state.crickets[i];
       const dx = cricket.x - frog.x;
@@ -280,7 +282,31 @@ function simulate(dt) {
         frog.hunger = Math.max(0, frog.hunger - 18);
         state.coins += 1;
         pushEvent("Frog fed", "A frog snapped up a cricket. +1 coin.");
+        ateSomething = true;
         break;
+      }
+    }
+
+    if (!ateSomething) {
+      for (let i = state.pillBugs.length - 1; i >= 0; i -= 1) {
+        const pillBug = state.pillBugs[i];
+        const dx = pillBug.x - frog.x;
+        const dy = pillBug.y - frog.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < PILL_BUG_BITE_RANGE && Math.random() < 0.35) {
+          frog.facing = pillBug.x >= frog.x ? 1 : -1;
+          const tongueDx = pillBug.x - frog.x;
+          const tongueDy = pillBug.y - frog.y;
+          const tongueDist = Math.hypot(tongueDx, tongueDy) || 1;
+          const reach = Math.min(12, tongueDist);
+          frog.tongueTimer = 1;
+          frog.tongueTargetX = frog.x + (tongueDx / tongueDist) * reach;
+          frog.tongueTargetY = frog.y + (tongueDy / tongueDist) * reach;
+          state.pillBugs.splice(i, 1);
+          frog.hunger = Math.max(0, frog.hunger - 10);
+          pushEvent("Pill bug eaten", "A frog nabbed a pill bug instead of a cricket.");
+          break;
+        }
       }
     }
 

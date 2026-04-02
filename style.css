@@ -267,12 +267,15 @@ p {
 
 .action-icon {
   display: block;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   line-height: 1;
+  margin-bottom: 4px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .action-label {
   display: block;
+  font-weight: 700;
 }
 
 .pixel-button.secondary {
