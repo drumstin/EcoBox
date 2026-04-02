@@ -15,7 +15,7 @@ const LOG_OBSTACLES = [
 ];
 const FROG_HIDE_CAVES = [
   { id: "log-a", x: 116, y: 148, w: 24, h: 12, exitX: 108, exitY: 144, capacity: 5 },
-  { id: "log-b", x: 56, y: 154, w: 24, h: 12, exitX: 82, exitY: 152, capacity: 5 }
+  { id: "log-b", x: 72, y: 158, w: 20, h: 10, exitX: 96, exitY: 156, capacity: 5 }
 ];
 
 function createInitialState() {
@@ -908,25 +908,25 @@ function drawHabitatBase() {
   ctx.restore();
 
   ctx.save();
-  ctx.translate(68, 158);
+  ctx.translate(84, 162);
   ctx.rotate(0.04);
   ctx.fillStyle = "#7b5533";
-  ctx.fillRect(-18, -8, 36, 16);
+  ctx.fillRect(-15, -7, 30, 14);
   ctx.fillStyle = "#966b41";
-  ctx.fillRect(-15, -6, 30, 12);
+  ctx.fillRect(-12, -5, 24, 10);
   ctx.fillStyle = "rgba(22, 14, 9, 0.90)";
   ctx.beginPath();
-  ctx.ellipse(-11, 0, 6.5, 4, 0, 0, Math.PI * 2);
+  ctx.ellipse(-9, 0, 5.5, 3.5, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.strokeStyle = "#6a4828";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(-5, -5);
-  ctx.lineTo(10, -5);
-  ctx.moveTo(-8, 0);
-  ctx.lineTo(12, 0);
-  ctx.moveTo(-5, 5);
-  ctx.lineTo(9, 5);
+  ctx.moveTo(-4, -4);
+  ctx.lineTo(8, -4);
+  ctx.moveTo(-6, 0);
+  ctx.lineTo(10, 0);
+  ctx.moveTo(-4, 4);
+  ctx.lineTo(7, 4);
   ctx.stroke();
   ctx.restore();
 
