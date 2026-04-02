@@ -12,6 +12,10 @@ const LOG_OBSTACLES = [
   { x: 56, y: 156, w: 16, h: 10 },
   { x: 164, y: 150, w: 14, h: 9 }
 ];
+const FROG_HIDE_CAVES = [
+  { x: 118, y: 148, w: 18, h: 10, exitX: 110, exitY: 144 },
+  { x: 60, y: 154, w: 12, h: 8, exitX: 76, exitY: 150 }
+];
 
 const state = {
   tick: 0,
@@ -127,7 +131,10 @@ function spawnFrog() {
     tongueTargetY: 0,
     poopTimer: rand(12, 26),
     digestedCrickets: 0,
-    digestedPillBugs: 0
+    digestedPillBugs: 0,
+    sleepTimer: 0,
+    totalCricketsEaten: 0,
+    inHide: false
   };
 }
 
@@ -244,6 +251,20 @@ function simulate(dt) {
   }
 
   for (const frog of state.frogs) {
+    if (frog.inHide) {
+      frog.sleepTimer = Math.max(0, frog.sleepTimer - dt);
+      if (frog.sleepTimer === 0) {
+        const cave = FROG_HIDE_CAVES[Math.floor(Math.random() * FROG_HIDE_CAVES.length)];
+        frog.inHide = false;
+        frog.x = cave.exitX;
+        frog.y = cave.exitY;
+        frog.hunger = 8;
+        frog.totalCricketsEaten = 0;
+        spawnPopup(frog.x, frog.y - 8, "awake");
+      }
+      continue;
+    }
+
     frog.hunger += dt * 3.2;
     frog.hopTimer -= dt;
     frog.restTimer -= dt;
@@ -327,6 +348,7 @@ function simulate(dt) {
         state.crickets.splice(i, 1);
         frog.hunger = Math.max(0, frog.hunger - 18);
         frog.digestedCrickets += 1;
+        frog.totalCricketsEaten += 1;
         state.coins += 1;
         spawnPopup(frog.x, frog.y - 8, "+1 coin");
         pushEvent("Frog fed", "A frog snapped up a cricket. +1 coin.");
@@ -344,6 +366,16 @@ function simulate(dt) {
       frog.poopTimer = rand(18, 34);
       frog.digestedCrickets = 0;
       frog.digestedPillBugs = 0;
+    }
+
+    if (frog.totalCricketsEaten >= 10) {
+      const cave = FROG_HIDE_CAVES[Math.floor(Math.random() * FROG_HIDE_CAVES.length)];
+      frog.inHide = true;
+      frog.sleepTimer = 30;
+      frog.x = cave.x + cave.w / 2;
+      frog.y = cave.y + cave.h / 2;
+      spawnPopup(frog.x, frog.y - 8, "sleep");
+      continue;
     }
 
     for (const obstacle of LOG_OBSTACLES) {
@@ -601,6 +633,10 @@ function drawHabitatBase() {
   ctx.fillStyle = "#5f452c";
   ctx.beginPath();
   ctx.ellipse(126, 152, 16, 8, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(22, 14, 9, 0.85)";
+  ctx.beginPath();
+  ctx.ellipse(126, 154, 10, 4, 0, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#65472d";
@@ -909,6 +945,7 @@ function drawCreatures() {
     }
   }
   for (const frog of state.frogs) {
+    if (frog.inHide) continue;
     drawFrog(frog);
     if (frogUpgradeLevel >= 8) {
       ctx.fillStyle = "rgba(255,245,180,0.16)";
