@@ -265,19 +265,6 @@ function simulate(dt) {
         targetY = cricket.y;
       }
     }
-    if (!targetType || Math.random() < 0.08) {
-      for (const pillBug of state.pillBugs) {
-        const dx = pillBug.x - frog.x;
-        const dy = pillBug.y - frog.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < closestDist + 6) {
-          closestDist = dist;
-          targetType = "pillbug";
-          targetX = pillBug.x;
-          targetY = pillBug.y;
-        }
-      }
-    }
 
     if (frog.jumpPhase === "crouch") {
       frog.crouchTimer = Math.max(0, frog.crouchTimer - dt * 3.4);
@@ -301,11 +288,6 @@ function simulate(dt) {
         const dy = targetY - frog.y;
         frog.vx = clamp(Math.sign(dx) * rand(0.18, 0.36), -0.38, 0.38);
         frog.vy = clamp(Math.sign(dy) * rand(0.18, 0.36), -0.38, 0.38);
-      } else if (targetType === "pillbug" && closestDist < 34 && Math.random() < 0.08) {
-        const dx = targetX - frog.x;
-        const dy = targetY - frog.y;
-        frog.vx = clamp(Math.sign(dx) * rand(0.14, 0.24), -0.28, 0.28);
-        frog.vy = clamp(Math.sign(dy) * rand(0.14, 0.24), -0.28, 0.28);
       } else if (frog.hopTimer <= 0 && Math.random() < 0.28) {
         frog.vx = rand(-0.22, 0.22);
         frog.vy = rand(-0.22, 0.22);
@@ -354,27 +336,7 @@ function simulate(dt) {
     }
 
     if (!ateSomething) {
-      for (let i = state.pillBugs.length - 1; i >= 0; i -= 1) {
-        const pillBug = state.pillBugs[i];
-        const dx = pillBug.x - frog.x;
-        const dy = pillBug.y - frog.y;
-        const dist = Math.hypot(dx, dy);
-        if (dist < PILL_BUG_BITE_RANGE && Math.random() < 0.35) {
-          frog.facing = pillBug.x >= frog.x ? 1 : -1;
-          const tongueDx = pillBug.x - frog.x;
-          const tongueDy = pillBug.y - frog.y;
-          const tongueDist = Math.hypot(tongueDx, tongueDy) || 1;
-          const reach = Math.min(12, tongueDist);
-          frog.tongueTimer = 1;
-          frog.tongueTargetX = frog.x + (tongueDx / tongueDist) * reach;
-          frog.tongueTargetY = frog.y + (tongueDy / tongueDist) * reach;
-          state.pillBugs.splice(i, 1);
-          frog.hunger = Math.max(0, frog.hunger - 10);
-          frog.digestedPillBugs += 1;
-          pushEvent("Pill bug eaten", "A frog nabbed a pill bug instead of a cricket.");
-          break;
-        }
-      }
+      // Pill bugs are cleanup creatures only and are no longer part of the frog diet.
     }
 
     if (frog.digestedCrickets >= 3 || frog.digestedPillBugs >= 2 || frog.poopTimer <= 0) {
