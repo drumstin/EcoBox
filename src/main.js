@@ -51,8 +51,11 @@ const elements = {
   cricketFarmPanel: document.getElementById("cricket-farm-panel"),
   cricketFarmBoxes: document.getElementById("cricket-farm-boxes"),
   buyCarrotButton: document.getElementById("buy-carrot-button"),
+  buyCarrotPrice: document.getElementById("buy-carrot-price"),
   buyPotatoButton: document.getElementById("buy-potato-button"),
+  buyPotatoPrice: document.getElementById("buy-potato-price"),
   addCricketBoxButton: document.getElementById("add-cricket-box-button"),
+  addCricketBoxPrice: document.getElementById("add-cricket-box-price"),
   multiBuyTabs: document.getElementById("multi-buy-tabs"),
   buyFrogButton: document.getElementById("buy-frog-button"),
   buyFrogPrice: document.getElementById("buy-frog-price"),
@@ -1040,6 +1043,9 @@ function renderQuickActionPrices() {
   if (elements.collectPrice) elements.collectPrice.textContent = `free`;
   if (elements.cleanPrice) elements.cleanPrice.textContent = `free`;
   if (elements.boostPrice) elements.boostPrice.textContent = `3 coins`;
+  if (elements.buyCarrotPrice) elements.buyCarrotPrice.textContent = `1 coin`;
+  if (elements.buyPotatoPrice) elements.buyPotatoPrice.textContent = `1 coin`;
+  if (elements.addCricketBoxPrice) elements.addCricketBoxPrice.textContent = `${10 + state.cricketFarm.boxes.length * 5} coins`;
 }
 
 function bindUi() {
@@ -1056,6 +1062,7 @@ function bindUi() {
     }
     state.cricketFarm.carrots += 1;
     renderCricketFarm();
+    renderQuickActionPrices();
   });
 
   elements.buyPotatoButton?.addEventListener("click", () => {
@@ -1066,6 +1073,7 @@ function bindUi() {
     }
     state.cricketFarm.potatoes += 1;
     renderCricketFarm();
+    renderQuickActionPrices();
   });
 
   elements.addCricketBoxButton?.addEventListener("click", () => {
@@ -1078,6 +1086,7 @@ function bindUi() {
     state.cricketFarm.boxes.push({ id: state.cricketFarm.boxes.length + 1, crickets: 0, minimized: false, breedingTimer: 0 });
     pushEvent("New box", "A new cricket breeder box was added.");
     renderCricketFarm();
+    renderQuickActionPrices();
     renderHud();
   });
 
