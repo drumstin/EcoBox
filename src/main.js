@@ -48,7 +48,7 @@ const state = {
     { id: "crickets", name: "Cricket Cup", description: "Release live feeder crickets", cost: CRICKET_COST, level: 0, maxLevel: 999, currency: "coins" },
     { id: "pillbug", name: "Pill Bug Crew", description: "Adds 1 waste-eating pill bug", cost: PILL_BUG_COST, level: 0, maxLevel: 20, currency: "coins" },
     { id: "mist", name: "Mister", description: "Keeps humidity high", cost: 6, level: 0, maxLevel: 8, currency: "coins" },
-    { id: "plants", name: "Leafy Vines", description: "Adds cover and natural beauty", cost: 7, level: 0, maxLevel: 8, currency: "coins" },
+    { id: "plants", name: "Leafy Vines", description: "Grows one spreading vine across the habitat", cost: 7, level: 0, maxLevel: 5, currency: "coins" },
     { id: "decor", name: "Pretty Hide", description: "Adds bark hides and stones", cost: 4, level: 0, maxLevel: 8, currency: "coins" }
   ]
 };
@@ -679,44 +679,63 @@ function drawHabitatBase() {
   }
 
   const plantLevel = getUpgrade("plants")?.level ?? 0;
-  for (let i = 0; i < plantLevel; i += 1) {
-    const startX = 176 - (i % 3) * 14;
-    const startY = 34 + (i % 2) * 5;
-    const vineLength = 34 + i * 12;
-    const sway = (i % 2 === 0 ? 1 : -1) * (8 + i * 2.2);
+  if (plantLevel > 0) {
+    const startX = 172;
+    const startY = 46;
+    const endX = 54;
+    const endY = 164;
+    const spread = plantLevel / 5;
 
-    ctx.strokeStyle = i % 2 === 0 ? "#2e6a34" : "#255a2d";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#2c6633";
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(startX, startY);
-    ctx.quadraticCurveTo(startX + sway, startY + vineLength * 0.28, startX - sway * 0.45, startY + vineLength * 0.62);
-    ctx.quadraticCurveTo(startX - sway * 0.7, startY + vineLength * 0.82, startX - sway * 0.35, startY + vineLength);
+    ctx.quadraticCurveTo(150, 82, 132, 108);
+    if (plantLevel >= 2) ctx.quadraticCurveTo(110, 124, 96, 138);
+    if (plantLevel >= 3) ctx.quadraticCurveTo(82, 146, 72, 154);
+    if (plantLevel >= 4) ctx.quadraticCurveTo(64, 160, 58, 162);
+    if (plantLevel >= 5) ctx.quadraticCurveTo(56, 163, endX, endY);
     ctx.stroke();
 
-    if (i >= 1) {
+    if (plantLevel >= 2) {
       ctx.beginPath();
-      ctx.moveTo(startX - 1, startY + 12);
-      ctx.quadraticCurveTo(startX - 16, startY + 24, startX - 24, startY + 40);
+      ctx.moveTo(132, 108);
+      ctx.quadraticCurveTo(150, 126, 170, 142);
       ctx.stroke();
     }
 
-    if (i >= 3) {
+    if (plantLevel >= 3) {
       ctx.beginPath();
-      ctx.moveTo(startX + 2, startY + 20);
-      ctx.quadraticCurveTo(startX + 16, startY + 32, startX + 22, startY + 52);
+      ctx.moveTo(108, 130);
+      ctx.quadraticCurveTo(118, 150, 126, 168);
       ctx.stroke();
     }
 
-    ctx.fillStyle = i % 2 === 0 ? "#5ea85c" : "#4a8e4e";
-    for (let leaf = 0; leaf < 5 + i; leaf += 1) {
-      const t = leaf / Math.max(1, 4 + i);
-      const flowX = startX + Math.sin(t * Math.PI * 1.3) * sway * 0.38;
-      const flowY = startY + t * vineLength;
+    if (plantLevel >= 4) {
       ctx.beginPath();
-      ctx.moveTo(flowX - 5, flowY + 2);
-      ctx.lineTo(flowX, flowY - 1.5);
-      ctx.lineTo(flowX + 4.8, flowY + 2.2);
-      ctx.lineTo(flowX, flowY + 5.2);
+      ctx.moveTo(86, 148);
+      ctx.quadraticCurveTo(94, 164, 102, 178);
+      ctx.stroke();
+    }
+
+    if (plantLevel >= 5) {
+      ctx.beginPath();
+      ctx.moveTo(70, 156);
+      ctx.quadraticCurveTo(84, 168, 150, 176);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = "#4b9250";
+    const leafCount = 8 + plantLevel * 6;
+    for (let leaf = 0; leaf < leafCount; leaf += 1) {
+      const t = leaf / Math.max(1, leafCount - 1);
+      const vineX = startX + (endX - startX) * t;
+      const vineY = startY + (endY - startY) * t * spread + Math.sin(t * Math.PI * 2.3) * 10;
+      ctx.beginPath();
+      ctx.moveTo(vineX - 6, vineY + 2);
+      ctx.lineTo(vineX, vineY - 2);
+      ctx.lineTo(vineX + 6, vineY + 2);
+      ctx.lineTo(vineX, vineY + 6);
       ctx.closePath();
       ctx.fill();
     }
