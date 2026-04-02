@@ -953,6 +953,11 @@ function renderCricketFarm() {
   elements.cricketFarmBoxes.innerHTML = state.cricketFarm.boxes.map((box) => {
     const isFull = box.crickets >= 100;
     const minimized = box.minimized || isFull;
+    const previewDots = Array.from({ length: Math.min(24, Math.max(2, Math.ceil(box.crickets / 5))) }, (_, index) => {
+      const left = 6 + ((index * 17) % 88);
+      const top = 8 + ((index * 11) % 50);
+      return `<span class="cricket-dot" style="left:${left}%; top:${top}%"></span>`;
+    }).join("");
     return `
       <article class="farm-box ${minimized ? "minimized" : ""}" data-box-id="${box.id}">
         <div class="farm-box-header">
@@ -963,6 +968,7 @@ function renderCricketFarm() {
           <div>Crickets: ${box.crickets} / 100</div>
           <div>Feed: ${state.cricketFarm.carrots} carrots · ${state.cricketFarm.potatoes} potatoes</div>
         </div>
+        <div class="cricket-box-preview">${previewDots}</div>
         ${minimized ? `<div class="farm-box-actions"><button class="pixel-button action-feed" data-release-box="${box.id}" type="button">Release 100</button></div>` : `
           <div class="farm-box-actions">
             <button class="pixel-button action-feed" data-feed-box="${box.id}" data-feed-type="carrot" type="button">Use Carrot</button>
