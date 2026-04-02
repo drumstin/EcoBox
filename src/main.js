@@ -14,8 +14,8 @@ const LOG_OBSTACLES = [
   { x: 164, y: 150, w: 14, h: 9 }
 ];
 const FROG_HIDE_CAVES = [
-  { x: 118, y: 148, w: 18, h: 10, exitX: 110, exitY: 144 },
-  { x: 60, y: 154, w: 12, h: 8, exitX: 76, exitY: 150 }
+  { id: "log-a", x: 116, y: 148, w: 24, h: 12, exitX: 108, exitY: 144, capacity: 5 },
+  { id: "log-b", x: 56, y: 154, w: 24, h: 12, exitX: 82, exitY: 152, capacity: 5 }
 ];
 
 const state = {
@@ -270,8 +270,9 @@ function simulate(dt) {
     if (frog.inHide) {
       frog.sleepTimer = Math.max(0, frog.sleepTimer - dt);
       if (frog.sleepTimer === 0) {
-        const cave = FROG_HIDE_CAVES[Math.floor(Math.random() * FROG_HIDE_CAVES.length)];
+        const cave = FROG_HIDE_CAVES.find((entry) => entry.id === frog.hideId) ?? FROG_HIDE_CAVES[0];
         frog.inHide = false;
+        frog.hideId = null;
         frog.x = cave.exitX;
         frog.y = cave.exitY;
         frog.hunger = 8;
@@ -388,13 +389,16 @@ function simulate(dt) {
     }
 
     if (frog.totalCricketsEaten >= 10) {
-      const cave = FROG_HIDE_CAVES[Math.floor(Math.random() * FROG_HIDE_CAVES.length)];
-      frog.inHide = true;
-      frog.sleepTimer = 30;
-      frog.x = cave.x + cave.w / 2;
-      frog.y = cave.y + cave.h / 2;
-      spawnPopup(frog.x, frog.y - 8, "sleep");
-      continue;
+      const availableHide = FROG_HIDE_CAVES.find((cave) => state.frogs.filter((other) => other.inHide && other.hideId === cave.id).length < cave.capacity);
+      if (availableHide) {
+        frog.inHide = true;
+        frog.hideId = availableHide.id;
+        frog.sleepTimer = 30;
+        frog.x = availableHide.x + availableHide.w / 2;
+        frog.y = availableHide.y + availableHide.h / 2;
+        spawnPopup(frog.x, frog.y - 8, "sleep");
+        continue;
+      }
     }
 
     for (const obstacle of LOG_OBSTACLES) {
@@ -744,37 +748,47 @@ function drawHabitatBase() {
   ctx.save();
   ctx.translate(116, 148);
   ctx.rotate(-0.08);
-  ctx.fillStyle = "#815b36";
-  ctx.fillRect(-28, -10, 56, 20);
-  ctx.fillStyle = "#9b7447";
-  ctx.fillRect(-24, -8, 48, 14);
+  ctx.fillStyle = "#7b5533";
+  ctx.fillRect(-30, -11, 60, 22);
+  ctx.fillStyle = "#966b41";
+  ctx.fillRect(-26, -8, 52, 16);
   ctx.fillStyle = "rgba(26, 16, 10, 0.94)";
   ctx.beginPath();
-  ctx.ellipse(-18, 0, 10, 6, 0, 0, Math.PI * 2);
+  ctx.ellipse(-20, 0, 10, 6, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.strokeStyle = "#6a4828";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(-6, -7);
-  ctx.lineTo(16, -7);
-  ctx.moveTo(-10, 0);
-  ctx.lineTo(20, 0);
-  ctx.moveTo(-6, 7);
+  ctx.moveTo(-10, -7);
+  ctx.lineTo(18, -7);
+  ctx.moveTo(-14, 0);
+  ctx.lineTo(22, 0);
+  ctx.moveTo(-10, 7);
   ctx.lineTo(18, 7);
   ctx.stroke();
   ctx.restore();
 
   ctx.save();
-  ctx.translate(66, 158);
-  ctx.rotate(0.06);
-  ctx.fillStyle = "#7b5736";
-  ctx.fillRect(-14, -7, 28, 14);
-  ctx.fillStyle = "#946d43";
-  ctx.fillRect(-11, -5, 22, 10);
+  ctx.translate(68, 158);
+  ctx.rotate(0.04);
+  ctx.fillStyle = "#7b5533";
+  ctx.fillRect(-18, -8, 36, 16);
+  ctx.fillStyle = "#966b41";
+  ctx.fillRect(-15, -6, 30, 12);
   ctx.fillStyle = "rgba(22, 14, 9, 0.90)";
   ctx.beginPath();
-  ctx.ellipse(-9, 0, 5.5, 3.5, 0, 0, Math.PI * 2);
+  ctx.ellipse(-11, 0, 6.5, 4, 0, 0, Math.PI * 2);
   ctx.fill();
+  ctx.strokeStyle = "#6a4828";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(-5, -5);
+  ctx.lineTo(10, -5);
+  ctx.moveTo(-8, 0);
+  ctx.lineTo(12, 0);
+  ctx.moveTo(-5, 5);
+  ctx.lineTo(9, 5);
+  ctx.stroke();
   ctx.restore();
 
   ctx.fillStyle = "#65472d";
