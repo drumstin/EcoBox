@@ -516,12 +516,12 @@ function drawHabitatBase() {
   ctx.fillStyle = wallGrad;
   ctx.fillRect(0, 0, WORLD_SIZE, WORLD_SIZE);
 
-  const canopyGrad = ctx.createLinearGradient(0, 24, 0, 102);
-  canopyGrad.addColorStop(0, "#54753d");
-  canopyGrad.addColorStop(1, "#324924");
+  const canopyGrad = ctx.createLinearGradient(0, 28, 0, 96);
+  canopyGrad.addColorStop(0, "#4e6b39");
+  canopyGrad.addColorStop(1, "#314724");
   ctx.fillStyle = canopyGrad;
   ctx.beginPath();
-  ctx.ellipse(120, 58, 92, 36, 0, 0, Math.PI * 2);
+  ctx.ellipse(120, 54, 72, 26, 0, 0, Math.PI * 2);
   ctx.fill();
 
   const floorGrad = ctx.createLinearGradient(0, 98, 0, WORLD_SIZE);
@@ -530,43 +530,33 @@ function drawHabitatBase() {
   ctx.fillStyle = floorGrad;
   ctx.fillRect(24, 96, WORLD_SIZE - 48, WORLD_SIZE - 120);
 
-  ctx.fillStyle = "#3f5c2e";
+  ctx.fillStyle = "#405b2e";
   ctx.beginPath();
-  ctx.ellipse(68, 64, 46, 18, -0.2, 0, Math.PI * 2);
-  ctx.ellipse(166, 62, 40, 16, 0.18, 0, Math.PI * 2);
+  ctx.ellipse(76, 66, 28, 12, -0.15, 0, Math.PI * 2);
+  ctx.ellipse(162, 64, 26, 11, 0.15, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#7f6240";
   ctx.beginPath();
-  ctx.ellipse(112, 150, 64, 24, -0.12, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = "#6a4d31";
-  ctx.beginPath();
-  ctx.ellipse(154, 136, 26, 12, 0.18, 0, Math.PI * 2);
+  ctx.ellipse(112, 154, 56, 20, -0.08, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#8f6f48";
   ctx.save();
-  ctx.translate(90, 92);
-  ctx.rotate(-0.6);
-  ctx.fillRect(-8, -34, 16, 72);
+  ctx.translate(96, 96);
+  ctx.rotate(-0.38);
+  ctx.fillRect(-6, -28, 12, 60);
   ctx.restore();
 
   ctx.save();
-  ctx.translate(104, 84);
-  ctx.rotate(0.12);
-  ctx.fillRect(-6, -4, 78, 12);
-  ctx.restore();
-
-  ctx.save();
-  ctx.translate(154, 74);
+  ctx.translate(108, 90);
   ctx.rotate(0.08);
-  ctx.fillRect(-4, -3, 34, 8);
+  ctx.fillRect(-6, -4, 64, 10);
   ctx.restore();
 
-  ctx.fillStyle = "#5b452c";
+  ctx.fillStyle = "#63492e";
   ctx.beginPath();
-  ctx.ellipse(132, 154, 20, 12, 0, 0, Math.PI * 2);
+  ctx.ellipse(130, 154, 18, 10, 0, 0, Math.PI * 2);
   ctx.fill();
 
   const coverPatches = 6 + Math.floor(state.groundCover / 7);
