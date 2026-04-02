@@ -1166,92 +1166,64 @@ function drawHabitatBase() {
 
 function drawFrog(frog) {
   const x = Math.round(frog.x);
-  const paletteShift = typeof frog.morph === "number" ? frog.morph % 5 : Math.abs(Math.floor((frog.x + frog.y) % 5));
+  const paletteShift = typeof frog.morph === "number" ? frog.morph % 5 : 0;
   const palettes = [
-    { dark: "#15522d", mid: "#2dcb5e", light: "#95f7aa", belly: "#dff6c8", stripe: "#071e10" },
-    { dark: "#0a3f67", mid: "#1497de", light: "#8ae4ff", belly: "#d7f3ff", stripe: "#031b2d" },
-    { dark: "#7a2f0c", mid: "#ff6b1c", light: "#ffb366", belly: "#fff0d6", stripe: "#3b1707" },
-    { dark: "#5a1010", mid: "#e12d2d", light: "#ff7a7a", belly: "#ffe0d1", stripe: "#260707" },
-    { dark: "#5d4a00", mid: "#d5b400", light: "#f5ea69", belly: "#f8f2c8", stripe: "#2b2200" }
+    { dark: "#111111", mid: "#33c79a", light: "#a9ef87", belly: "#ffd26f", accent: "#111111" },
+    { dark: "#111111", mid: "#2d9fe0", light: "#8be7ff", belly: "#d7f3ff", accent: "#111111" },
+    { dark: "#111111", mid: "#ff7a2f", light: "#ffbe74", belly: "#ffd98a", accent: "#111111" },
+    { dark: "#111111", mid: "#e54444", light: "#ff8f8f", belly: "#ffd0a0", accent: "#111111" },
+    { dark: "#111111", mid: "#d3c22b", light: "#eef07d", belly: "#ffe09b", accent: "#111111" }
   ];
   const palette = palettes[paletteShift];
-  const bodyDark = palette.dark;
-  const bodyMid = palette.mid;
-  const bodyLight = palette.light;
-  const belly = palette.belly;
-  const stripe = palette.stripe;
-  const crouchWave = frog.jumpPhase === "crouch" ? Math.sin((1 - frog.crouchTimer) * Math.PI * 0.5) : 0;
   const jumpWave = Math.sin(frog.jumpArc * Math.PI);
-  const lift = jumpWave * 18;
-  const squash = frog.jumpPhase === "crouch"
-    ? 1 - crouchWave * 0.24
-    : frog.jumping
-      ? 1 - jumpWave * 0.18
-      : 1;
-  const stretch = frog.jumpPhase === "crouch"
-    ? 1 + crouchWave * 0.08
-    : frog.jumping
-      ? 1 + jumpWave * 0.24
-      : 1;
-  const y = Math.round(frog.y - lift + crouchWave * 3);
-  const spread = Math.round(frog.jumpPhase === "crouch"
-    ? 5 + crouchWave * 3
-    : frog.jumping
-      ? 3 + jumpWave * 4
-      : 1);
-  const faceDir = frog.facing >= 0 ? 1 : -1;
-  const tongueBaseX = x + (faceDir > 0 ? 11 : 1);
-  const tongueBaseY = y + 6;
-  const bodyW = Math.max(12, Math.round(14 * stretch));
-  const bodyH = Math.max(9, Math.round(10 * squash));
+  const lift = jumpWave * 16;
+  const y = Math.round(frog.y - lift);
 
   if (frog.jumpArc > 0.05) {
-    drawPixelRect(x + 2, Math.round(frog.y + 11), 10, 2, "rgba(30,20,10,0.16)", "transparent");
+    drawPixelRect(x + 2, Math.round(frog.y + 12), 12, 2, "rgba(30,20,10,0.16)", "transparent");
   }
 
   if (frog.tongueTimer > 0.01) {
     const targetX = Math.round(frog.tongueTargetX);
     const targetY = Math.round(frog.tongueTargetY);
+    const baseX = x + 8;
+    const baseY = y + 7;
     const phase = frog.tongueTimer > 0.5 ? (1 - frog.tongueTimer) / 0.5 : frog.tongueTimer / 0.5;
     const eased = Math.max(0, Math.min(1, phase));
-    const tipX = Math.round(tongueBaseX + (targetX - tongueBaseX) * eased);
-    const tipY = Math.round(tongueBaseY + (targetY - tongueBaseY) * eased);
-    drawPixelRect(Math.min(tongueBaseX, tipX), Math.min(tongueBaseY, tipY), Math.max(2, Math.abs(tipX - tongueBaseX) + 2), 2, "#f58aa0", "transparent");
-    drawPixelRect(tipX, tipY, 2, 2, "#ffd1da", "transparent");
+    const tipX = Math.round(baseX + (targetX - baseX) * eased);
+    const tipY = Math.round(baseY + (targetY - baseY) * eased);
+    drawPixelRect(Math.min(baseX, tipX), Math.min(baseY, tipY), Math.max(2, Math.abs(tipX - baseX) + 2), 2, "#f58aa0", "transparent");
   }
 
-  drawPixelRect(x, y + 1, bodyW, Math.max(7, bodyH - 1), bodyDark, "transparent");
-  drawPixelRect(x + 1, y, Math.max(10, bodyW - 2), bodyH, bodyMid, "#2f6f2a");
-  drawPixelRect(x + 2, y + 1, Math.max(8, bodyW - 4), Math.max(4, bodyH - 4), bodyLight, "transparent");
-  drawPixelRect(x + 3, y + 3, Math.max(6, bodyW - 8), 2, bodyLight, "transparent");
-  if (paletteShift === 1) {
-    drawPixelRect(x + 4, y + 2, Math.max(4, bodyW - 10), 1, stripe, "transparent");
-  }
-  if (paletteShift === 2) {
-    drawPixelRect(x + 2, y + 5, 2, 2, stripe, "transparent");
-    drawPixelRect(x + Math.max(8, bodyW - 4), y + 5, 2, 2, stripe, "transparent");
-  }
-  if (paletteShift === 3) {
-    drawPixelRect(x + 3, y + 2, 2, 1, stripe, "transparent");
-    drawPixelRect(x + Math.max(8, bodyW - 5), y + 2, 2, 1, stripe, "transparent");
-  }
-  if (paletteShift === 4) {
-    drawPixelRect(x + Math.max(4, Math.floor(bodyW / 2) - 2), y + 1, 3, bodyH - 2, stripe, "transparent");
-  }
+  drawPixelRect(x + 4, y, 8, 3, palette.dark, "transparent");
+  drawPixelRect(x + 5, y + 1, 6, 2, palette.mid, "transparent");
+  drawPixelRect(x + 3, y + 3, 10, 2, palette.light, "transparent");
+  drawPixelRect(x + 4, y + 5, 8, 2, palette.accent, "transparent");
+  drawPixelRect(x + 4, y + 7, 8, 3, palette.belly, "transparent");
+  drawPixelRect(x + 3, y + 10, 10, 2, palette.accent, "transparent");
+  drawPixelRect(x + 5, y + 12, 6, 3, palette.belly, "transparent");
 
-  drawPixelRect(x + 2, y - 2, 3, 3, "#d6ffbf", "transparent");
-  drawPixelRect(x + Math.max(7, bodyW - 6), y - 2, 3, 3, "#d6ffbf", "transparent");
-  drawPixelRect(x + 2, y - 1, 2, 2, "#8fef74", "transparent");
-  drawPixelRect(x + Math.max(8, bodyW - 5), y - 1, 2, 2, "#8fef74", "transparent");
+  drawPixelRect(x + 2, y + 1, 2, 4, palette.dark, "transparent");
+  drawPixelRect(x + 12, y + 1, 2, 4, palette.dark, "transparent");
+  drawPixelRect(x + 1, y + 5, 3, 5, palette.mid, "transparent");
+  drawPixelRect(x + 12, y + 5, 3, 5, palette.mid, "transparent");
+  drawPixelRect(x, y + 9, 4, 4, palette.mid, "transparent");
+  drawPixelRect(x + 12, y + 9, 4, 4, palette.mid, "transparent");
 
-  drawPixelRect(faceDir > 0 ? x + Math.max(9, bodyW - 3) : x + 1, y + 4, 2, 2, "#102313", "transparent");
-  drawPixelRect(x + Math.max(4, Math.floor(bodyW / 2) - 1), y + Math.max(5, bodyH - 3), 3, 2, belly, "transparent");
-  drawPixelRect(faceDir > 0 ? x + Math.max(9, bodyW - 3) : x + 1, y + 4, 1, 1, "#f8fbff", "transparent");
+  drawPixelRect(x + 4, y - 1, 2, 2, palette.dark, "transparent");
+  drawPixelRect(x + 10, y - 1, 2, 2, palette.dark, "transparent");
+  drawPixelRect(x + 5, y, 1, 1, "#f8fbff", "transparent");
+  drawPixelRect(x + 10, y, 1, 1, "#f8fbff", "transparent");
+  drawPixelRect(x + 5, y + 2, 1, 2, palette.accent, "transparent");
+  drawPixelRect(x + 10, y + 2, 1, 2, palette.accent, "transparent");
 
-  drawPixelRect(x - spread, y + Math.max(7, bodyH - 1), 3 + spread, 2, "#5bb04a", "transparent");
-  drawPixelRect(x + Math.max(9, bodyW - 2), y + Math.max(7, bodyH - 1), 3 + spread, 2, "#5bb04a", "transparent");
-  drawPixelRect(x + 1, y + Math.max(6, bodyH - 2), 2, 3, "#4ea049", "transparent");
-  drawPixelRect(x + Math.max(10, bodyW - 1), y + Math.max(6, bodyH - 2), 2, 3, "#4ea049", "transparent");
+  if (paletteShift === 1 || paletteShift === 3) {
+    drawPixelRect(x + 6, y + 5, 4, 1, palette.mid, "transparent");
+  }
+  if (paletteShift === 2 || paletteShift === 4) {
+    drawPixelRect(x + 3, y + 8, 2, 2, palette.accent, "transparent");
+    drawPixelRect(x + 11, y + 8, 2, 2, palette.accent, "transparent");
+  }
 }
 
 function drawCricket(cricket) {
