@@ -908,16 +908,16 @@ function drawHabitatBase() {
     ctx.fillRect(178 - i * 4, 32 + (i % 3) * 4, 4, 10);
   }
   for (let i = 0; i < 4 + mistLevel * 8; i += 1) {
-    const drift = ((state.tick * 8) + i * 9) % (36 + mistLevel * 6);
-    const spread = 6 + mistLevel * 3;
-    const puffX = 190 - (i % 4) * spread;
-    const puffY = 146 + drift * 0.7;
+    const drift = ((state.tick * 7) + i * 10) % (44 + mistLevel * 6);
+    const spread = 10 + mistLevel * 4;
+    const puffX = 190 - drift * 0.8;
+    const puffY = 146 + Math.sin((state.tick * 0.8) + i) * 4 + (i % 3) * 6;
     const radius = 4 + mistLevel * 0.5;
     ctx.fillStyle = `rgba(235,245,238,${0.10 + mistLevel * 0.015})`;
     ctx.beginPath();
     ctx.arc(puffX, puffY, radius, 0, Math.PI * 2);
-    ctx.arc(puffX + 4, puffY + 2, radius - 1, 0, Math.PI * 2);
-    ctx.arc(puffX - 3, puffY + 4, Math.max(2, radius - 2), 0, Math.PI * 2);
+    ctx.arc(puffX - spread * 0.18, puffY + 2, radius - 1, 0, Math.PI * 2);
+    ctx.arc(puffX - spread * 0.34, puffY - 2, Math.max(2, radius - 2), 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -926,11 +926,11 @@ function drawHabitatBase() {
     const nozzleX = 194;
     const nozzleY = 146;
     const plumeSize = 42 + mistLevel * 10;
-    const plume = ctx.createRadialGradient(nozzleX, nozzleY + 12, 2, nozzleX - 12, nozzleY + 32, plumeSize);
+    const plume = ctx.createRadialGradient(nozzleX, nozzleY + 4, 2, nozzleX - 36, nozzleY + 10, plumeSize);
     plume.addColorStop(0, `rgba(235,245,238,${(0.16 + mistLevel * 0.03) * mistProgress})`);
     plume.addColorStop(1, "rgba(235,245,238,0)");
     ctx.fillStyle = plume;
-    ctx.fillRect(132, 126, 96, 86);
+    ctx.fillRect(118, 122, 110, 72);
     ctx.fillStyle = `rgba(235,245,238,${(0.08 + mistLevel * 0.015) * mistProgress})`;
     ctx.fillRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48);
   }
