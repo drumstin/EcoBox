@@ -41,7 +41,21 @@
             <button class="multi-buy-tab" data-multibuy="50" type="button">50</button>
             <button class="multi-buy-tab" data-multibuy="100" type="button">100</button>
           </div>
+          <button id="toggle-farm-button" class="farm-toggle-button" type="button">Open Cricket Farm</button>
         </div>
+
+        <section id="cricket-farm-panel" class="farm-panel" hidden>
+          <div class="section-title-row">
+            <h2>Cricket Farm</h2>
+            <span class="section-tag">BREEDER</span>
+          </div>
+          <div class="farm-controls">
+            <button id="buy-carrot-button" class="pixel-button action-feed" type="button">Buy Carrot</button>
+            <button id="buy-potato-button" class="pixel-button action-pillbug" type="button">Buy Potato Slice</button>
+            <button id="add-cricket-box-button" class="pixel-button action-clean" type="button">Add Box</button>
+          </div>
+          <div id="cricket-farm-boxes" class="farm-boxes"></div>
+        </section>
 
         <div class="quick-actions">
           <button id="buy-frog-button" class="pixel-button action-frog featured-action"><span class="action-icon action-icon-frog"></span><span class="action-label">Buy Frog</span></button>

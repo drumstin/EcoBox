@@ -218,8 +218,8 @@ p {
 
 .multi-buy-bar {
   margin-top: 12px;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
@@ -254,6 +254,69 @@ p {
 .multi-buy-tab.active {
   background: linear-gradient(180deg, #8ff0a0, #52c86d);
   color: #102414;
+}
+
+.farm-toggle-button {
+  min-width: 150px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, #ffe58e, #f0bf46);
+  color: #2d2104;
+  cursor: pointer;
+}
+
+.farm-panel {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(27, 36, 54, 0.96), rgba(18, 24, 36, 0.96));
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.farm-controls {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.farm-boxes {
+  display: grid;
+  gap: 10px;
+}
+
+.farm-box {
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(35, 46, 67, 0.96), rgba(22, 30, 44, 0.96));
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.farm-box.minimized {
+  padding: 10px 12px;
+}
+
+.farm-box-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.farm-box-stats {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.farm-box-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .quick-actions {
