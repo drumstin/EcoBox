@@ -1,7 +1,8 @@
 const WORLD_SIZE = 240;
-const SAVE_KEY = "ecobox-save-v5";
+const SAVE_KEY = "ecobox-save-v6";
 const FROG_COST = 5;
 const CRICKET_COST = 1;
+const PILL_BUG_COST = 2;
 
 const state = {
   tick: 0,
@@ -15,6 +16,7 @@ const state = {
   decorationsPlaced: 0,
   frogs: [],
   crickets: [],
+  pillBugs: [],
   events: [
     { label: "EcoBox online", detail: "Empty frog habitat ready for your first resident." },
     { label: "Starter funds", detail: "You have 10 coins to begin stocking the enclosure." }
@@ -22,6 +24,7 @@ const state = {
   upgrades: [
     { id: "frog", name: "Tree Frog", description: "Adds 1 frog to the habitat", cost: FROG_COST, level: 0, maxLevel: 24, currency: "coins" },
     { id: "crickets", name: "Cricket Cup", description: "Release live feeder crickets", cost: CRICKET_COST, level: 0, maxLevel: 999, currency: "coins" },
+    { id: "pillbug", name: "Pill Bug Crew", description: "Adds 1 waste-eating pill bug", cost: PILL_BUG_COST, level: 0, maxLevel: 20, currency: "coins" },
     { id: "mist", name: "Mister", description: "Keeps humidity high", cost: 6, level: 0, maxLevel: 8, currency: "coins" },
     { id: "plants", name: "Leafy Vines", description: "Adds cover and natural beauty", cost: 7, level: 0, maxLevel: 8, currency: "coins" },
     { id: "decor", name: "Pretty Hide", description: "Adds bark hides and stones", cost: 4, level: 0, maxLevel: 8, currency: "coins" }
@@ -55,16 +58,19 @@ function rand(min, max) {
 
 function pushEvent(label, detail) {
   state.events.unshift({ label, detail });
-  state.events = state.events.slice(0, 16);
+  state.events = state.events.slice(0, 18);
 }
 
 function spawnFrog() {
   return {
     x: rand(56, WORLD_SIZE - 56),
     y: rand(56, WORLD_SIZE - 56),
-    vx: rand(-0.18, 0.18),
-    vy: rand(-0.18, 0.18),
-    hopTimer: rand(0.2, 2.4),
+    vx: 0,
+    vy: 0,
+    hopTimer: rand(0.3, 1.8),
+    restTimer: rand(0.8, 2.4),
+    jumping: false,
+    jumpArc: 0,
     facing: Math.random() < 0.5 ? -1 : 1,
     hunger: rand(25, 50)
   };
@@ -77,6 +83,17 @@ function spawnCricket() {
     vx: rand(-0.42, 0.42),
     vy: rand(-0.42, 0.42),
     skitterTimer: rand(0.2, 1.4)
+  };
+}
+
+function spawnPillBug() {
+  return {
+    x: rand(46, WORLD_SIZE - 46),
+    y: rand(122, WORLD_SIZE - 34),
+    vx: rand(-0.18, 0.18),
+    vy: rand(-0.1, 0.1),
+    scootTimer: rand(0.3, 1.2),
+    restTimer: rand(0.4, 1.6)
   };
 }
 
@@ -94,7 +111,8 @@ function saveGame() {
     events: state.events,
     upgrades: state.upgrades,
     frogs: state.frogs,
-    crickets: state.crickets
+    crickets: state.crickets,
+    pillBugs: state.pillBugs
   }));
   pushEvent("Saved", "Local habitat state stored on this device.");
   renderHud();
@@ -126,6 +144,7 @@ function getUpgrade(id) {
 function getUpgradeCost(upgrade) {
   if (upgrade.id === "frog") return FROG_COST;
   if (upgrade.id === "crickets") return CRICKET_COST;
+  if (upgrade.id === "pillbug") return PILL_BUG_COST;
   return Math.floor(upgrade.cost * (1 + upgrade.level * 0.55));
 }
 
@@ -143,14 +162,15 @@ function simulate(dt) {
   const decor = getUpgrade("decor")?.level ?? 0;
   const frogCount = state.frogs.length;
   const cricketCount = state.crickets.length;
+  const pillBugCount = state.pillBugs.length;
   const lampMultiplier = state.lampTimer > 0 ? 1.8 : 1;
 
   state.moss += (0.1 + plants * 0.08) * dt * lampMultiplier;
   state.humidity += (0.08 + mist * 0.18) * dt;
-  state.cleanliness += (0.04 + plants * 0.05 + decor * 0.03) * dt;
+  state.cleanliness += (0.04 + plants * 0.05 + decor * 0.03 + pillBugCount * 0.02) * dt;
   state.cleanliness -= (frogCount * 0.03 + cricketCount * 0.008) * dt;
   state.waste += (frogCount * 0.045 + cricketCount * 0.01) * dt;
-  state.waste -= (0.05 + decor * 0.05) * dt;
+  state.waste -= (0.05 + decor * 0.05 + pillBugCount * 0.09) * dt;
 
   if (state.waste > 40) {
     state.cleanliness -= 0.2 * dt;
@@ -165,6 +185,7 @@ function simulate(dt) {
   for (const frog of state.frogs) {
     frog.hunger += dt * 3.2;
     frog.hopTimer -= dt;
+    frog.restTimer -= dt;
 
     let targetCricket = null;
     let closestDist = Infinity;
@@ -178,20 +199,37 @@ function simulate(dt) {
       }
     }
 
-    if (targetCricket && closestDist < 64) {
-      const dx = targetCricket.x - frog.x;
-      const dy = targetCricket.y - frog.y;
-      frog.vx += Math.sign(dx) * 0.02;
-      frog.vy += Math.sign(dy) * 0.02;
-    } else if (frog.hopTimer <= 0) {
-      frog.vx = rand(-0.28, 0.28);
-      frog.vy = rand(-0.28, 0.28);
-      frog.hopTimer = rand(0.6, 2.2);
+    if (frog.jumping) {
+      frog.jumpArc = Math.max(0, frog.jumpArc - dt * 4.4);
+      if (frog.jumpArc === 0) {
+        frog.jumping = false;
+        frog.vx = 0;
+        frog.vy = 0;
+        frog.restTimer = rand(0.8, 2.6);
+      }
+    } else if (frog.restTimer <= 0) {
+      if (targetCricket && closestDist < 70) {
+        const dx = targetCricket.x - frog.x;
+        const dy = targetCricket.y - frog.y;
+        frog.vx = clamp(Math.sign(dx) * rand(0.16, 0.34), -0.36, 0.36);
+        frog.vy = clamp(Math.sign(dy) * rand(0.16, 0.34), -0.36, 0.36);
+      } else if (frog.hopTimer <= 0) {
+        frog.vx = rand(-0.3, 0.3);
+        frog.vy = rand(-0.3, 0.3);
+      }
+
+      if (Math.abs(frog.vx) > 0.05 || Math.abs(frog.vy) > 0.05) {
+        frog.jumping = true;
+        frog.jumpArc = 1;
+        frog.hopTimer = rand(0.6, 1.8);
+      }
     }
 
-    frog.x += frog.vx * dt * 60;
-    frog.y += frog.vy * dt * 60;
-    frog.facing = frog.vx >= 0 ? 1 : -1;
+    if (frog.jumping) {
+      frog.x += frog.vx * dt * 72;
+      frog.y += frog.vy * dt * 72;
+      frog.facing = frog.vx >= 0 ? 1 : -1;
+    }
 
     for (let i = state.crickets.length - 1; i >= 0; i -= 1) {
       const cricket = state.crickets[i];
@@ -207,8 +245,6 @@ function simulate(dt) {
       }
     }
 
-    frog.vx = clamp(frog.vx, -0.34, 0.34);
-    frog.vy = clamp(frog.vy, -0.34, 0.34);
     if (frog.x < 36 || frog.x > WORLD_SIZE - 36) frog.vx *= -1;
     if (frog.y < 36 || frog.y > WORLD_SIZE - 36) frog.vy *= -1;
     frog.x = clamp(frog.x, 36, WORLD_SIZE - 36);
@@ -232,6 +268,32 @@ function simulate(dt) {
     cricket.y = clamp(cricket.y, 30, WORLD_SIZE - 30);
   }
 
+  for (const pillBug of state.pillBugs) {
+    pillBug.scootTimer -= dt;
+    pillBug.restTimer -= dt;
+
+    if (pillBug.restTimer <= 0 && pillBug.scootTimer <= 0) {
+      pillBug.vx = rand(-0.2, 0.2);
+      pillBug.vy = rand(-0.12, 0.12);
+      pillBug.scootTimer = rand(0.35, 1.1);
+      pillBug.restTimer = rand(0.8, 1.8);
+    }
+
+    if (pillBug.scootTimer > 0) {
+      pillBug.x += pillBug.vx * dt * 54;
+      pillBug.y += pillBug.vy * dt * 54;
+    }
+
+    if (state.waste > 0 && Math.random() < 0.01) {
+      state.waste = Math.max(0, state.waste - 0.15);
+    }
+
+    if (pillBug.x < 34 || pillBug.x > WORLD_SIZE - 34) pillBug.vx *= -1;
+    if (pillBug.y < 116 || pillBug.y > WORLD_SIZE - 30) pillBug.vy *= -1;
+    pillBug.x = clamp(pillBug.x, 34, WORLD_SIZE - 34);
+    pillBug.y = clamp(pillBug.y, 116, WORLD_SIZE - 30);
+  }
+
   if (state.lampTimer > 0) {
     state.lampTimer = Math.max(0, state.lampTimer - dt);
   }
@@ -241,7 +303,7 @@ function simulate(dt) {
   state.moss = clamp(state.moss, 0, 100);
   state.waste = clamp(state.waste, 0, 100);
   state.coins = clamp(state.coins, 0, 9999);
-  state.level = clamp(1 + Math.floor((state.coins + frogCount * 6 + decor * 3 + plants * 2) / 18), 1, 99);
+  state.level = clamp(1 + Math.floor((state.coins + frogCount * 6 + pillBugCount * 3 + decor * 3 + plants * 2) / 18), 1, 99);
 }
 
 function drawPixelRect(x, y, w, h, fill, stroke = "#000") {
@@ -330,8 +392,12 @@ function drawHabitatBase() {
 
 function drawFrog(frog) {
   const x = Math.round(frog.x);
-  const y = Math.round(frog.y);
+  const y = Math.round(frog.y - frog.jumpArc * 6);
   const faceX = frog.facing >= 0 ? x + 11 : x - 1;
+
+  if (frog.jumpArc > 0.05) {
+    drawPixelRect(x + 2, y + 11, 8, 2, "rgba(30,20,10,0.25)", "transparent");
+  }
 
   drawPixelRect(x, y, 12, 10, "#73d65f", "#2f6f2a");
   drawPixelRect(x + 1, y + 2, 10, 5, "#91ec79", "transparent");
@@ -350,9 +416,21 @@ function drawCricket(cricket) {
   drawPixelRect(x + 4, y + 1, 2, 2, "#5a4735", "transparent");
 }
 
+function drawPillBug(pillBug) {
+  const x = Math.round(pillBug.x);
+  const y = Math.round(pillBug.y);
+  drawPixelRect(x, y, 7, 5, "#6a645d", "#3f3a35");
+  drawPixelRect(x + 1, y + 1, 5, 1, "#9b948a", "transparent");
+  drawPixelRect(x + 2, y + 5, 1, 2, "#4a443e", "transparent");
+  drawPixelRect(x + 5, y + 5, 1, 2, "#4a443e", "transparent");
+}
+
 function drawCreatures() {
   for (const cricket of state.crickets) {
     drawCricket(cricket);
+  }
+  for (const pillBug of state.pillBugs) {
+    drawPillBug(pillBug);
   }
   for (const frog of state.frogs) {
     drawFrog(frog);
@@ -416,7 +494,7 @@ function renderHud() {
     { label: "Humidity", value: state.humidity, max: 100, suffix: "%" },
     { label: "Cleanliness", value: state.cleanliness, max: 100, suffix: "%" },
     { label: "Frogs", value: state.frogs.length, max: 8, suffix: " frogs" },
-    { label: "Crickets", value: state.crickets.length, max: 20, suffix: " bugs" }
+    { label: "Pill Bugs", value: state.pillBugs.length, max: 10, suffix: " bugs" }
   ];
 
   elements.statusGrid.innerHTML = statusItems.map((item) => {
@@ -432,7 +510,7 @@ function renderHud() {
 
   const milestoneData = [
     { title: "First Frog", done: state.frogs.length >= 1, text: "Buy your first frog for 5 coins." },
-    { title: "Feeding Time", done: state.crickets.length >= 3 || state.upgrades.find((u) => u.id === "crickets")?.level >= 3, text: "Release at least 3 crickets." },
+    { title: "Cleanup Crew", done: state.pillBugs.length >= 2, text: "Add 2 pill bugs to eat waste." },
     { title: "Pretty Home", done: (getUpgrade("decor")?.level ?? 0) >= 2, text: "Add two pretty hides for cover." }
   ];
 
@@ -446,7 +524,7 @@ function renderHud() {
   elements.upgradeList.innerHTML = state.upgrades.map((upgrade) => {
     const cost = getUpgradeCost(upgrade);
     const disabled = state.coins < cost || upgrade.level >= upgrade.maxLevel;
-    const buyLabel = upgrade.id === "frog" ? "ADOPT" : upgrade.id === "crickets" ? "DROP" : upgrade.level >= upgrade.maxLevel ? "MAX" : "BUY";
+    const buyLabel = upgrade.id === "frog" ? "ADOPT" : upgrade.id === "crickets" ? "DROP" : upgrade.id === "pillbug" ? "ADD" : upgrade.level >= upgrade.maxLevel ? "MAX" : "BUY";
     return `
       <article class="upgrade">
         <div>
@@ -478,6 +556,9 @@ function renderHud() {
       } else if (upgrade.id === "crickets") {
         state.crickets.push(spawnCricket());
         pushEvent("Crickets released", "Fresh feeder insects were added.");
+      } else if (upgrade.id === "pillbug") {
+        state.pillBugs.push(spawnPillBug());
+        pushEvent("Cleanup crew", "A pill bug joined the habitat floor.");
       } else if (upgrade.id === "decor") {
         state.decorationsPlaced += 1;
         upgrade.level += 1;
@@ -487,7 +568,7 @@ function renderHud() {
         pushEvent("Upgrade bought", `${upgrade.name} upgraded to level ${upgrade.level}.`);
       }
 
-      if (upgrade.id === "frog" || upgrade.id === "crickets") {
+      if (upgrade.id === "frog" || upgrade.id === "crickets" || upgrade.id === "pillbug") {
         upgrade.level += 1;
       }
 
@@ -554,7 +635,8 @@ function tick() {
       events: state.events,
       upgrades: state.upgrades,
       frogs: state.frogs,
-      crickets: state.crickets
+      crickets: state.crickets,
+      pillBugs: state.pillBugs
     }));
   }
   requestAnimationFrame(tick);
@@ -563,6 +645,7 @@ function tick() {
 loadGame();
 state.frogs = Array.isArray(state.frogs) ? state.frogs : [];
 state.crickets = Array.isArray(state.crickets) ? state.crickets : [];
+state.pillBugs = Array.isArray(state.pillBugs) ? state.pillBugs : [];
 bindUi();
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
