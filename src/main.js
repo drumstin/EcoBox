@@ -108,7 +108,9 @@ function spawnFrog() {
     tongueTimer: 0,
     tongueTargetX: 0,
     tongueTargetY: 0,
-    poopTimer: rand(12, 26)
+    poopTimer: rand(12, 26),
+    digestedCrickets: 0,
+    digestedPillBugs: 0
   };
 }
 
@@ -242,7 +244,7 @@ function simulate(dt) {
         targetY = cricket.y;
       }
     }
-    if (!targetType || Math.random() < 0.18) {
+    if (!targetType || Math.random() < 0.08) {
       for (const pillBug of state.pillBugs) {
         const dx = pillBug.x - frog.x;
         const dy = pillBug.y - frog.y;
@@ -278,7 +280,7 @@ function simulate(dt) {
         const dy = targetY - frog.y;
         frog.vx = clamp(Math.sign(dx) * rand(0.18, 0.36), -0.38, 0.38);
         frog.vy = clamp(Math.sign(dy) * rand(0.18, 0.36), -0.38, 0.38);
-      } else if (targetType === "pillbug" && closestDist < 44 && Math.random() < 0.22) {
+      } else if (targetType === "pillbug" && closestDist < 34 && Math.random() < 0.08) {
         const dx = targetX - frog.x;
         const dy = targetY - frog.y;
         frog.vx = clamp(Math.sign(dx) * rand(0.14, 0.24), -0.28, 0.28);
@@ -321,6 +323,7 @@ function simulate(dt) {
         frog.tongueTargetY = frog.y + (tongueDy / tongueDist) * reach;
         state.crickets.splice(i, 1);
         frog.hunger = Math.max(0, frog.hunger - 18);
+        frog.digestedCrickets += 1;
         state.coins += 1;
         pushEvent("Frog fed", "A frog snapped up a cricket. +1 coin.");
         ateSomething = true;
@@ -345,15 +348,18 @@ function simulate(dt) {
           frog.tongueTargetY = frog.y + (tongueDy / tongueDist) * reach;
           state.pillBugs.splice(i, 1);
           frog.hunger = Math.max(0, frog.hunger - 10);
+          frog.digestedPillBugs += 1;
           pushEvent("Pill bug eaten", "A frog nabbed a pill bug instead of a cricket.");
           break;
         }
       }
     }
 
-    if (frog.poopTimer <= 0) {
+    if (frog.digestedCrickets >= 3 || frog.digestedPillBugs >= 2 || frog.poopTimer <= 0) {
       state.droppings.push({ x: frog.x + rand(-4, 4), y: frog.y + rand(4, 8), age: 0 });
       frog.poopTimer = rand(18, 34);
+      frog.digestedCrickets = 0;
+      frog.digestedPillBugs = 0;
     }
 
     if (frog.x < 36 || frog.x > WORLD_SIZE - 36) frog.vx *= -1;
