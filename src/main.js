@@ -204,7 +204,7 @@ function simulate(dt) {
     }
 
     if (frog.jumping) {
-      frog.jumpArc = Math.max(0, frog.jumpArc - dt * 2.8);
+      frog.jumpArc = Math.max(0, frog.jumpArc - dt * 1.9);
       if (frog.jumpArc === 0) {
         frog.jumping = false;
         frog.vx = 0;
@@ -428,9 +428,11 @@ function drawHabitatBase() {
 
 function drawFrog(frog) {
   const x = Math.round(frog.x);
-  const lift = Math.sin(frog.jumpArc * Math.PI) * 10;
-  const squash = frog.jumping ? 1 - Math.sin(frog.jumpArc * Math.PI) * 0.12 : 1;
-  const stretch = frog.jumping ? 1 + Math.sin(frog.jumpArc * Math.PI) * 0.16 : 1;
+  const jumpWave = Math.sin(frog.jumpArc * Math.PI);
+  const lift = jumpWave * 18;
+  const landingBounce = frog.jumping ? 0 : 0;
+  const squash = frog.jumping ? 1 - jumpWave * 0.18 : 1;
+  const stretch = frog.jumping ? 1 + jumpWave * 0.24 : 1;
   const y = Math.round(frog.y - lift);
   const faceX = frog.facing >= 0 ? x + 11 : x - 1;
   const tongueBaseX = frog.facing >= 0 ? x + 10 : x + 1;
