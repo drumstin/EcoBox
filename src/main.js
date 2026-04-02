@@ -19,6 +19,7 @@ const state = {
   frogs: [],
   crickets: [],
   pillBugs: [],
+  pillBugEggs: [],
   droppings: [],
   fungusPatches: [],
   cricketFarmOpen: false,
@@ -125,7 +126,7 @@ function spawnCricket() {
   };
 }
 
-function spawnPillBug() {
+function spawnPillBug(stage = "adult") {
   return {
     x: rand(46, WORLD_SIZE - 46),
     y: rand(122, WORLD_SIZE - 34),
@@ -133,7 +134,9 @@ function spawnPillBug() {
     vy: rand(-0.1, 0.1),
     scootTimer: rand(0.3, 1.2),
     restTimer: rand(0.4, 1.6),
-    age: 0
+    age: 0,
+    stage,
+    poopEaten: 0
   };
 }
 
@@ -153,6 +156,7 @@ function saveGame() {
     frogs: state.frogs,
     crickets: state.crickets,
     pillBugs: state.pillBugs,
+    pillBugEggs: state.pillBugEggs,
     droppings: state.droppings,
     fungusPatches: state.fungusPatches
   }));
@@ -406,10 +410,15 @@ function simulate(dt) {
     pillBug.restTimer -= dt;
     pillBug.age += dt;
 
-    if (pillBug.age >= 160) {
+    if (pillBug.stage === "adult" && pillBug.age >= 160) {
       state.waste = Math.min(100, state.waste + 0.4);
       state.pillBugs.splice(p, 1);
       continue;
+    }
+
+    if (pillBug.stage === "juvenile" && pillBug.age >= 40) {
+      pillBug.stage = "adult";
+      pillBug.age = 0;
     }
 
     let nearestDropping = null;
@@ -453,6 +462,16 @@ function simulate(dt) {
       if (dist < 8) {
         state.droppings.splice(i, 1);
         state.waste = Math.max(0, state.waste - 0.6);
+        if (pillBug.stage === "adult") {
+          pillBug.poopEaten += 1;
+          if (pillBug.poopEaten >= 10 && state.pillBugs.some((other) => other !== pillBug && other.stage === "adult")) {
+            for (let egg = 0; egg < 5; egg += 1) {
+              state.pillBugEggs.push({ x: pillBug.x + rand(-4, 4), y: pillBug.y + rand(-2, 2), age: 0, hatchTimer: 5 });
+            }
+            pillBug.poopEaten = 0;
+            pushEvent("Pill bug eggs", "A pair of pill bugs laid 5 eggs.");
+          }
+        }
         break;
       }
     }
@@ -465,6 +484,19 @@ function simulate(dt) {
     if (pillBug.y < 116 || pillBug.y > WORLD_SIZE - 30) pillBug.vy *= -1;
     pillBug.x = clamp(pillBug.x, 34, WORLD_SIZE - 34);
     pillBug.y = clamp(pillBug.y, 116, WORLD_SIZE - 30);
+  }
+
+  for (let e = state.pillBugEggs.length - 1; e >= 0; e -= 1) {
+    const egg = state.pillBugEggs[e];
+    egg.age += dt;
+    egg.hatchTimer -= dt;
+    if (egg.hatchTimer <= 0) {
+      const juvenile = spawnPillBug("juvenile");
+      juvenile.x = egg.x;
+      juvenile.y = egg.y;
+      state.pillBugs.push(juvenile);
+      state.pillBugEggs.splice(e, 1);
+    }
   }
 
   for (const box of state.cricketFarm.boxes) {
@@ -792,29 +824,36 @@ function drawCricket(cricket) {
 function drawPillBug(pillBug) {
   const x = pillBug.x;
   const y = pillBug.y;
+  const scale = pillBug.stage === "juvenile" ? 0.62 : 1;
   ctx.fillStyle = "#55504a";
   ctx.beginPath();
-  ctx.ellipse(x + 4, y + 4.2, 4.2, 2.8, 0, 0, Math.PI * 2);
+  ctx.ellipse(x + 4 * scale, y + 4.2 * scale, 4.2 * scale, 2.8 * scale, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = "#6a645d";
   ctx.beginPath();
-  ctx.ellipse(x + 4, y + 3.4, 4.1, 2.6, 0, 0, Math.PI * 2);
+  ctx.ellipse(x + 4 * scale, y + 3.4 * scale, 4.1 * scale, 2.6 * scale, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.strokeStyle = "#8e867c";
   ctx.lineWidth = 1;
   for (let i = -2; i <= 2; i += 1) {
     ctx.beginPath();
-    ctx.moveTo(x + 4 + i, y + 1.5);
-    ctx.lineTo(x + 4 + i, y + 5.3);
+    ctx.moveTo(x + (4 + i) * scale, y + 1.5 * scale);
+    ctx.lineTo(x + (4 + i) * scale, y + 5.3 * scale);
     ctx.stroke();
   }
   ctx.fillStyle = "#d8d0c4";
   ctx.beginPath();
-  ctx.arc(x + 4, y + 2.8, 0.9, 0, Math.PI * 2);
+  ctx.arc(x + 4 * scale, y + 2.8 * scale, 0.9 * scale, 0, Math.PI * 2);
   ctx.fill();
 }
 
 function drawDroppingsAndFungus() {
+  for (const egg of state.pillBugEggs) {
+    ctx.fillStyle = "rgba(255,255,255,0.92)";
+    ctx.beginPath();
+    ctx.arc(egg.x, egg.y, 1.4, 0, Math.PI * 2);
+    ctx.fill();
+  }
   for (const dropping of state.droppings) {
     ctx.fillStyle = "#4b321d";
     ctx.beginPath();
@@ -1272,6 +1311,7 @@ loadGame();
 state.frogs = Array.isArray(state.frogs) ? state.frogs : [];
 state.crickets = Array.isArray(state.crickets) ? state.crickets : [];
 state.pillBugs = Array.isArray(state.pillBugs) ? state.pillBugs : [];
+state.pillBugEggs = Array.isArray(state.pillBugEggs) ? state.pillBugEggs : [];
 state.droppings = Array.isArray(state.droppings) ? state.droppings : [];
 state.fungusPatches = Array.isArray(state.fungusPatches) ? state.fungusPatches : [];
 bindUi();
