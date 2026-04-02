@@ -334,7 +334,7 @@ function drawHabitatBase() {
   drawPixelRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48, "#655033", "#342415");
   drawPixelRect(31, 31, WORLD_SIZE - 62, WORLD_SIZE - 62, "rgba(255,255,255,0.025)", "transparent");
 
-  drawPixelRect(34, 30, 172, 70, "#496534", "#26391b");
+  drawPixelRect(34, 30, 172, 70, "#3f4e2c", "#26391b");
   drawPixelRect(42, 106, 156, 90, "#5e472d", "#342112");
   drawPixelRect(38, 144, 84, 30, "#6b5131", "#3b2414");
   drawPixelRect(128, 126, 40, 20, "#523a27", "#2b1a10");
@@ -343,15 +343,18 @@ function drawHabitatBase() {
   drawPixelRect(150, 58, 26, 8, "#7a6040", "#49311c");
   drawPixelRect(76, 152, 16, 10, "#4e3924", "#29180e");
   drawPixelRect(170, 142, 14, 8, "#4e3924", "#29180e");
+  drawPixelRect(40, 34, 160, 12, "#314123", "transparent");
+  drawPixelRect(48, 48, 150, 10, "#455935", "transparent");
+  drawPixelRect(38, 90, 164, 6, "#29361d", "transparent");
 
   const coverPatches = 5 + Math.floor(state.groundCover / 8);
   for (let i = 0; i < coverPatches; i += 1) {
     const x = 44 + ((i * 27) % 138);
-    const y = 40 + ((i * 21) % 58);
-    drawPixelCircle(x, y, 8, "#4b8745");
-    drawPixelCircle(x + 6, y - 4, 5, "#7ccf73");
-    drawPixelCircle(x - 6, y + 4, 4, "#315f2f");
-    drawPixelCircle(x + 10, y + 1, 3, "#9be18a");
+    const y = 40 + ((i * 21) % 46);
+    drawPixelRect(x, y, 12, 6, "#4b8745", "transparent");
+    drawPixelRect(x + 6, y - 3, 7, 5, "#7ccf73", "transparent");
+    drawPixelRect(x - 5, y + 4, 6, 4, "#315f2f", "transparent");
+    drawPixelRect(x + 10, y + 1, 4, 3, "#9be18a", "transparent");
   }
 
   for (let i = 0; i < 10; i += 1) {
