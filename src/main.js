@@ -14,6 +14,7 @@ const state = {
   waste: 4,
   level: 1,
   lampTimer: 0,
+  mistBurstTimer: 60,
   decorationsPlaced: 0,
   frogs: [],
   crickets: [],
@@ -469,6 +470,11 @@ function simulate(dt) {
     }
   }
 
+  state.mistBurstTimer -= dt;
+  if (state.mistBurstTimer <= 0) {
+    state.mistBurstTimer = 60;
+  }
+
   if (state.lampTimer > 0) {
     state.lampTimer = Math.max(0, state.lampTimer - dt);
   }
@@ -663,6 +669,8 @@ function drawHabitatBase() {
   ctx.fillStyle = "#4d5a48";
   ctx.fillRect(182, 30, 24, 8);
   ctx.fillRect(194, 38, 4, 12);
+  ctx.fillStyle = "rgba(245,250,255,0.85)";
+  ctx.fillRect(195, 50, 2, 112);
   for (let i = 0; i < mistLevel * 2; i += 1) {
     ctx.fillStyle = "rgba(220,240,255,0.20)";
     ctx.fillRect(178 - i * 4, 32 + (i % 3) * 4, 4, 10);
@@ -677,6 +685,12 @@ function drawHabitatBase() {
     ctx.arc(puffX + 4, puffY + 2, 4, 0, Math.PI * 2);
     ctx.arc(puffX - 3, puffY + 4, 3, 0, Math.PI * 2);
     ctx.fill();
+  }
+
+  if (mistLevel > 0 && state.mistBurstTimer > 52) {
+    const mistProgress = Math.min(1, (60 - state.mistBurstTimer) / 8);
+    ctx.fillStyle = `rgba(235,245,238,${0.10 * mistProgress})`;
+    ctx.fillRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48);
   }
 
   for (let i = 0; i < 5; i += 1) {
