@@ -342,6 +342,11 @@ function drawPixelCircle(cx, cy, r, fill, stroke = "transparent") {
 }
 
 function drawHabitatBase() {
+  const glow = ctx.createRadialGradient(92, 58, 10, 96, 64, 120);
+  glow.addColorStop(0, "rgba(255, 244, 194, 0.16)");
+  glow.addColorStop(1, "rgba(255, 244, 194, 0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, WORLD_SIZE, WORLD_SIZE);
   drawPixelRect(0, 0, WORLD_SIZE, WORLD_SIZE, "#2c2418", "#110d09");
   drawPixelRect(14, 14, WORLD_SIZE - 28, WORLD_SIZE - 28, "#4b3a24", "#23180f");
   drawPixelRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48, "#655033", "#342415");
@@ -471,11 +476,13 @@ function drawCricket(cricket) {
 function drawPillBug(pillBug) {
   const x = Math.round(pillBug.x);
   const y = Math.round(pillBug.y);
+  drawPixelRect(x, y + 1, 7, 4, "#55504a", "transparent");
   drawPixelRect(x, y, 7, 5, "#6a645d", "#3f3a35");
-  drawPixelRect(x + 1, y + 1, 5, 1, "#9b948a", "transparent");
+  drawPixelRect(x + 1, y + 1, 5, 1, "#b8b0a4", "transparent");
+  drawPixelRect(x + 1, y + 2, 5, 1, "#8e867c", "transparent");
   drawPixelRect(x + 2, y + 5, 1, 2, "#4a443e", "transparent");
   drawPixelRect(x + 5, y + 5, 1, 2, "#4a443e", "transparent");
-  drawPixelRect(x + 3, y + 2, 1, 2, "#c1b8ab", "transparent");
+  drawPixelRect(x + 3, y + 2, 1, 2, "#d8d0c4", "transparent");
 }
 
 function drawCreatures() {
@@ -495,8 +502,9 @@ function drawWaste() {
   for (let i = 0; i < wastePatches; i += 1) {
     const x = 46 + ((i * 29) % 132);
     const y = 118 + ((i * 19) % 58);
-    drawPixelRect(x, y, 6, 6, "rgba(92, 62, 29, 0.65)", "transparent");
-    drawPixelRect(x + 2, y + 1, 2, 2, "rgba(130, 94, 55, 0.55)", "transparent");
+    drawPixelRect(x, y, 6, 6, "rgba(92, 62, 29, 0.58)", "transparent");
+    drawPixelRect(x + 2, y + 1, 2, 2, "rgba(130, 94, 55, 0.45)", "transparent");
+    drawPixelRect(x + 1, y + 4, 3, 1, "rgba(70, 44, 20, 0.35)", "transparent");
   }
 }
 
