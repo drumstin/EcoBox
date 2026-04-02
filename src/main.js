@@ -20,6 +20,7 @@ const state = {
   pillBugs: [],
   droppings: [],
   fungusPatches: [],
+  multiBuyAmount: 5,
   events: [
     { label: "EcoBox online", detail: "Empty frog habitat ready for your first resident." },
     { label: "Starter funds", detail: "You have 10 coins to begin stocking the enclosure." }
@@ -38,6 +39,7 @@ const elements = {
   canvas: document.getElementById("tank-canvas"),
   overlay: document.getElementById("tank-overlay"),
   saveButton: document.getElementById("save-button"),
+  multiBuyTabs: document.getElementById("multi-buy-tabs"),
   buyFrogButton: document.getElementById("buy-frog-button"),
   buyPillBugButton: document.getElementById("buy-pillbug-button"),
   collectButton: document.getElementById("collect-button"),
@@ -918,29 +920,46 @@ function renderHud() {
 }
 
 function bindUi() {
+  elements.multiBuyTabs?.querySelectorAll("[data-multibuy]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.multiBuyAmount = Number(button.dataset.multibuy) || 5;
+      elements.multiBuyTabs.querySelectorAll("[data-multibuy]").forEach((tab) => tab.classList.toggle("active", tab === button));
+    });
+  });
+
   elements.buyFrogButton.addEventListener("click", () => {
-    if (!spendCoins(FROG_COST)) {
-      pushEvent("Need coins", "You need 5 coins to buy a frog.");
+    let bought = 0;
+    for (let i = 0; i < state.multiBuyAmount; i += 1) {
+      if (!spendCoins(FROG_COST)) break;
+      state.frogs.push(spawnFrog());
+      const frogUpgrade = getUpgrade("frog");
+      if (frogUpgrade) frogUpgrade.level += 1;
+      bought += 1;
+    }
+    if (!bought) {
+      pushEvent("Need coins", `You need ${FROG_COST} coins per frog.`);
       renderHud();
       return;
     }
-    state.frogs.push(spawnFrog());
-    const frogUpgrade = getUpgrade("frog");
-    if (frogUpgrade) frogUpgrade.level += 1;
-    pushEvent("New frog", "A tree frog hopped into the habitat.");
+    pushEvent("New frogs", `${bought} tree frog${bought === 1 ? "" : "s"} joined the habitat.`);
     renderHud();
   });
 
   elements.buyPillBugButton.addEventListener("click", () => {
-    if (!spendCoins(PILL_BUG_COST)) {
-      pushEvent("Need coins", "You need 1 coin to add a pill bug.");
+    let bought = 0;
+    for (let i = 0; i < state.multiBuyAmount; i += 1) {
+      if (!spendCoins(PILL_BUG_COST)) break;
+      state.pillBugs.push(spawnPillBug());
+      const pillBugUpgrade = getUpgrade("pillbug");
+      if (pillBugUpgrade) pillBugUpgrade.level += 1;
+      bought += 1;
+    }
+    if (!bought) {
+      pushEvent("Need coins", `You need ${PILL_BUG_COST} coin per pill bug.`);
       renderHud();
       return;
     }
-    state.pillBugs.push(spawnPillBug());
-    const pillBugUpgrade = getUpgrade("pillbug");
-    if (pillBugUpgrade) pillBugUpgrade.level += 1;
-    pushEvent("Cleanup crew", "A pill bug joined the habitat floor.");
+    pushEvent("Cleanup crew", `${bought} pill bug${bought === 1 ? "" : "s"} joined the habitat floor.`);
     renderHud();
   });
 
@@ -952,13 +971,18 @@ function bindUi() {
   });
 
   elements.feedButton.addEventListener("click", () => {
-    if (!spendCoins(CRICKET_COST)) {
-      pushEvent("Need coins", "You need 1 coin to buy crickets.");
+    let bought = 0;
+    for (let i = 0; i < state.multiBuyAmount; i += 1) {
+      if (!spendCoins(CRICKET_COST)) break;
+      state.crickets.push(spawnCricket());
+      bought += 1;
+    }
+    if (!bought) {
+      pushEvent("Need coins", `You need ${CRICKET_COST} coin per cricket.`);
       renderHud();
       return;
     }
-    state.crickets.push(spawnCricket());
-    pushEvent("Crickets released", "Fresh feeder insects were added.");
+    pushEvent("Crickets released", `${bought} feeder cricket${bought === 1 ? "" : "s"} were added.`);
     renderHud();
   });
 

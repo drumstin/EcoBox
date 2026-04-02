@@ -216,6 +216,46 @@ p {
   font-size: 0.76rem;
 }
 
+.multi-buy-bar {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(27, 36, 54, 0.92), rgba(18, 24, 36, 0.92));
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.multi-buy-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.multi-buy-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.multi-buy-tab {
+  min-width: 44px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(20, 27, 41, 0.95), rgba(11, 16, 24, 0.95));
+  color: var(--text);
+  cursor: pointer;
+}
+
+.multi-buy-tab.active {
+  background: linear-gradient(180deg, #8ff0a0, #52c86d);
+  color: #102414;
+}
+
 .quick-actions {
   margin-top: 12px;
   display: grid;
