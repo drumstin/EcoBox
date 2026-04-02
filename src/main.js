@@ -361,9 +361,9 @@ function renderHud() {
     const percent = clamp((item.value / item.max) * 100, 0, 100);
     return `
       <article class="status-card">
-        <strong>${item.label}</strong>
-        <div>${Math.floor(item.value)}${item.suffix}</div>
+        <div class="status-name">${item.label}</div>
         <div class="bar"><span style="width:${percent}%"></span></div>
+        <div class="status-value">${Math.floor(item.value)}${item.suffix}</div>
       </article>
     `;
   }).join("");

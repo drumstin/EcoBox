@@ -15,8 +15,7 @@
         <p class="subcopy">Top-down tank builder with idle growth and upgrade loops.</p>
       </div>
       <div class="topbar-actions">
-        <div class="chip-row" id="tank-chips"></div>
-        <button id="save-button" class="pixel-button secondary" type="button">Save</button>
+        <button id="save-button" class="pixel-button secondary save-button" type="button">Save</button>
       </div>
     </header>
 
@@ -35,32 +34,46 @@
         </div>
 
         <div class="quick-actions">
-          <button id="collect-button" class="pixel-button">Collect</button>
-          <button id="feed-button" class="pixel-button">Seed Algae</button>
-          <button id="clean-button" class="pixel-button">Skim Waste</button>
-          <button id="boost-button" class="pixel-button accent">Sun Boost</button>
+          <button id="collect-button" class="pixel-button action-collect">Collect</button>
+          <button id="feed-button" class="pixel-button action-feed">Seed Algae</button>
+          <button id="clean-button" class="pixel-button action-clean">Skim Waste</button>
+          <button id="boost-button" class="pixel-button action-boost">Sun Boost</button>
         </div>
       </section>
 
-      <aside class="hud panel pixel-frame">
-        <section>
-          <h2>Tank Status</h2>
-          <div id="status-grid" class="status-grid"></div>
+      <aside class="hud-shell">
+        <section class="hud-strip panel pixel-frame">
+          <div class="hud-strip-header">
+            <span class="hud-label">LIVE READOUT</span>
+            <div id="tank-chips" class="chip-row compact"></div>
+          </div>
+          <div id="status-grid" class="status-strip"></div>
         </section>
 
-        <section>
-          <h2>Goals</h2>
-          <div id="milestones" class="milestones"></div>
-        </section>
+        <section class="hud-cards">
+          <section class="hud-card panel pixel-frame">
+            <div class="section-title-row">
+              <h2>Goals</h2>
+              <span class="section-tag">TRACKER</span>
+            </div>
+            <div id="milestones" class="milestones card-stack"></div>
+          </section>
 
-        <section>
-          <h2>Upgrade Crate</h2>
-          <div id="upgrade-list" class="upgrade-list"></div>
-        </section>
+          <section class="hud-card panel pixel-frame">
+            <div class="section-title-row">
+              <h2>Upgrade Crate</h2>
+              <span class="section-tag">SHOP</span>
+            </div>
+            <div id="upgrade-list" class="upgrade-list card-stack"></div>
+          </section>
 
-        <section>
-          <h2>Recent Activity</h2>
-          <div id="event-log" class="event-log"></div>
+          <section class="hud-card panel pixel-frame">
+            <div class="section-title-row">
+              <h2>Recent Activity</h2>
+              <span class="section-tag">LOG</span>
+            </div>
+            <div id="event-log" class="event-log card-stack"></div>
+          </section>
         </section>
       </aside>
     </section>
