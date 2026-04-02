@@ -93,6 +93,14 @@ canvas {
 .topbar-actions {
   display: flex;
   align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.reset-button {
+  background: linear-gradient(180deg, #ffb3b3, #d66a6a);
+  color: #2a0f0f;
 }
 
 .eyebrow {
@@ -777,6 +785,11 @@ p {
 
   .topbar {
     flex-direction: column;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .topbar-actions {
