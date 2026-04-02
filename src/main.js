@@ -28,6 +28,7 @@ const state = {
   level: 1,
   lampTimer: 0,
   mistBurstTimer: 60,
+  mistPauseTimer: 0,
   decorationsPlaced: 0,
   frogs: [],
   frogEggs: [],
@@ -183,6 +184,7 @@ function saveGame() {
     waste: state.waste,
     level: state.level,
     lampTimer: state.lampTimer,
+    mistPauseTimer: state.mistPauseTimer,
     decorationsPlaced: state.decorationsPlaced,
     events: state.events,
     upgrades: state.upgrades,
@@ -640,10 +642,18 @@ function simulate(dt) {
     }
   }
 
-  state.mistBurstTimer -= dt;
-  if (state.mistBurstTimer <= 0) {
-    state.mistBurstTimer = 60;
-    spawnPopup(192, 72, "mist");
+  const mistLevelNow = getUpgrade("mist")?.level ?? 0;
+  if (mistLevelNow >= 8 && state.mistPauseTimer > 0) {
+    state.mistPauseTimer = Math.max(0, state.mistPauseTimer - dt);
+  } else {
+    state.mistBurstTimer -= dt;
+    if (state.mistBurstTimer <= 0) {
+      state.mistBurstTimer = 60;
+      spawnPopup(192, 72, "mist");
+      if (mistLevelNow >= 8) {
+        state.mistPauseTimer = 130;
+      }
+    }
   }
 
   for (const popup of state.popups) {
@@ -943,6 +953,7 @@ function drawHabitatBase() {
   }
 
   const mistLevel = getUpgrade("mist")?.level ?? 0;
+  const mistPaused = mistLevel >= 8 && state.mistPauseTimer > 0;
   ctx.fillStyle = "#4d5a48";
   ctx.fillRect(170, 24, 34, 10);
   ctx.fillRect(182, 30, 10, 12);
@@ -962,25 +973,27 @@ function drawHabitatBase() {
   ctx.beginPath();
   ctx.arc(180, 92, 3, 0, Math.PI * 2);
   ctx.fill();
-  for (let i = 0; i < mistLevel * 2; i += 1) {
-    ctx.fillStyle = "rgba(220,240,255,0.20)";
-    ctx.fillRect(166 - i * 4, 24 + (i % 3) * 4, 4, 8);
-  }
-  for (let i = 0; i < 4 + mistLevel * 8; i += 1) {
-    const drift = ((state.tick * 7) + i * 10) % (44 + mistLevel * 6);
-    const spread = 10 + mistLevel * 4;
-    const puffX = 180 - drift * 0.72;
-    const puffY = 92 + Math.sin((state.tick * 0.8) + i) * 4 + (i % 3) * 5;
-    const radius = 4 + mistLevel * 0.5;
-    ctx.fillStyle = `rgba(235,245,238,${0.10 + mistLevel * 0.015})`;
-    ctx.beginPath();
-    ctx.arc(puffX, puffY, radius, 0, Math.PI * 2);
-    ctx.arc(puffX - spread * 0.18, puffY + 2, radius - 1, 0, Math.PI * 2);
-    ctx.arc(puffX - spread * 0.34, puffY - 2, Math.max(2, radius - 2), 0, Math.PI * 2);
-    ctx.fill();
+  if (!mistPaused) {
+    for (let i = 0; i < mistLevel * 2; i += 1) {
+      ctx.fillStyle = "rgba(220,240,255,0.20)";
+      ctx.fillRect(166 - i * 4, 24 + (i % 3) * 4, 4, 8);
+    }
+    for (let i = 0; i < 4 + mistLevel * 8; i += 1) {
+      const drift = ((state.tick * 7) + i * 10) % (44 + mistLevel * 6);
+      const spread = 10 + mistLevel * 4;
+      const puffX = 180 - drift * 0.72;
+      const puffY = 92 + Math.sin((state.tick * 0.8) + i) * 4 + (i % 3) * 5;
+      const radius = 4 + mistLevel * 0.5;
+      ctx.fillStyle = `rgba(235,245,238,${0.10 + mistLevel * 0.015})`;
+      ctx.beginPath();
+      ctx.arc(puffX, puffY, radius, 0, Math.PI * 2);
+      ctx.arc(puffX - spread * 0.18, puffY + 2, radius - 1, 0, Math.PI * 2);
+      ctx.arc(puffX - spread * 0.34, puffY - 2, Math.max(2, radius - 2), 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
-  if (mistLevel > 0 && state.mistBurstTimer > 52) {
+  if (!mistPaused && mistLevel > 0 && state.mistBurstTimer > 52) {
     const mistProgress = Math.min(1, (60 - state.mistBurstTimer) / 8);
     const nozzleX = 180;
     const nozzleY = 92;
