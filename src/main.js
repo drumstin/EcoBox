@@ -256,7 +256,7 @@ function openAlbum() {
   elements.albumList.innerHTML = entries.map((entry) => `
     <article class="album-entry ${entry.unlocked ? "" : "album-entry-locked"}">
       <div class="album-entry-top">
-        <span class="album-icon ${entry.unlocked ? entry.iconClass : ""}">${entry.unlocked ? entry.icon : "?"}</span>
+        <span class="album-icon ${entry.unlocked ? entry.iconClass : ""}">${entry.unlocked ? "" : "?"}</span>
         <div>
           <strong>${entry.unlocked ? entry.name : "Locked"}</strong>
           <div>${entry.unlocked ? `Seen now: ${entry.count}` : "Discover this critter"}</div>
