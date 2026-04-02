@@ -1,5 +1,5 @@
 const WORLD_SIZE = 240;
-const SAVE_KEY = "ecobox-save-v6";
+const SAVE_KEY = "ecobox-save-v7";
 const FROG_COST = 5;
 const CRICKET_COST = 1;
 const PILL_BUG_COST = 2;
@@ -9,7 +9,7 @@ const state = {
   coins: 10,
   humidity: 78,
   cleanliness: 86,
-  moss: 18,
+  groundCover: 18,
   waste: 4,
   level: 1,
   lampTimer: 0,
@@ -103,7 +103,7 @@ function saveGame() {
     coins: state.coins,
     humidity: state.humidity,
     cleanliness: state.cleanliness,
-    moss: state.moss,
+    groundCover: state.groundCover,
     waste: state.waste,
     level: state.level,
     lampTimer: state.lampTimer,
@@ -165,7 +165,7 @@ function simulate(dt) {
   const pillBugCount = state.pillBugs.length;
   const lampMultiplier = state.lampTimer > 0 ? 1.8 : 1;
 
-  state.moss += (0.1 + plants * 0.08) * dt * lampMultiplier;
+  state.groundCover += (0.08 + plants * 0.08) * dt * lampMultiplier;
   state.humidity += (0.08 + mist * 0.18) * dt;
   state.cleanliness += (0.04 + plants * 0.05 + decor * 0.03 + pillBugCount * 0.02) * dt;
   state.cleanliness -= (frogCount * 0.03 + cricketCount * 0.008) * dt;
@@ -300,7 +300,7 @@ function simulate(dt) {
 
   state.humidity = clamp(state.humidity, 0, 100);
   state.cleanliness = clamp(state.cleanliness, 0, 100);
-  state.moss = clamp(state.moss, 0, 100);
+  state.groundCover = clamp(state.groundCover, 0, 100);
   state.waste = clamp(state.waste, 0, 100);
   state.coins = clamp(state.coins, 0, 9999);
   state.level = clamp(1 + Math.floor((state.coins + frogCount * 6 + pillBugCount * 3 + decor * 3 + plants * 2) / 18), 1, 99);
@@ -341,15 +341,24 @@ function drawHabitatBase() {
   drawPixelRect(54, 64, 14, 50, "#8a6a45", "#53371c");
   drawPixelRect(62, 84, 52, 10, "#8a6a45", "#53371c");
   drawPixelRect(150, 58, 26, 8, "#7a6040", "#49311c");
+  drawPixelRect(76, 152, 16, 10, "#4e3924", "#29180e");
+  drawPixelRect(170, 142, 14, 8, "#4e3924", "#29180e");
 
-  const mossClusters = 5 + Math.floor(state.moss / 8);
-  for (let i = 0; i < mossClusters; i += 1) {
+  const coverPatches = 5 + Math.floor(state.groundCover / 8);
+  for (let i = 0; i < coverPatches; i += 1) {
     const x = 44 + ((i * 27) % 138);
     const y = 40 + ((i * 21) % 58);
-    drawPixelCircle(x, y, 10, "#3f9a48");
-    drawPixelCircle(x + 6, y - 4, 6, "#6add6f");
-    drawPixelCircle(x - 6, y + 4, 5, "#246c31");
-    drawPixelCircle(x + 10, y + 1, 3, "#8ef08b");
+    drawPixelCircle(x, y, 8, "#4b8745");
+    drawPixelCircle(x + 6, y - 4, 5, "#7ccf73");
+    drawPixelCircle(x - 6, y + 4, 4, "#315f2f");
+    drawPixelCircle(x + 10, y + 1, 3, "#9be18a");
+  }
+
+  for (let i = 0; i < 10; i += 1) {
+    const leafX = 42 + (i * 18) % 144;
+    const leafY = 112 + ((i % 3) * 16);
+    drawPixelRect(leafX, leafY, 5, 3, "#7f663f", "transparent");
+    drawPixelRect(leafX + 3, leafY + 2, 4, 2, "#94764b", "transparent");
   }
 
   for (let i = 0; i < 7; i += 1) {
@@ -367,6 +376,7 @@ function drawHabitatBase() {
     drawPixelRect(x, y, 4, 24, "#6cc76f", "transparent");
     drawPixelRect(x - 6, y + 6, 6, 4, "#7fe285", "transparent");
     drawPixelRect(x + 4, y + 12, 6, 4, "#5ab55f", "transparent");
+    drawPixelRect(x - 3, y + 16, 3, 6, "#85e58b", "transparent");
   }
 
   const decorLevel = getUpgrade("decor")?.level ?? 0;
@@ -375,6 +385,7 @@ function drawHabitatBase() {
     const y = 150 + ((i * 10) % 20);
     drawPixelRect(x, y, 12, 8, "#867965", "#4b4439");
     drawPixelRect(x + 6, y - 8, 6, 8, "#79d882", "transparent");
+    drawPixelRect(x - 4, y + 6, 4, 3, "#5c4a31", "transparent");
   }
 
   const mistLevel = getUpgrade("mist")?.level ?? 0;
@@ -407,6 +418,7 @@ function drawFrog(frog) {
   drawPixelRect(x - 2, y + 8, 3, 3, "#5bb04a", "transparent");
   drawPixelRect(x + 11, y + 8, 3, 3, "#5bb04a", "transparent");
   drawPixelRect(x + 4, y + 6, 4, 2, "#dbf3c4", "transparent");
+  drawPixelRect(x + 3, y + 1, 6, 1, "#d7ffbe", "transparent");
 }
 
 function drawCricket(cricket) {
@@ -414,6 +426,7 @@ function drawCricket(cricket) {
   const y = Math.round(cricket.y);
   drawPixelRect(x, y, 4, 4, "#392d25", "transparent");
   drawPixelRect(x + 4, y + 1, 2, 2, "#5a4735", "transparent");
+  drawPixelRect(x + 1, y - 1, 1, 2, "#7f6a57", "transparent");
 }
 
 function drawPillBug(pillBug) {
@@ -423,6 +436,7 @@ function drawPillBug(pillBug) {
   drawPixelRect(x + 1, y + 1, 5, 1, "#9b948a", "transparent");
   drawPixelRect(x + 2, y + 5, 1, 2, "#4a443e", "transparent");
   drawPixelRect(x + 5, y + 5, 1, 2, "#4a443e", "transparent");
+  drawPixelRect(x + 3, y + 2, 1, 2, "#c1b8ab", "transparent");
 }
 
 function drawCreatures() {
@@ -443,6 +457,7 @@ function drawWaste() {
     const x = 46 + ((i * 29) % 132);
     const y = 118 + ((i * 19) % 58);
     drawPixelRect(x, y, 6, 6, "rgba(92, 62, 29, 0.65)", "transparent");
+    drawPixelRect(x + 2, y + 1, 2, 2, "rgba(130, 94, 55, 0.55)", "transparent");
   }
 }
 
@@ -627,7 +642,7 @@ function tick() {
       coins: state.coins,
       humidity: state.humidity,
       cleanliness: state.cleanliness,
-      moss: state.moss,
+      groundCover: state.groundCover,
       waste: state.waste,
       level: state.level,
       lampTimer: state.lampTimer,
