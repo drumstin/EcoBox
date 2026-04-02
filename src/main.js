@@ -223,12 +223,14 @@ function loadGame() {
 function openResetConfirm() {
   if (elements.confirmModal) {
     elements.confirmModal.hidden = false;
+    elements.confirmModal.style.display = "grid";
   }
 }
 
 function closeResetConfirm() {
   if (elements.confirmModal) {
     elements.confirmModal.hidden = true;
+    elements.confirmModal.style.display = "none";
   }
 }
 
@@ -1702,12 +1704,16 @@ function tick() {
       waste: state.waste,
       level: state.level,
       lampTimer: state.lampTimer,
+      mistPauseTimer: state.mistPauseTimer,
       decorationsPlaced: state.decorationsPlaced,
       events: state.events,
       upgrades: state.upgrades,
       frogs: state.frogs,
+      frogEggs: state.frogEggs,
+      tadpoles: state.tadpoles,
       crickets: state.crickets,
       pillBugs: state.pillBugs,
+      pillBugEggs: state.pillBugEggs,
       droppings: state.droppings,
       fungusPatches: state.fungusPatches
     }));
@@ -1725,6 +1731,7 @@ state.pillBugEggs = Array.isArray(state.pillBugEggs) ? state.pillBugEggs : [];
 state.droppings = Array.isArray(state.droppings) ? state.droppings : [];
 state.fungusPatches = Array.isArray(state.fungusPatches) ? state.fungusPatches : [];
 bindUi();
+closeResetConfirm();
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("orientationchange", resizeCanvas);
