@@ -163,7 +163,10 @@ function spawnFrog(stage = "adult") {
     age: 0,
     breedReady: stage === "adult",
     breedCooldown: rand(20, 45),
-    restTargetHideId: null
+    restTargetHideId: null,
+    lastX: 0,
+    lastY: 0,
+    stuckTimer: 0
   };
 }
 
@@ -348,6 +351,8 @@ function simulate(dt) {
   }
 
   for (const frog of state.frogs) {
+    const prevX = frog.x;
+    const prevY = frog.y;
     frog.age += dt;
     if (frog.stage === "froglet" && frog.age >= 90) {
       frog.stage = "adult";
@@ -531,6 +536,23 @@ function simulate(dt) {
     if (frog.y < 36 || frog.y > WORLD_SIZE - 36) frog.vy *= -1;
     frog.x = clamp(frog.x, 36, WORLD_SIZE - 36);
     frog.y = clamp(frog.y, 36, WORLD_SIZE - 36);
+
+    const movedDist = Math.hypot(frog.x - prevX, frog.y - prevY);
+    if (!frog.inHide && movedDist < 0.45) {
+      frog.stuckTimer = (frog.stuckTimer ?? 0) + dt;
+    } else {
+      frog.stuckTimer = 0;
+    }
+
+    if (!frog.inHide && (frog.stuckTimer ?? 0) > 2.2) {
+      frog.vx = rand(-0.4, 0.4);
+      frog.vy = rand(-0.4, 0.4);
+      frog.jumpPhase = "crouch";
+      frog.crouchTimer = 0.6;
+      frog.hopTimer = rand(0.3, 0.9);
+      frog.restTimer = 0;
+      frog.stuckTimer = 0;
+    }
   }
 
   const readyFrogs = state.frogs.filter((frog) => frog.stage === "adult" && frog.breedReady && !frog.inHide && (frog.breedCooldown ?? 0) <= 0);
