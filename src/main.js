@@ -602,6 +602,12 @@ function drawHabitatBase() {
     ctx.moveTo(x, y + 18);
     ctx.lineTo(x - 4, y + 22);
     ctx.stroke();
+
+    ctx.fillStyle = i % 2 === 0 ? "#8ef08b" : "#6fdb78";
+    ctx.beginPath();
+    ctx.ellipse(x - 5, y + 10, 4, 2.5, -0.2, 0, Math.PI * 2);
+    ctx.ellipse(x + 5, y + 16, 4.5, 2.7, 0.3, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   const decorLevel = getUpgrade("decor")?.level ?? 0;
@@ -614,12 +620,18 @@ function drawHabitatBase() {
     ctx.fill();
     ctx.fillStyle = "#5c4a31";
     ctx.fillRect(x - 4, y + 6, 5, 3);
+    ctx.fillStyle = i % 2 === 0 ? "#c2a16a" : "#8b5e35";
+    ctx.fillRect(x + 3, y - 4, 3, 5);
   }
 
   const mistLevel = getUpgrade("mist")?.level ?? 0;
   ctx.fillStyle = "#4d5a48";
   ctx.fillRect(182, 30, 24, 8);
   ctx.fillRect(194, 38, 4, 12);
+  for (let i = 0; i < mistLevel; i += 1) {
+    ctx.fillStyle = "rgba(220,240,255,0.18)";
+    ctx.fillRect(178 - i * 4, 32 + i * 2, 4, 10);
+  }
   for (let i = 0; i < 4 + mistLevel * 3; i += 1) {
     const drift = ((state.tick * 8) + i * 9) % 52;
     const puffX = 176 + (i % 5) * 8;
@@ -773,14 +785,29 @@ function drawDroppingsAndFungus() {
 }
 
 function drawCreatures() {
+  const frogUpgradeLevel = getUpgrade("frog")?.level ?? state.frogs.length;
+  const pillBugUpgradeLevel = getUpgrade("pillbug")?.level ?? state.pillBugs.length;
+
   for (const cricket of state.crickets) {
     drawCricket(cricket);
   }
   for (const pillBug of state.pillBugs) {
     drawPillBug(pillBug);
+    if (pillBugUpgradeLevel >= 5) {
+      ctx.fillStyle = "rgba(220,220,220,0.25)";
+      ctx.beginPath();
+      ctx.arc(pillBug.x + 4, pillBug.y + 7, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
   for (const frog of state.frogs) {
     drawFrog(frog);
+    if (frogUpgradeLevel >= 8) {
+      ctx.fillStyle = "rgba(255,245,180,0.16)";
+      ctx.beginPath();
+      ctx.ellipse(frog.x + 7, frog.y + 10, 6, 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 }
 
@@ -892,6 +919,8 @@ function renderHud() {
   elements.eventLog.innerHTML = state.events.map((event) => `
     <div class="event-item"><strong>${event.label}</strong><br />${event.detail}</div>
   `).join("");
+
+  renderCricketFarm();
 
   elements.upgradeList.querySelectorAll("[data-upgrade-id]").forEach((button) => {
     button.addEventListener("click", () => {
