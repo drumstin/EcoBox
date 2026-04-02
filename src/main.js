@@ -252,11 +252,6 @@ function simulate(dt) {
     state.humidity -= 0.08 * dt;
   }
 
-  if (frogCount > 0 && Math.random() < 0.006 * frogCount * lampMultiplier) {
-    state.coins += 1;
-    pushEvent("Coins earned", "Visitors tipped you for the cute frog habitat.");
-  }
-
   for (const frog of state.frogs) {
     frog.age += dt;
     if (frog.stage === "froglet" && frog.age >= 90) {
