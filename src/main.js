@@ -630,13 +630,33 @@ function drawHabitatBase() {
   ctx.fillRect(-5, -4, 56, 9);
   ctx.restore();
 
-  ctx.fillStyle = "#5f452c";
+  ctx.fillStyle = "#805b38";
   ctx.beginPath();
-  ctx.ellipse(126, 152, 16, 8, 0, 0, Math.PI * 2);
+  ctx.ellipse(122, 150, 30, 14, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "rgba(22, 14, 9, 0.85)";
+  ctx.fillStyle = "#9a744a";
   ctx.beginPath();
-  ctx.ellipse(126, 154, 10, 4, 0, 0, Math.PI * 2);
+  ctx.ellipse(122, 147, 28, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(22, 14, 9, 0.92)";
+  ctx.beginPath();
+  ctx.ellipse(122, 150, 14, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#6b4f31";
+  ctx.fillRect(101, 145, 3, 12);
+  ctx.fillRect(140, 145, 3, 12);
+
+  ctx.fillStyle = "#7d5a39";
+  ctx.beginPath();
+  ctx.ellipse(66, 158, 16, 9, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#936f47";
+  ctx.beginPath();
+  ctx.ellipse(66, 156, 14, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(22, 14, 9, 0.88)";
+  ctx.beginPath();
+  ctx.ellipse(66, 158, 7, 3.5, 0, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#65472d";
