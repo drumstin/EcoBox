@@ -218,6 +218,8 @@ function loadGame() {
 }
 
 function resetGame() {
+  const confirmed = window.confirm("Reset EcoBox and lose this habitat? This cannot be undone.");
+  if (!confirmed) return;
   localStorage.removeItem(SAVE_KEY);
   Object.assign(state, createInitialState());
   pushEvent("Reset", "Started a fresh habitat.");
