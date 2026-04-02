@@ -456,6 +456,20 @@ function simulate(dt) {
       }
     }
 
+    let nearestFungus = null;
+    let nearestFungusDist = Infinity;
+    if (!nearestDropping) {
+      for (const fungus of state.fungusPatches) {
+        const dx = fungus.x - pillBug.x;
+        const dy = fungus.y - pillBug.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < nearestFungusDist) {
+          nearestFungusDist = dist;
+          nearestFungus = fungus;
+        }
+      }
+    }
+
     if (nearestDropping && nearestDist < 90) {
       const dx = nearestDropping.x - pillBug.x;
       const dy = nearestDropping.y - pillBug.y;
@@ -463,6 +477,13 @@ function simulate(dt) {
       pillBug.vy = clamp(Math.sign(dy) * 0.12, -0.12, 0.12);
       pillBug.x += pillBug.vx * dt * 42;
       pillBug.y += pillBug.vy * dt * 42;
+    } else if (nearestFungus && nearestFungusDist < 90) {
+      const dx = nearestFungus.x - pillBug.x;
+      const dy = nearestFungus.y - pillBug.y;
+      pillBug.vx = clamp(Math.sign(dx) * 0.14, -0.14, 0.14);
+      pillBug.vy = clamp(Math.sign(dy) * 0.1, -0.1, 0.1);
+      pillBug.x += pillBug.vx * dt * 36;
+      pillBug.y += pillBug.vy * dt * 36;
     } else {
       if (pillBug.restTimer <= 0 && pillBug.scootTimer <= 0) {
         pillBug.vx = rand(-0.2, 0.2);
@@ -495,6 +516,18 @@ function simulate(dt) {
             pushEvent("Pill bug eggs", "A pair of pill bugs laid 5 eggs.");
           }
         }
+        break;
+      }
+    }
+
+    for (let i = state.fungusPatches.length - 1; i >= 0; i -= 1) {
+      const fungus = state.fungusPatches[i];
+      const dx = fungus.x - pillBug.x;
+      const dy = fungus.y - pillBug.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 8) {
+        state.fungusPatches.splice(i, 1);
+        state.waste = Math.max(0, state.waste - 0.3);
         break;
       }
     }
