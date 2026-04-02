@@ -399,82 +399,131 @@ function drawHabitatBase() {
   glow.addColorStop(1, "rgba(255, 244, 194, 0)");
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, WORLD_SIZE, WORLD_SIZE);
-  drawPixelRect(0, 0, WORLD_SIZE, WORLD_SIZE, "#2c2418", "#110d09");
-  drawPixelRect(14, 14, WORLD_SIZE - 28, WORLD_SIZE - 28, "#4b3a24", "#23180f");
-  drawPixelRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48, "#655033", "#342415");
-  drawPixelRect(31, 31, WORLD_SIZE - 62, WORLD_SIZE - 62, "rgba(255,255,255,0.025)", "transparent");
 
-  drawPixelRect(34, 30, 172, 70, "#3f4e2c", "#26391b");
-  drawPixelRect(42, 106, 156, 90, "#5e472d", "#342112");
-  drawPixelRect(38, 144, 84, 30, "#6b5131", "#3b2414");
-  drawPixelRect(128, 126, 40, 20, "#523a27", "#2b1a10");
-  drawPixelRect(54, 64, 14, 50, "#8a6a45", "#53371c");
-  drawPixelRect(62, 84, 52, 10, "#8a6a45", "#53371c");
-  drawPixelRect(150, 58, 26, 8, "#7a6040", "#49311c");
-  drawPixelRect(76, 152, 16, 10, "#4e3924", "#29180e");
-  drawPixelRect(170, 142, 14, 8, "#4e3924", "#29180e");
-  drawPixelRect(40, 34, 160, 12, "#314123", "transparent");
-  drawPixelRect(48, 48, 150, 10, "#455935", "transparent");
-  drawPixelRect(38, 90, 164, 6, "#29361d", "transparent");
+  const wallGrad = ctx.createLinearGradient(0, 0, 0, WORLD_SIZE);
+  wallGrad.addColorStop(0, "#392c1e");
+  wallGrad.addColorStop(1, "#241a11");
+  ctx.fillStyle = wallGrad;
+  ctx.fillRect(0, 0, WORLD_SIZE, WORLD_SIZE);
 
-  const coverPatches = 5 + Math.floor(state.groundCover / 8);
+  const floorGrad = ctx.createLinearGradient(0, 96, 0, WORLD_SIZE);
+  floorGrad.addColorStop(0, "#6b5437");
+  floorGrad.addColorStop(1, "#4d3924");
+  ctx.fillStyle = floorGrad;
+  ctx.fillRect(24, 96, WORLD_SIZE - 48, WORLD_SIZE - 120);
+
+  ctx.fillStyle = "#425730";
+  ctx.fillRect(28, 28, WORLD_SIZE - 56, 74);
+  ctx.fillStyle = "#314223";
+  ctx.fillRect(36, 34, WORLD_SIZE - 72, 18);
+  ctx.fillStyle = "#58713f";
+  ctx.fillRect(44, 54, WORLD_SIZE - 84, 16);
+  ctx.fillStyle = "#2b391e";
+  ctx.fillRect(34, 88, WORLD_SIZE - 68, 10);
+
+  ctx.fillStyle = "#775838";
+  ctx.beginPath();
+  ctx.ellipse(84, 150, 48, 22, -0.18, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(162, 136, 34, 16, 0.12, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#8b6a45";
+  ctx.fillRect(56, 62, 14, 54);
+  ctx.fillRect(64, 84, 56, 10);
+  ctx.fillRect(150, 58, 30, 8);
+
+  const coverPatches = 6 + Math.floor(state.groundCover / 7);
   for (let i = 0; i < coverPatches; i += 1) {
-    const x = 44 + ((i * 27) % 138);
-    const y = 40 + ((i * 21) % 46);
-    drawPixelRect(x, y, 12, 6, "#4b8745", "transparent");
-    drawPixelRect(x + 6, y - 3, 7, 5, "#7ccf73", "transparent");
-    drawPixelRect(x - 5, y + 4, 6, 4, "#315f2f", "transparent");
-    drawPixelRect(x + 10, y + 1, 4, 3, "#9be18a", "transparent");
+    const x = 42 + ((i * 23) % 146);
+    const y = 40 + ((i * 17) % 50);
+    ctx.fillStyle = "#4f8d46";
+    ctx.beginPath();
+    ctx.ellipse(x, y, 10, 6, 0.18, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#78cf73";
+    ctx.beginPath();
+    ctx.ellipse(x + 6, y - 3, 6, 4, -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#315f2f";
+    ctx.beginPath();
+    ctx.ellipse(x - 5, y + 4, 5, 3, 0.35, 0, Math.PI * 2);
+    ctx.fill();
   }
 
-  for (let i = 0; i < 10; i += 1) {
-    const leafX = 42 + (i * 18) % 144;
-    const leafY = 112 + ((i % 3) * 16);
-    drawPixelRect(leafX, leafY, 5, 3, "#7f663f", "transparent");
-    drawPixelRect(leafX + 3, leafY + 2, 4, 2, "#94764b", "transparent");
+  for (let i = 0; i < 12; i += 1) {
+    const leafX = 42 + (i * 16) % 150;
+    const leafY = 110 + ((i % 4) * 14);
+    ctx.fillStyle = i % 2 === 0 ? "#876741" : "#9a7a4f";
+    ctx.beginPath();
+    ctx.ellipse(leafX, leafY, 4.5, 2.4, (i % 3) * 0.35, 0, Math.PI * 2);
+    ctx.fill();
   }
 
-  for (let i = 0; i < 7; i += 1) {
-    const fernX = 40 + i * 22;
+  for (let i = 0; i < 8; i += 1) {
+    const fernX = 38 + i * 22;
     const fernY = 102 + (i % 2) * 8;
-    drawPixelRect(fernX, fernY, 3, 16, "#5ab55f", "transparent");
-    drawPixelRect(fernX - 4, fernY + 4, 4, 3, "#77d67c", "transparent");
-    drawPixelRect(fernX + 3, fernY + 8, 4, 3, "#4f9f56", "transparent");
+    ctx.strokeStyle = "#4f9f56";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(fernX, fernY + 14);
+    ctx.lineTo(fernX, fernY);
+    ctx.moveTo(fernX, fernY + 4);
+    ctx.lineTo(fernX - 5, fernY + 7);
+    ctx.moveTo(fernX, fernY + 8);
+    ctx.lineTo(fernX + 5, fernY + 10);
+    ctx.stroke();
   }
 
   const plantLevel = getUpgrade("plants")?.level ?? 0;
   for (let i = 0; i < plantLevel; i += 1) {
     const x = 168 + (i % 2) * 10;
     const y = 44 + (i * 13) % 54;
-    drawPixelRect(x, y, 4, 24, "#6cc76f", "transparent");
-    drawPixelRect(x - 6, y + 6, 6, 4, "#7fe285", "transparent");
-    drawPixelRect(x + 4, y + 12, 6, 4, "#5ab55f", "transparent");
-    drawPixelRect(x - 3, y + 16, 3, 6, "#85e58b", "transparent");
+    ctx.strokeStyle = "#67c86f";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, y + 24);
+    ctx.lineTo(x, y);
+    ctx.moveTo(x, y + 8);
+    ctx.lineTo(x - 6, y + 10);
+    ctx.moveTo(x, y + 14);
+    ctx.lineTo(x + 7, y + 16);
+    ctx.moveTo(x, y + 18);
+    ctx.lineTo(x - 4, y + 22);
+    ctx.stroke();
   }
 
   const decorLevel = getUpgrade("decor")?.level ?? 0;
   for (let i = 0; i < decorLevel; i += 1) {
     const x = 144 + ((i * 16) % 28);
     const y = 150 + ((i * 10) % 20);
-    drawPixelRect(x, y, 12, 8, "#867965", "#4b4439");
-    drawPixelRect(x + 6, y - 8, 6, 8, "#79d882", "transparent");
-    drawPixelRect(x - 4, y + 6, 4, 3, "#5c4a31", "transparent");
+    ctx.fillStyle = "#8d8377";
+    ctx.beginPath();
+    ctx.ellipse(x + 6, y + 4, 7, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#5c4a31";
+    ctx.fillRect(x - 4, y + 6, 5, 3);
   }
 
   const mistLevel = getUpgrade("mist")?.level ?? 0;
-  drawPixelRect(182, 30, 24, 8, "#4d5a48", "#283022");
-  drawPixelRect(194, 38, 4, 12, "#6b775f", "transparent");
-  for (let i = 0; i < 3 + mistLevel * 3; i += 1) {
+  ctx.fillStyle = "#4d5a48";
+  ctx.fillRect(182, 30, 24, 8);
+  ctx.fillRect(194, 38, 4, 12);
+  for (let i = 0; i < 4 + mistLevel * 3; i += 1) {
     const drift = ((state.tick * 8) + i * 9) % 52;
     const puffX = 176 + (i % 5) * 8;
     const puffY = 46 + drift;
-    drawPixelCircle(puffX, puffY, 5, "rgba(235,245,238,0.12)");
-    drawPixelCircle(puffX + 4, puffY + 2, 4, "rgba(235,245,238,0.10)");
-    drawPixelCircle(puffX - 3, puffY + 4, 3, "rgba(235,245,238,0.08)");
+    ctx.fillStyle = "rgba(235,245,238,0.10)";
+    ctx.beginPath();
+    ctx.arc(puffX, puffY, 5, 0, Math.PI * 2);
+    ctx.arc(puffX + 4, puffY + 2, 4, 0, Math.PI * 2);
+    ctx.arc(puffX - 3, puffY + 4, 3, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   for (let i = 0; i < 5; i += 1) {
-    drawPixelCircle(48 + i * 28, 36 + (i % 2) * 6, 2, "rgba(255,255,255,0.24)");
+    drawPixelCircle(48 + i * 28, 36 + (i % 2) * 6, 2, "rgba(255,255,255,0.22)");
   }
 }
 
