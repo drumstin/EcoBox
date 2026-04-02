@@ -531,47 +531,47 @@ function drawHabitatBase() {
   ctx.fillStyle = wallGrad;
   ctx.fillRect(0, 0, WORLD_SIZE, WORLD_SIZE);
 
-  const canopyGrad = ctx.createLinearGradient(0, 28, 0, 96);
-  canopyGrad.addColorStop(0, "#4e6b39");
-  canopyGrad.addColorStop(1, "#314724");
+  const canopyGrad = ctx.createLinearGradient(0, 30, 0, 92);
+  canopyGrad.addColorStop(0, "#587740");
+  canopyGrad.addColorStop(1, "#355028");
   ctx.fillStyle = canopyGrad;
   ctx.beginPath();
-  ctx.ellipse(120, 54, 72, 26, 0, 0, Math.PI * 2);
+  ctx.ellipse(120, 52, 60, 20, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  const floorGrad = ctx.createLinearGradient(0, 98, 0, WORLD_SIZE);
-  floorGrad.addColorStop(0, "#7a5d3a");
-  floorGrad.addColorStop(1, "#4c3722");
+  const floorGrad = ctx.createLinearGradient(0, 100, 0, WORLD_SIZE);
+  floorGrad.addColorStop(0, "#7d613d");
+  floorGrad.addColorStop(1, "#4a3621");
   ctx.fillStyle = floorGrad;
-  ctx.fillRect(24, 96, WORLD_SIZE - 48, WORLD_SIZE - 120);
+  ctx.fillRect(24, 98, WORLD_SIZE - 48, WORLD_SIZE - 122);
 
-  ctx.fillStyle = "#405b2e";
+  ctx.fillStyle = "#476534";
   ctx.beginPath();
-  ctx.ellipse(76, 66, 28, 12, -0.15, 0, Math.PI * 2);
-  ctx.ellipse(162, 64, 26, 11, 0.15, 0, Math.PI * 2);
+  ctx.ellipse(70, 66, 20, 9, -0.12, 0, Math.PI * 2);
+  ctx.ellipse(170, 64, 18, 8, 0.12, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#7f6240";
+  ctx.fillStyle = "#7c5d3b";
   ctx.beginPath();
-  ctx.ellipse(112, 154, 56, 20, -0.08, 0, Math.PI * 2);
+  ctx.ellipse(110, 154, 46, 16, -0.06, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.fillStyle = "#8f6f48";
+  ctx.fillStyle = "#916f47";
   ctx.save();
-  ctx.translate(96, 96);
-  ctx.rotate(-0.38);
-  ctx.fillRect(-6, -28, 12, 60);
+  ctx.translate(98, 98);
+  ctx.rotate(-0.28);
+  ctx.fillRect(-5, -24, 10, 50);
   ctx.restore();
 
   ctx.save();
-  ctx.translate(108, 90);
-  ctx.rotate(0.08);
-  ctx.fillRect(-6, -4, 64, 10);
+  ctx.translate(108, 92);
+  ctx.rotate(0.06);
+  ctx.fillRect(-5, -4, 56, 9);
   ctx.restore();
 
-  ctx.fillStyle = "#63492e";
+  ctx.fillStyle = "#5f452c";
   ctx.beginPath();
-  ctx.ellipse(130, 154, 18, 10, 0, 0, Math.PI * 2);
+  ctx.ellipse(126, 152, 16, 8, 0, 0, Math.PI * 2);
   ctx.fill();
 
   const coverPatches = 6 + Math.floor(state.groundCover / 7);
@@ -592,12 +592,12 @@ function drawHabitatBase() {
     ctx.fill();
   }
 
-  for (let i = 0; i < 18; i += 1) {
-    const leafX = 36 + (i * 11) % 168;
-    const leafY = 114 + ((i % 5) * 11);
-    ctx.fillStyle = i % 3 === 0 ? "#8c6b41" : i % 2 === 0 ? "#9f7d4d" : "#705230";
+  for (let i = 0; i < 12; i += 1) {
+    const leafX = 44 + (i * 14) % 154;
+    const leafY = 118 + ((i % 4) * 10);
+    ctx.fillStyle = i % 2 === 0 ? "#9f7d4d" : "#765636";
     ctx.beginPath();
-    ctx.ellipse(leafX, leafY, 5.5, 2.6, (i % 4) * 0.28, 0, Math.PI * 2);
+    ctx.ellipse(leafX, leafY, 5, 2.3, (i % 3) * 0.24, 0, Math.PI * 2);
     ctx.fill();
   }
 
