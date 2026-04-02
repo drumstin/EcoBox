@@ -229,17 +229,22 @@ function loadGame() {
 function openAlbum() {
   if (!elements.albumModal || !elements.albumList) return;
   const entries = [
-    { name: "Tree Frog", count: state.frogs.filter((frog) => frog.stage === "adult").length, note: "Main terrarium frogs." },
-    { name: "Froglet", count: state.frogs.filter((frog) => frog.stage === "froglet").length, note: "Young frogs growing out of the pond." },
-    { name: "Tadpole", count: state.tadpoles.length, note: "Wiggling pond babies." },
-    { name: "Cricket", count: state.crickets.length, note: "Feeder insects in the habitat." },
-    { name: "Pill Bug", count: state.pillBugs.length, note: "Cleanup crew on the substrate." }
+    { name: "Tree Frog", icon: "🐸", unlocked: state.frogs.some((frog) => frog.stage === "adult"), count: state.frogs.filter((frog) => frog.stage === "adult").length, note: "Main terrarium frogs." },
+    { name: "Froglet", icon: "🐸", unlocked: state.frogs.some((frog) => frog.stage === "froglet"), count: state.frogs.filter((frog) => frog.stage === "froglet").length, note: "Young frogs growing out of the pond." },
+    { name: "Tadpole", icon: "~", unlocked: state.tadpoles.length > 0 || state.frogEggs.length > 0, count: state.tadpoles.length, note: "Wiggling pond babies." },
+    { name: "Cricket", icon: "🦗", unlocked: state.crickets.length > 0 || state.cricketFarm.boxes.some((box) => box.type !== "pillbug" && box.crickets > 0), count: state.crickets.length, note: "Feeder insects in the habitat." },
+    { name: "Pill Bug", icon: "◔", unlocked: state.pillBugs.length > 0 || state.cricketFarm.boxes.some((box) => box.type === "pillbug" && box.crickets > 0), count: state.pillBugs.length, note: "Cleanup crew on the substrate." }
   ];
   elements.albumList.innerHTML = entries.map((entry) => `
-    <article class="album-entry">
-      <strong>${entry.name}</strong>
-      <div>Seen now: ${entry.count}</div>
-      <div>${entry.note}</div>
+    <article class="album-entry ${entry.unlocked ? "" : "album-entry-locked"}">
+      <div class="album-entry-top">
+        <span class="album-icon">${entry.unlocked ? entry.icon : "?"}</span>
+        <div>
+          <strong>${entry.unlocked ? entry.name : "Locked"}</strong>
+          <div>${entry.unlocked ? `Seen now: ${entry.count}` : "Discover this critter"}</div>
+        </div>
+      </div>
+      <div>${entry.unlocked ? entry.note : "Keep building the habitat to unlock this entry."}</div>
     </article>
   `).join("");
   elements.albumModal.hidden = false;
