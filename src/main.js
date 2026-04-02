@@ -618,8 +618,8 @@ function simulate(dt) {
 
   for (const box of state.cricketFarm.boxes) {
     box.breedingTimer += dt;
-    if (box.breedingTimer >= 5 && box.crickets > 1 && box.crickets < 100 && (state.cricketFarm.carrots > 0 || state.cricketFarm.potatoes > 0)) {
-      const growth = state.cricketFarm.potatoes > 0 ? 4 : 2;
+    if (box.breedingTimer >= 5 && box.crickets < 100) {
+      const growth = box.crickets <= 0 ? 1 : 2;
       box.crickets = Math.min(100, box.crickets + growth);
       box.breedingTimer = 0;
       if (box.crickets >= 100) {
