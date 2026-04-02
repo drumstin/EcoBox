@@ -587,52 +587,57 @@ function drawHabitatBase() {
   }
 
   const plantLevel = getUpgrade("plants")?.level ?? 0;
-  for (let i = 0; i < plantLevel; i += 1) {
-    const x = 168 + (i % 2) * 10;
-    const y = 44 + (i * 13) % 54;
-    ctx.strokeStyle = "#67c86f";
+  for (let i = 0; i < plantLevel * 2; i += 1) {
+    const x = 154 + (i % 4) * 12;
+    const y = 38 + (i * 11) % 66;
+    ctx.strokeStyle = i % 2 === 0 ? "#67c86f" : "#58b85f";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(x, y + 24);
+    ctx.moveTo(x, y + 28);
     ctx.lineTo(x, y);
     ctx.moveTo(x, y + 8);
-    ctx.lineTo(x - 6, y + 10);
+    ctx.lineTo(x - 7, y + 11);
     ctx.moveTo(x, y + 14);
-    ctx.lineTo(x + 7, y + 16);
-    ctx.moveTo(x, y + 18);
-    ctx.lineTo(x - 4, y + 22);
+    ctx.lineTo(x + 8, y + 17);
+    ctx.moveTo(x, y + 20);
+    ctx.lineTo(x - 5, y + 24);
     ctx.stroke();
 
     ctx.fillStyle = i % 2 === 0 ? "#8ef08b" : "#6fdb78";
     ctx.beginPath();
-    ctx.ellipse(x - 5, y + 10, 4, 2.5, -0.2, 0, Math.PI * 2);
-    ctx.ellipse(x + 5, y + 16, 4.5, 2.7, 0.3, 0, Math.PI * 2);
+    ctx.ellipse(x - 6, y + 11, 5, 3, -0.2, 0, Math.PI * 2);
+    ctx.ellipse(x + 6, y + 17, 5.5, 3, 0.3, 0, Math.PI * 2);
+    ctx.ellipse(x, y + 5, 4, 2.6, 0.1, 0, Math.PI * 2);
     ctx.fill();
   }
 
   const decorLevel = getUpgrade("decor")?.level ?? 0;
-  for (let i = 0; i < decorLevel; i += 1) {
-    const x = 144 + ((i * 16) % 28);
-    const y = 150 + ((i * 10) % 20);
-    ctx.fillStyle = "#8d8377";
+  for (let i = 0; i < decorLevel * 2; i += 1) {
+    const x = 132 + ((i * 18) % 46);
+    const y = 142 + ((i * 12) % 28);
+    ctx.fillStyle = i % 2 === 0 ? "#8d8377" : "#a39176";
     ctx.beginPath();
-    ctx.ellipse(x + 6, y + 4, 7, 5, 0, 0, Math.PI * 2);
+    ctx.ellipse(x + 6, y + 4, 8, 5.5, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = "#5c4a31";
-    ctx.fillRect(x - 4, y + 6, 5, 3);
+    ctx.fillRect(x - 5, y + 6, 6, 3);
     ctx.fillStyle = i % 2 === 0 ? "#c2a16a" : "#8b5e35";
-    ctx.fillRect(x + 3, y - 4, 3, 5);
+    ctx.fillRect(x + 3, y - 4, 3, 6);
+    ctx.fillStyle = "#7adf7d";
+    ctx.beginPath();
+    ctx.ellipse(x + 10, y - 3, 3, 2, 0.2, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   const mistLevel = getUpgrade("mist")?.level ?? 0;
   ctx.fillStyle = "#4d5a48";
   ctx.fillRect(182, 30, 24, 8);
   ctx.fillRect(194, 38, 4, 12);
-  for (let i = 0; i < mistLevel; i += 1) {
-    ctx.fillStyle = "rgba(220,240,255,0.18)";
-    ctx.fillRect(178 - i * 4, 32 + i * 2, 4, 10);
+  for (let i = 0; i < mistLevel * 2; i += 1) {
+    ctx.fillStyle = "rgba(220,240,255,0.20)";
+    ctx.fillRect(178 - i * 4, 32 + (i % 3) * 4, 4, 10);
   }
-  for (let i = 0; i < 4 + mistLevel * 3; i += 1) {
+  for (let i = 0; i < 4 + mistLevel * 5; i += 1) {
     const drift = ((state.tick * 8) + i * 9) % 52;
     const puffX = 176 + (i % 5) * 8;
     const puffY = 46 + drift;
