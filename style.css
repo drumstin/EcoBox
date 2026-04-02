@@ -162,6 +162,25 @@ p {
   color: var(--text);
 }
 
+.tank-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.float-popup {
+  position: absolute;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(18, 24, 36, 0.85);
+  color: #f6f2c2;
+  font-size: 0.72rem;
+  font-weight: 700;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+}
+
 .hud-shell {
   display: grid;
   gap: 12px;

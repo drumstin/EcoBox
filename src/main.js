@@ -30,6 +30,7 @@ const state = {
   pillBugEggs: [],
   droppings: [],
   fungusPatches: [],
+  popups: [],
   cricketFarmOpen: false,
   multiBuyAmount: 1,
   cricketFarm: {
@@ -56,6 +57,7 @@ const state = {
 const elements = {
   canvas: document.getElementById("tank-canvas"),
   overlay: document.getElementById("tank-overlay"),
+  tankFx: document.getElementById("tank-fx"),
   saveButton: document.getElementById("save-button"),
   toggleFarmButton: document.getElementById("toggle-farm-button"),
   cricketFarmPanel: document.getElementById("cricket-farm-panel"),
@@ -99,6 +101,11 @@ function rand(min, max) {
 function pushEvent(label, detail) {
   state.events.unshift({ label, detail });
   state.events = state.events.slice(0, 18);
+}
+
+function spawnPopup(x, y, text) {
+  state.popups.push({ x, y, text, age: 0 });
+  state.popups = state.popups.slice(-10);
 }
 
 function spawnFrog() {
@@ -339,6 +346,7 @@ function simulate(dt) {
         frog.hunger = Math.max(0, frog.hunger - 18);
         frog.digestedCrickets += 1;
         state.coins += 1;
+        spawnPopup(frog.x, frog.y - 8, "+1 coin");
         pushEvent("Frog fed", "A frog snapped up a cricket. +1 coin.");
         ateSomething = true;
         break;
@@ -535,7 +543,13 @@ function simulate(dt) {
   state.mistBurstTimer -= dt;
   if (state.mistBurstTimer <= 0) {
     state.mistBurstTimer = 60;
+    spawnPopup(192, 72, "mist");
   }
+
+  for (const popup of state.popups) {
+    popup.age += dt;
+  }
+  state.popups = state.popups.filter((popup) => popup.age < 1.4);
 
   if (state.lampTimer > 0) {
     state.lampTimer = Math.max(0, state.lampTimer - dt);
@@ -986,6 +1000,18 @@ function renderHabitat() {
   ctx.restore();
 }
 
+function renderPopups() {
+  if (!elements.tankFx) return;
+  const rect = elements.canvas.getBoundingClientRect();
+  const scale = rect.width / WORLD_SIZE;
+  elements.tankFx.innerHTML = state.popups.map((popup) => {
+    const x = popup.x * scale;
+    const y = (popup.y - popup.age * 18) * scale;
+    const opacity = Math.max(0, 1 - popup.age / 1.4);
+    return `<div class="float-popup" style="left:${x}px; top:${y}px; opacity:${opacity};">${popup.text}</div>`;
+  }).join("");
+}
+
 function renderHud() {
   elements.tankChips.innerHTML = [
     `<div class="chip">LV ${state.level}</div>`,
@@ -1316,6 +1342,7 @@ function tick() {
   simulate(1 / 20);
   renderHabitat();
   renderHud();
+  renderPopups();
   if (state.cricketFarmOpen) {
     renderCricketFarm();
   }
