@@ -4,6 +4,7 @@ const FROG_COST = 5;
 const CRICKET_COST = 1;
 const PILL_BUG_COST = 1;
 const PILL_BUG_BITE_RANGE = 12;
+const MAX_PILL_BUGS = 24;
 const LOG_OBSTACLES = [
   { x: 86, y: 134, w: 50, h: 18 },
   { x: 118, y: 146, w: 24, h: 12 },
@@ -529,7 +530,9 @@ function simulate(dt) {
         if (pillBug.stage === "adult") {
           pillBug.poopEaten += 1;
           if (pillBug.poopEaten >= 10 && state.pillBugs.some((other) => other !== pillBug && other.stage === "adult")) {
-            for (let egg = 0; egg < 5; egg += 1) {
+            const availableSlots = Math.max(0, MAX_PILL_BUGS - state.pillBugs.length - state.pillBugEggs.length);
+            const eggCount = Math.min(5, availableSlots);
+            for (let egg = 0; egg < eggCount; egg += 1) {
               state.pillBugEggs.push({ x: pillBug.x + rand(-4, 4), y: pillBug.y + rand(-2, 2), age: 0, hatchTimer: 5 });
             }
             pillBug.poopEaten = 0;
@@ -568,10 +571,12 @@ function simulate(dt) {
     egg.age += dt;
     egg.hatchTimer -= dt;
     if (egg.hatchTimer <= 0) {
-      const juvenile = spawnPillBug("juvenile");
-      juvenile.x = egg.x;
-      juvenile.y = egg.y;
-      state.pillBugs.push(juvenile);
+      if (state.pillBugs.length < MAX_PILL_BUGS) {
+        const juvenile = spawnPillBug("juvenile");
+        juvenile.x = egg.x;
+        juvenile.y = egg.y;
+        state.pillBugs.push(juvenile);
+      }
       state.pillBugEggs.splice(e, 1);
     }
   }
@@ -1278,6 +1283,7 @@ function renderHud() {
         state.crickets.push(spawnCricket());
         pushEvent("Crickets released", "Fresh feeder insects were added.");
       } else if (upgrade.id === "pillbug") {
+        if (state.pillBugs.length >= MAX_PILL_BUGS) return;
         state.pillBugs.push(spawnPillBug());
         pushEvent("Cleanup crew", "A pill bug joined the habitat floor.");
       } else if (upgrade.id === "decor") {
@@ -1486,6 +1492,7 @@ function bindUi() {
   elements.buyPillBugButton.addEventListener("click", () => {
     let bought = 0;
     for (let i = 0; i < state.multiBuyAmount; i += 1) {
+      if (state.pillBugs.length >= MAX_PILL_BUGS) break;
       if (!spendCoins(PILL_BUG_COST)) break;
       state.pillBugs.push(spawnPillBug());
       const pillBugUpgrade = getUpgrade("pillbug");
