@@ -91,6 +91,7 @@ const elements = {
   boostButton: document.getElementById("boost-button"),
   boostPrice: document.getElementById("boost-price"),
   tankChips: document.getElementById("tank-chips"),
+  mainStats: document.getElementById("main-stats"),
   statusGrid: document.getElementById("status-grid"),
   milestones: document.getElementById("milestones"),
   upgradeList: document.getElementById("upgrade-list"),
@@ -1225,6 +1226,24 @@ function renderHud() {
     `<div class="chip">Crickets ${state.crickets.length}</div>`,
     `<div class="chip">${state.frogs.length === 0 ? "Buy your first frog" : state.lampTimer > 0 ? `Sun Lamp ${Math.ceil(state.lampTimer)}s` : "Terrarium Stable"}</div>`
   ].join("");
+
+  const mainStatItems = [
+    { label: "Coins", value: `${Math.floor(state.coins)}¢` },
+    { label: "Humidity", value: `${Math.floor(state.humidity)}%` },
+    { label: "Cleanliness", value: `${Math.floor(state.cleanliness)}%` },
+    { label: "Frogs", value: `${state.frogs.length}` },
+    { label: "Pill Bugs", value: `${state.pillBugs.length}` },
+    { label: "Crickets", value: `${state.crickets.length}` }
+  ];
+
+  if (elements.mainStats) {
+    elements.mainStats.innerHTML = mainStatItems.map((item) => `
+      <article class="main-stat">
+        <div class="main-stat-label">${item.label}</div>
+        <div class="main-stat-value">${item.value}</div>
+      </article>
+    `).join("");
+  }
 
   const statusItems = [
     { label: "Coins", value: state.coins, max: 40, suffix: "¢" },
