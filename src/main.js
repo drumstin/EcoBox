@@ -955,9 +955,13 @@ function renderCricketFarm() {
     const minimized = box.minimized || isFull;
     const previewDots = Array.from({ length: Math.min(24, Math.max(2, Math.ceil(box.crickets / 5))) }, (_, index) => {
       const left = 6 + ((index * 17) % 88);
-      const top = 8 + ((index * 11) % 50);
+      const baseTop = 10 + ((index * 11) % 48);
+      const hop = Math.sin(state.tick * 4 + index * 1.2) * 4;
+      const top = Math.max(6, Math.min(58, baseTop - hop));
       return `<span class="cricket-dot" style="left:${left}%; top:${top}%"></span>`;
     }).join("");
+    const carrotVisual = state.cricketFarm.carrots > 0 ? `<span class="farm-food farm-food-carrot"></span>` : "";
+    const potatoVisual = state.cricketFarm.potatoes > 0 ? `<span class="farm-food farm-food-potato"></span>` : "";
     return `
       <article class="farm-box ${minimized ? "minimized" : ""}" data-box-id="${box.id}">
         <div class="farm-box-header">
@@ -968,7 +972,7 @@ function renderCricketFarm() {
           <div>Crickets: ${box.crickets} / 100</div>
           <div>Feed: ${state.cricketFarm.carrots} carrots · ${state.cricketFarm.potatoes} potatoes</div>
         </div>
-        <div class="cricket-box-preview">${previewDots}</div>
+        <div class="cricket-box-preview">${previewDots}${carrotVisual}${potatoVisual}</div>
         ${minimized ? `<div class="farm-box-actions"><button class="pixel-button action-feed" data-release-box="${box.id}" type="button">Release 100</button></div>` : `
           <div class="farm-box-actions">
             <button class="pixel-button action-feed" data-feed-box="${box.id}" data-feed-type="carrot" type="button">Use Carrot</button>
@@ -1153,6 +1157,9 @@ function tick() {
   simulate(1 / 20);
   renderHabitat();
   renderHud();
+  if (state.cricketFarmOpen) {
+    renderCricketFarm();
+  }
   if (Math.floor(state.tick) % 15 === 0 && Math.abs(state.tick % 15) < 0.051) {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       tick: state.tick,

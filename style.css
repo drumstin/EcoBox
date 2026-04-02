@@ -318,6 +318,41 @@ p {
   border-radius: 50%;
   background: #3a2b1e;
   opacity: 0.85;
+  box-shadow: 1px 1px 0 rgba(255,255,255,0.08);
+}
+
+.farm-food {
+  position: absolute;
+  display: block;
+}
+
+.farm-food-carrot {
+  left: 14px;
+  bottom: 10px;
+  width: 14px;
+  height: 6px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #ffb46b, #e57f2f);
+}
+
+.farm-food-carrot::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 1px;
+  width: 5px;
+  height: 4px;
+  border-radius: 4px;
+  background: #5ab55f;
+}
+
+.farm-food-potato {
+  right: 16px;
+  bottom: 12px;
+  width: 12px;
+  height: 8px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #e7d3a7, #b89a63);
 }
 
 .farm-box.minimized {
