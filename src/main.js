@@ -82,8 +82,6 @@ const elements = {
   sellFrogPrice: document.getElementById("sell-frog-price"),
   buyPillBugButton: document.getElementById("buy-pillbug-button"),
   buyPillBugPrice: document.getElementById("buy-pillbug-price"),
-  collectButton: document.getElementById("collect-button"),
-  collectPrice: document.getElementById("collect-price"),
   feedButton: document.getElementById("feed-button"),
   feedPrice: document.getElementById("feed-price"),
   cleanButton: document.getElementById("clean-button"),
@@ -254,6 +252,7 @@ function simulate(dt) {
   state.cleanliness -= (frogCount * 0.03 + cricketCount * 0.008) * dt;
   state.waste += (frogCount * 0.045 + cricketCount * 0.01) * dt;
   state.waste -= (0.05 + decor * 0.05 + pillBugCount * 0.09) * dt;
+  state.coins += (frogCount * 0.03 + decor * 0.015) * dt;
 
   if (state.waste > 40) {
     state.cleanliness -= 0.2 * dt;
@@ -1423,7 +1422,6 @@ function renderQuickActionPrices() {
   if (elements.feedPrice) elements.feedPrice.textContent = `${CRICKET_COST * state.multiBuyAmount} coins`;
   if (elements.buyPillBugPrice) elements.buyPillBugPrice.textContent = `${PILL_BUG_COST * state.multiBuyAmount} coins`;
   if (elements.sellFrogPrice) elements.sellFrogPrice.textContent = `5 frogs → 100 coins`;
-  if (elements.collectPrice) elements.collectPrice.textContent = `free`;
   if (elements.cleanPrice) elements.cleanPrice.textContent = `free`;
   if (elements.boostPrice) elements.boostPrice.textContent = `3 coins`;
   if (elements.buyCarrotPrice) elements.buyCarrotPrice.textContent = `${1 * state.multiBuyAmount} coin${state.multiBuyAmount === 1 ? "" : "s"}`;
@@ -1561,14 +1559,6 @@ function bindUi() {
     }
     spawnPopup(132, 144, `+${bought} pill bug${bought === 1 ? "" : "s"}`);
     pushEvent("Cleanup crew", `${bought} pill bug${bought === 1 ? "" : "s"} joined the habitat floor.`);
-    renderHud();
-  });
-
-  elements.collectButton.addEventListener("click", () => {
-    const gained = Math.max(1, state.frogs.length + Math.floor((getUpgrade("decor")?.level ?? 0) / 2));
-    state.coins += gained;
-    spawnPopup(60, 48, `+${gained} coins`);
-    pushEvent("Coins collected", `You collected ${gained} coins from habitat visitors.`);
     renderHud();
   });
 
