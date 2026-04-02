@@ -1,18 +1,17 @@
 :root {
-  --bg: #120f1b;
-  --bg-2: #1b1630;
-  --panel: #2b2148;
-  --panel-edge: #0b0913;
-  --text: #f8f4e3;
-  --muted: #c9bc8f;
-  --green: #6ee87c;
-  --green-dark: #2b7a32;
-  --blue: #63d6ff;
-  --blue-dark: #1f5774;
-  --gold: #ffd45e;
-  --gold-dark: #8f6112;
-  --danger: #ff7f7f;
-  --danger-dark: #8a2f42;
+  --bg: #10131b;
+  --bg-2: #182030;
+  --panel: #25304a;
+  --panel-edge: #08101a;
+  --text: #eff7d6;
+  --muted: #b0c39b;
+  --green: #7ce38b;
+  --green-dark: #2f7743;
+  --blue: #75d8ff;
+  --blue-dark: #295c78;
+  --gold: #ffd866;
+  --gold-dark: #8a6510;
+  --rose: #ff8aa8;
   --shadow: rgba(0, 0, 0, 0.35);
 }
 
@@ -31,8 +30,8 @@ body {
   min-height: 100dvh;
   font-family: "Courier New", monospace;
   background:
-    radial-gradient(circle at top, rgba(99, 214, 255, 0.14), transparent 30%),
-    linear-gradient(180deg, #171126 0%, var(--bg) 100%);
+    radial-gradient(circle at top, rgba(117, 216, 255, 0.16), transparent 28%),
+    linear-gradient(180deg, #121927 0%, var(--bg) 100%);
   color: var(--text);
   image-rendering: pixelated;
 }
@@ -47,15 +46,15 @@ canvas {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 3 / 2;
-  background: #0b2631;
+  aspect-ratio: 1 / 1;
+  background: #163543;
   border: 4px solid var(--panel-edge);
   border-radius: 8px;
   image-rendering: pixelated;
 }
 
 .app-shell {
-  width: min(1200px, 100%);
+  width: min(1180px, 100%);
   margin: 0 auto;
   padding: 12px;
 }
@@ -68,7 +67,7 @@ canvas {
 .pixel-frame {
   position: relative;
   border: 4px solid var(--panel-edge);
-  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.4), 0 16px 24px var(--shadow);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.42), 0 16px 24px var(--shadow);
 }
 
 .pixel-frame::before {
@@ -82,17 +81,28 @@ canvas {
 .topbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   padding: 12px;
   margin-bottom: 12px;
 }
 
+.topbar-actions {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
 .eyebrow {
   margin: 0 0 4px;
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   letter-spacing: 0.08em;
+}
+
+.subcopy {
+  margin-bottom: 0;
+  max-width: 38ch;
 }
 
 h1,
@@ -102,8 +112,8 @@ p {
 }
 
 h1 {
-  margin-bottom: 0;
-  font-size: clamp(1.4rem, 4vw, 2rem);
+  margin-bottom: 6px;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
 }
 
 h2 {
@@ -117,7 +127,7 @@ p {
 
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 360px);
+  grid-template-columns: minmax(0, 1.35fr) minmax(290px, 360px);
   gap: 12px;
 }
 
@@ -127,11 +137,24 @@ p {
 }
 
 .tank-header {
+  margin-bottom: 10px;
+}
+
+.tank-stage {
+  position: relative;
+}
+
+.tank-overlay {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 10px;
+  gap: 8px;
+  pointer-events: none;
+  font-size: 0.75rem;
+  color: var(--text);
 }
 
 .chip-row {
@@ -143,10 +166,10 @@ p {
 
 .chip {
   padding: 6px 10px;
-  background: #171126;
+  background: #141a29;
   border: 2px solid var(--panel-edge);
   color: var(--text);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
 }
 
 .quick-actions {
@@ -159,7 +182,7 @@ p {
 .pixel-button {
   border: 4px solid var(--panel-edge);
   background: var(--green);
-  color: #102414;
+  color: #0d2414;
   padding: 10px 12px;
   min-height: 48px;
   cursor: pointer;
@@ -168,12 +191,17 @@ p {
 
 .pixel-button.secondary {
   background: var(--blue);
-  color: #0e2530;
+  color: #0d2530;
 }
 
 .pixel-button.accent {
   background: var(--gold);
-  color: #312304;
+  color: #2d2104;
+}
+
+.pixel-button:disabled {
+  opacity: 0.58;
+  cursor: not-allowed;
 }
 
 .pixel-button:active {
@@ -212,7 +240,7 @@ p {
 
 .bar {
   height: 12px;
-  background: #0f0b18;
+  background: #0c1018;
   border: 2px solid var(--panel-edge);
   margin-top: 6px;
   overflow: hidden;
@@ -276,10 +304,13 @@ p {
     padding: 10px;
   }
 
-  .topbar,
-  .tank-header {
+  .topbar {
     flex-direction: column;
-    align-items: stretch;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-items: stretch;
   }
 
   .chip-row {

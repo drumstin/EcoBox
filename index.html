@@ -10,48 +10,56 @@
   <main class="app-shell">
     <header class="topbar panel pixel-frame">
       <div>
-        <p class="eyebrow">8-BIT IDLE ECOSYSTEM</p>
+        <p class="eyebrow">8-BIT IDLE TERRARIUM</p>
         <h1>EcoBox</h1>
+        <p class="subcopy">Top-down tank builder with idle growth and upgrade loops.</p>
       </div>
-      <button id="save-button" class="pixel-button secondary" type="button">Save</button>
+      <div class="topbar-actions">
+        <div class="chip-row" id="tank-chips"></div>
+        <button id="save-button" class="pixel-button secondary" type="button">Save</button>
+      </div>
     </header>
 
     <section class="game-layout">
       <section class="tank-panel panel pixel-frame">
         <div class="tank-header">
           <div>
-            <h2>Tank View</h2>
-            <p>Keep the box balanced and growing.</p>
+            <h2>Overhead Tank</h2>
+            <p>Lay out a stable little biome and keep it productive.</p>
           </div>
-          <div class="chip-row" id="tank-chips"></div>
         </div>
-        <canvas id="tank-canvas" width="960" height="640" aria-label="EcoBox tank"></canvas>
+
+        <div class="tank-stage">
+          <canvas id="tank-canvas" width="960" height="960" aria-label="EcoBox tank top-down view"></canvas>
+          <div class="tank-overlay" id="tank-overlay"></div>
+        </div>
+
         <div class="quick-actions">
           <button id="collect-button" class="pixel-button">Collect</button>
-          <button id="feed-button" class="pixel-button">Feed</button>
-          <button id="clean-button" class="pixel-button">Clean</button>
-          <button id="boost-button" class="pixel-button accent">Boost</button>
+          <button id="feed-button" class="pixel-button">Seed Algae</button>
+          <button id="clean-button" class="pixel-button">Skim Waste</button>
+          <button id="boost-button" class="pixel-button accent">Sun Boost</button>
         </div>
       </section>
 
       <aside class="hud panel pixel-frame">
         <section>
-          <h2>Status</h2>
+          <h2>Tank Status</h2>
           <div id="status-grid" class="status-grid"></div>
         </section>
 
         <section>
-          <h2>Progress</h2>
+          <h2>Goals</h2>
           <div id="milestones" class="milestones"></div>
         </section>
 
         <section>
-          <h2>Upgrades</h2>
+          <h2>Upgrade Crate</h2>
           <div id="upgrade-list" class="upgrade-list"></div>
         </section>
 
         <section>
-          <h2>Event Log</h2>
+          <h2>Recent Activity</h2>
           <div id="event-log" class="event-log"></div>
         </section>
       </aside>
