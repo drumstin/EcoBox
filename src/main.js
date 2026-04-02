@@ -132,7 +132,8 @@ function spawnPillBug() {
     vx: rand(-0.18, 0.18),
     vy: rand(-0.1, 0.1),
     scootTimer: rand(0.3, 1.2),
-    restTimer: rand(0.4, 1.6)
+    restTimer: rand(0.4, 1.6),
+    age: 0
   };
 }
 
@@ -399,9 +400,17 @@ function simulate(dt) {
     cricket.y = clamp(cricket.y, 30, WORLD_SIZE - 30);
   }
 
-  for (const pillBug of state.pillBugs) {
+  for (let p = state.pillBugs.length - 1; p >= 0; p -= 1) {
+    const pillBug = state.pillBugs[p];
     pillBug.scootTimer -= dt;
     pillBug.restTimer -= dt;
+    pillBug.age += dt;
+
+    if (pillBug.age >= 160) {
+      state.waste = Math.min(100, state.waste + 0.4);
+      state.pillBugs.splice(p, 1);
+      continue;
+    }
 
     let nearestDropping = null;
     let nearestDist = Infinity;
