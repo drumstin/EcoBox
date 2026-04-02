@@ -161,7 +161,8 @@ function spawnFrog(stage = "adult") {
     inHide: false,
     stage,
     age: 0,
-    breedReady: false
+    breedReady: false,
+    restTargetHideId: null
   };
 }
 
@@ -365,6 +366,7 @@ function simulate(dt) {
         const cave = FROG_HIDE_CAVES.find((entry) => entry.id === frog.hideId) ?? FROG_HIDE_CAVES[0];
         frog.inHide = false;
         frog.hideId = null;
+        frog.restTargetHideId = null;
         frog.x = cave.exitX;
         frog.y = cave.exitY;
         frog.hunger = 8;
@@ -397,6 +399,10 @@ function simulate(dt) {
       }
     }
 
+    const restTargetHide = frog.restTargetHideId
+      ? FROG_HIDE_CAVES.find((cave) => cave.id === frog.restTargetHideId)
+      : null;
+
     if (frog.jumpPhase === "crouch") {
       frog.crouchTimer = Math.max(0, frog.crouchTimer - dt * 3.4);
       if (frog.crouchTimer === 0) {
@@ -414,7 +420,12 @@ function simulate(dt) {
         frog.restTimer = rand(0.8, 2.6);
       }
     } else if (frog.restTimer <= 0) {
-      if (targetType === "cricket" && closestDist < 78) {
+      if (restTargetHide) {
+        const dx = restTargetHide.exitX - frog.x;
+        const dy = restTargetHide.exitY - frog.y;
+        frog.vx = clamp(Math.sign(dx) * rand(0.18, 0.34), -0.34, 0.34);
+        frog.vy = clamp(Math.sign(dy) * rand(0.18, 0.34), -0.34, 0.34);
+      } else if (targetType === "cricket" && closestDist < 78) {
         const dx = targetX - frog.x;
         const dy = targetY - frog.y;
         frog.vx = clamp(Math.sign(dx) * rand(0.18, 0.36), -0.38, 0.38);
@@ -481,13 +492,20 @@ function simulate(dt) {
     }
 
     if (frog.totalCricketsEaten >= 10) {
-      const availableHide = FROG_HIDE_CAVES.find((cave) => state.frogs.filter((other) => other.inHide && other.hideId === cave.id).length < cave.capacity);
-      if (availableHide) {
+      const availableHide = FROG_HIDE_CAVES.find((cave) => state.frogs.filter((other) => (other.inHide || other.restTargetHideId === cave.id) && other !== frog && (other.hideId === cave.id || other.restTargetHideId === cave.id)).length < cave.capacity);
+      if (availableHide && !frog.restTargetHideId) {
+        frog.restTargetHideId = availableHide.id;
+      }
+    }
+
+    if (restTargetHide) {
+      const distToHide = Math.hypot(restTargetHide.exitX - frog.x, restTargetHide.exitY - frog.y);
+      if (distToHide < 10) {
         frog.inHide = true;
-        frog.hideId = availableHide.id;
+        frog.hideId = restTargetHide.id;
         frog.sleepTimer = 30;
-        frog.x = availableHide.x + availableHide.w / 2;
-        frog.y = availableHide.y + availableHide.h / 2;
+        frog.x = restTargetHide.x + restTargetHide.w / 2;
+        frog.y = restTargetHide.y + restTargetHide.h / 2;
         spawnPopup(frog.x, frog.y - 8, "sleep");
         continue;
       }
@@ -1208,12 +1226,19 @@ function drawFrog(frog) {
   drawPixelRect(x + 1, y, Math.max(10, bodyW - 2), bodyH, bodyMid, "#2f6f2a");
   drawPixelRect(x + 2, y + 1, Math.max(8, bodyW - 4), Math.max(4, bodyH - 4), bodyLight, "transparent");
   drawPixelRect(x + 3, y + 3, Math.max(6, bodyW - 8), 2, bodyLight, "transparent");
-  if (paletteShift >= 1) {
+  if (paletteShift === 1) {
     drawPixelRect(x + 4, y + 2, Math.max(4, bodyW - 10), 1, stripe, "transparent");
   }
-  if (paletteShift === 2 || paletteShift === 4) {
+  if (paletteShift === 2) {
     drawPixelRect(x + 2, y + 5, 2, 2, stripe, "transparent");
     drawPixelRect(x + Math.max(8, bodyW - 4), y + 5, 2, 2, stripe, "transparent");
+  }
+  if (paletteShift === 3) {
+    drawPixelRect(x + 3, y + 2, 2, 1, stripe, "transparent");
+    drawPixelRect(x + Math.max(8, bodyW - 5), y + 2, 2, 1, stripe, "transparent");
+  }
+  if (paletteShift === 4) {
+    drawPixelRect(x + Math.max(4, Math.floor(bodyW / 2) - 2), y + 1, 3, bodyH - 2, stripe, "transparent");
   }
 
   drawPixelRect(x + 2, y - 2, 3, 3, "#d6ffbf", "transparent");
