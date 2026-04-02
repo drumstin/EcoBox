@@ -46,7 +46,7 @@ function createInitialState() {
       carrots: 0,
       potatoes: 0,
       boxes: [
-        { id: 1, crickets: 0, minimized: false, breedingTimer: 0 }
+        { id: 1, type: "cricket", crickets: 0, minimized: false, breedingTimer: 0 }
       ]
     },
     events: [
@@ -84,6 +84,8 @@ const elements = {
   buyPotatoPrice: document.getElementById("buy-potato-price"),
   addCricketBoxButton: document.getElementById("add-cricket-box-button"),
   addCricketBoxPrice: document.getElementById("add-cricket-box-price"),
+  addPillbugBoxButton: document.getElementById("add-pillbug-box-button"),
+  addPillbugBoxPrice: document.getElementById("add-pillbug-box-price"),
   multiBuyTabs: document.getElementById("multi-buy-tabs"),
   buyFrogButton: document.getElementById("buy-frog-button"),
   buyFrogPrice: document.getElementById("buy-frog-price"),
@@ -663,7 +665,9 @@ function simulate(dt) {
   for (const box of state.cricketFarm.boxes) {
     box.breedingTimer += dt;
     if (box.breedingTimer >= 5 && box.crickets < 100) {
-      const growth = box.crickets <= 0 ? 1 : 2;
+      const growth = box.type === "pillbug"
+        ? (box.crickets <= 0 ? 1 : 1)
+        : (box.crickets <= 0 ? 1 : 2);
       box.crickets = Math.min(100, box.crickets + growth);
       box.breedingTimer = 0;
       if (box.crickets >= 100) {
@@ -1475,31 +1479,36 @@ function renderHud() {
 function renderCricketFarm() {
   if (!elements.cricketFarmPanel || !elements.cricketFarmBoxes || !elements.toggleFarmButton) return;
   elements.cricketFarmPanel.hidden = !state.cricketFarmOpen;
-  elements.toggleFarmButton.textContent = state.cricketFarmOpen ? "Hide Cricket Farm" : "Open Cricket Farm";
+  elements.toggleFarmButton.textContent = state.cricketFarmOpen ? "Hide Breeder Boxes" : "Open Breeder Boxes";
 
   elements.cricketFarmBoxes.innerHTML = state.cricketFarm.boxes.map((box) => {
     const isFull = box.crickets >= 100;
     const minimized = box.minimized || isFull;
     const previewDots = Array.from({ length: Math.min(24, Math.max(2, Math.ceil(box.crickets / 5))) }, (_, index) => {
       const left = 6 + ((index * 17) % 88);
-      const baseTop = 10 + ((index * 11) % 48);
-      const hop = Math.sin(state.tick * 4 + index * 1.2) * 4;
-      const top = Math.max(6, Math.min(58, baseTop - hop));
-      return `<span class="cricket-dot" style="left:${left}%; top:${top}%"></span>`;
+      const floor = box.type === "pillbug" ? 58 : 48;
+      const hop = box.type === "pillbug" ? Math.sin(state.tick * 1.4 + index) * 1.5 : Math.abs(Math.sin(state.tick * 4 + index * 1.2)) * 10;
+      const top = box.type === "pillbug"
+        ? Math.max(56, Math.min(66, floor + hop))
+        : Math.max(8, Math.min(58, floor - hop));
+      const klass = box.type === "pillbug" ? "pillbug-dot" : "cricket-dot";
+      return `<span class="${klass}" style="left:${left}%; top:${top}%"></span>`;
     }).join("");
-    const carrotVisual = state.cricketFarm.carrots > 0 ? `<span class="farm-food farm-food-carrot"></span>` : "";
+    const carrotVisual = box.type === "cricket" && state.cricketFarm.carrots > 0 ? `<span class="farm-food farm-food-carrot"></span>` : "";
     const potatoVisual = state.cricketFarm.potatoes > 0 ? `<span class="farm-food farm-food-potato"></span>` : "";
+    const label = box.type === "pillbug" ? "Pill Bug Box" : "Cricket Box";
+    const countLabel = box.type === "pillbug" ? "Pill Bugs" : "Crickets";
     return `
       <article class="farm-box ${minimized ? "minimized" : ""}" data-box-id="${box.id}">
         <div class="farm-box-header">
-          <strong>Cricket Box ${box.id}</strong>
+          <strong>${label} ${box.id}</strong>
           <button class="multi-buy-tab" data-farm-toggle="${box.id}" type="button">${minimized ? "Open" : "Minimize"}</button>
         </div>
         <div class="farm-box-stats">
-          <div>Crickets: ${box.crickets} / 100</div>
+          <div>${countLabel}: ${box.crickets} / 100</div>
           <div>Feed: ${state.cricketFarm.carrots} carrots · ${state.cricketFarm.potatoes} potatoes</div>
         </div>
-        <div class="cricket-box-preview">${previewDots}${carrotVisual}${potatoVisual}</div>
+        <div class="cricket-box-preview ${box.type === "pillbug" ? "pillbug-box-preview" : ""}">${previewDots}${carrotVisual}${potatoVisual}</div>
         ${minimized ? `<div class="farm-box-actions"><button class="pixel-button action-feed" data-release-box="${box.id}" type="button">Release 100</button></div>` : `
           <div class="farm-box-actions">
             <button class="pixel-button action-feed" data-feed-box="${box.id}" data-feed-type="carrot" type="button">Use Carrot</button>
@@ -1527,11 +1536,11 @@ function renderCricketFarm() {
       if (button.dataset.feedType === "carrot") {
         if (state.cricketFarm.carrots <= 0) return;
         state.cricketFarm.carrots -= 1;
-        box.crickets = Math.min(100, box.crickets + 8);
+        box.crickets = Math.min(100, box.crickets + (box.type === "pillbug" ? 5 : 8));
       } else {
         if (state.cricketFarm.potatoes <= 0) return;
         state.cricketFarm.potatoes -= 1;
-        box.crickets = Math.min(100, box.crickets + 12);
+        box.crickets = Math.min(100, box.crickets + (box.type === "pillbug" ? 8 : 12));
       }
       renderCricketFarm();
     });
@@ -1543,11 +1552,16 @@ function renderCricketFarm() {
       if (!box || box.crickets <= 0) return;
       const releaseCount = Math.min(100, box.crickets);
       for (let i = 0; i < releaseCount; i += 1) {
-        state.crickets.push(spawnCricket());
+        if (box.type === "pillbug") {
+          if (state.pillBugs.length >= MAX_PILL_BUGS) break;
+          state.pillBugs.push(spawnPillBug());
+        } else {
+          state.crickets.push(spawnCricket());
+        }
       }
       box.crickets = Math.max(0, box.crickets - releaseCount);
       box.minimized = false;
-      pushEvent("Farm release", `Released ${releaseCount} crickets from box ${box.id}.`);
+      pushEvent("Farm release", `Released ${releaseCount} ${box.type === "pillbug" ? "pill bugs" : "crickets"} from box ${box.id}.`);
       renderCricketFarm();
       renderHud();
     });
@@ -1564,8 +1578,14 @@ function renderQuickActionPrices() {
   if (elements.buyCarrotPrice) elements.buyCarrotPrice.textContent = `${1 * state.multiBuyAmount} coin${state.multiBuyAmount === 1 ? "" : "s"}`;
   if (elements.buyPotatoPrice) elements.buyPotatoPrice.textContent = `${1 * state.multiBuyAmount} coin${state.multiBuyAmount === 1 ? "" : "s"}`;
   if (elements.addCricketBoxPrice) {
-    const singleCost = 10 + state.cricketFarm.boxes.length * 5;
+    const cricketBoxes = state.cricketFarm.boxes.filter((box) => box.type !== "pillbug").length;
+    const singleCost = 10 + cricketBoxes * 5;
     elements.addCricketBoxPrice.textContent = `${singleCost * state.multiBuyAmount} coins`;
+  }
+  if (elements.addPillbugBoxPrice) {
+    const pillbugBoxes = state.cricketFarm.boxes.filter((box) => box.type === "pillbug").length;
+    const singleCost = 10 + pillbugBoxes * 5;
+    elements.addPillbugBoxPrice.textContent = `${singleCost * state.multiBuyAmount} coins`;
   }
 }
 
@@ -1612,19 +1632,44 @@ function bindUi() {
   elements.addCricketBoxButton?.addEventListener("click", () => {
     let bought = 0;
     for (let i = 0; i < state.multiBuyAmount; i += 1) {
-      const cost = 10 + state.cricketFarm.boxes.length * 5;
+      const cricketBoxes = state.cricketFarm.boxes.filter((box) => box.type !== "pillbug").length;
+      const cost = 10 + cricketBoxes * 5;
       if (!spendCoins(cost)) break;
-      state.cricketFarm.boxes.push({ id: state.cricketFarm.boxes.length + 1, crickets: 0, minimized: false, breedingTimer: 0 });
+      state.cricketFarm.boxes.push({ id: state.cricketFarm.boxes.length + 1, type: "cricket", crickets: 0, minimized: false, breedingTimer: 0 });
       bought += 1;
     }
     if (!bought) {
-      const cost = 10 + state.cricketFarm.boxes.length * 5;
+      const cricketBoxes = state.cricketFarm.boxes.filter((box) => box.type !== "pillbug").length;
+      const cost = 10 + cricketBoxes * 5;
       pushEvent("Need coins", `You need ${cost} coins to add another cricket box.`);
       renderHud();
       return;
     }
-    spawnPopup(198, 64, `+${bought} box${bought === 1 ? "" : "es"}`);
+    spawnPopup(198, 64, `+${bought} cricket box${bought === 1 ? "" : "es"}`);
     pushEvent("New box", `${bought} new cricket breeder box${bought === 1 ? "" : "es"} added.`);
+    renderCricketFarm();
+    renderQuickActionPrices();
+    renderHud();
+  });
+
+  elements.addPillbugBoxButton?.addEventListener("click", () => {
+    let bought = 0;
+    for (let i = 0; i < state.multiBuyAmount; i += 1) {
+      const pillbugBoxes = state.cricketFarm.boxes.filter((box) => box.type === "pillbug").length;
+      const cost = 10 + pillbugBoxes * 5;
+      if (!spendCoins(cost)) break;
+      state.cricketFarm.boxes.push({ id: state.cricketFarm.boxes.length + 1, type: "pillbug", crickets: 0, minimized: false, breedingTimer: 0 });
+      bought += 1;
+    }
+    if (!bought) {
+      const pillbugBoxes = state.cricketFarm.boxes.filter((box) => box.type === "pillbug").length;
+      const cost = 10 + pillbugBoxes * 5;
+      pushEvent("Need coins", `You need ${cost} coins to add another pill bug box.`);
+      renderHud();
+      return;
+    }
+    spawnPopup(198, 72, `+${bought} pill bug box${bought === 1 ? "" : "es"}`);
+    pushEvent("New box", `${bought} new pill bug breeder box${bought === 1 ? "" : "es"} added.`);
     renderCricketFarm();
     renderQuickActionPrices();
     renderHud();

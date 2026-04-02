@@ -391,7 +391,7 @@ p {
 
 .farm-controls {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   margin-bottom: 12px;
 }
@@ -410,12 +410,26 @@ p {
 
 .cricket-box-preview {
   position: relative;
-  height: 74px;
+  height: 84px;
   margin-top: 10px;
   border-radius: 12px;
   background: linear-gradient(180deg, rgba(210, 238, 255, 0.18), rgba(180, 220, 245, 0.08));
   border: 1px solid rgba(220, 245, 255, 0.35);
   overflow: hidden;
+}
+
+.cricket-box-preview::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18px;
+  background: linear-gradient(180deg, rgba(94, 84, 64, 0.26), rgba(60, 48, 34, 0.42));
+}
+
+.pillbug-box-preview::after {
+  background: linear-gradient(180deg, rgba(88, 76, 58, 0.30), rgba(54, 42, 28, 0.48));
 }
 
 .cricket-dot {
@@ -424,8 +438,17 @@ p {
   height: 4px;
   border-radius: 50%;
   background: #3a2b1e;
-  opacity: 0.85;
+  opacity: 0.9;
   box-shadow: 1px 1px 0 rgba(255,255,255,0.08);
+}
+
+.pillbug-dot {
+  position: absolute;
+  width: 8px;
+  height: 5px;
+  border-radius: 999px;
+  background: #57524b;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
 }
 
 .farm-food {
@@ -832,11 +855,17 @@ p {
     width: 100%;
   }
 
-  .save-button {
+  .save-button,
+  .reset-button {
     width: 100%;
   }
 
   .quick-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .farm-controls,
+  .farm-box-actions {
     grid-template-columns: 1fr 1fr;
   }
 
