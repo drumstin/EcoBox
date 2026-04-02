@@ -879,18 +879,32 @@ function drawHabitatBase() {
   const mistLevel = getUpgrade("mist")?.level ?? 0;
   ctx.fillStyle = "#4d5a48";
   ctx.fillRect(182, 30, 24, 8);
-  ctx.fillRect(194, 38, 4, 12);
-  ctx.fillStyle = "rgba(245,250,255,0.85)";
-  ctx.fillRect(195, 50, 2, 112);
+  ctx.fillRect(193, 38, 6, 10);
+  ctx.strokeStyle = "rgba(242,248,255,0.92)";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(196, 48);
+  ctx.bezierCurveTo(197, 72, 195, 104, 194, 144);
+  ctx.stroke();
+  ctx.strokeStyle = "rgba(220,235,245,0.45)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(197, 50);
+  ctx.bezierCurveTo(198, 74, 196, 106, 195, 142);
+  ctx.stroke();
+  ctx.fillStyle = "rgba(245,250,255,0.96)";
+  ctx.beginPath();
+  ctx.arc(194, 146, 3, 0, Math.PI * 2);
+  ctx.fill();
   for (let i = 0; i < mistLevel * 2; i += 1) {
     ctx.fillStyle = "rgba(220,240,255,0.20)";
     ctx.fillRect(178 - i * 4, 32 + (i % 3) * 4, 4, 10);
   }
   for (let i = 0; i < 4 + mistLevel * 5; i += 1) {
-    const drift = ((state.tick * 8) + i * 9) % 52;
-    const puffX = 176 + (i % 5) * 8;
-    const puffY = 46 + drift;
-    ctx.fillStyle = "rgba(235,245,238,0.10)";
+    const drift = ((state.tick * 8) + i * 9) % 38;
+    const puffX = 188 - (i % 4) * 10;
+    const puffY = 146 + drift * 0.7;
+    ctx.fillStyle = "rgba(235,245,238,0.12)";
     ctx.beginPath();
     ctx.arc(puffX, puffY, 5, 0, Math.PI * 2);
     ctx.arc(puffX + 4, puffY + 2, 4, 0, Math.PI * 2);
@@ -900,7 +914,14 @@ function drawHabitatBase() {
 
   if (mistLevel > 0 && state.mistBurstTimer > 52) {
     const mistProgress = Math.min(1, (60 - state.mistBurstTimer) / 8);
-    ctx.fillStyle = `rgba(235,245,238,${0.10 * mistProgress})`;
+    const nozzleX = 194;
+    const nozzleY = 146;
+    const plume = ctx.createRadialGradient(nozzleX, nozzleY + 12, 2, nozzleX - 10, nozzleY + 32, 42);
+    plume.addColorStop(0, `rgba(235,245,238,${0.16 * mistProgress})`);
+    plume.addColorStop(1, "rgba(235,245,238,0)");
+    ctx.fillStyle = plume;
+    ctx.fillRect(150, 132, 70, 60);
+    ctx.fillStyle = `rgba(235,245,238,${0.08 * mistProgress})`;
     ctx.fillRect(24, 24, WORLD_SIZE - 48, WORLD_SIZE - 48);
   }
 
