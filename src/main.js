@@ -1262,9 +1262,12 @@ function renderQuickActionPrices() {
   if (elements.collectPrice) elements.collectPrice.textContent = `free`;
   if (elements.cleanPrice) elements.cleanPrice.textContent = `free`;
   if (elements.boostPrice) elements.boostPrice.textContent = `3 coins`;
-  if (elements.buyCarrotPrice) elements.buyCarrotPrice.textContent = `1 coin`;
-  if (elements.buyPotatoPrice) elements.buyPotatoPrice.textContent = `1 coin`;
-  if (elements.addCricketBoxPrice) elements.addCricketBoxPrice.textContent = `${10 + state.cricketFarm.boxes.length * 5} coins`;
+  if (elements.buyCarrotPrice) elements.buyCarrotPrice.textContent = `${1 * state.multiBuyAmount} coin${state.multiBuyAmount === 1 ? "" : "s"}`;
+  if (elements.buyPotatoPrice) elements.buyPotatoPrice.textContent = `${1 * state.multiBuyAmount} coin${state.multiBuyAmount === 1 ? "" : "s"}`;
+  if (elements.addCricketBoxPrice) {
+    const singleCost = 10 + state.cricketFarm.boxes.length * 5;
+    elements.addCricketBoxPrice.textContent = `${singleCost * state.multiBuyAmount} coins`;
+  }
 }
 
 function bindUi() {
@@ -1274,36 +1277,55 @@ function bindUi() {
   });
 
   elements.buyCarrotButton?.addEventListener("click", () => {
-    if (!spendCoins(1)) {
-      pushEvent("Need coins", "You need 1 coin to buy a carrot.");
+    let bought = 0;
+    for (let i = 0; i < state.multiBuyAmount; i += 1) {
+      if (!spendCoins(1)) break;
+      state.cricketFarm.carrots += 1;
+      bought += 1;
+    }
+    if (!bought) {
+      pushEvent("Need coins", "You need 1 coin per carrot.");
       renderHud();
       return;
     }
-    state.cricketFarm.carrots += 1;
+    spawnPopup(182, 48, `+${bought} carrot${bought === 1 ? "" : "s"}`);
     renderCricketFarm();
     renderQuickActionPrices();
   });
 
   elements.buyPotatoButton?.addEventListener("click", () => {
-    if (!spendCoins(1)) {
-      pushEvent("Need coins", "You need 1 coin to buy a potato slice.");
+    let bought = 0;
+    for (let i = 0; i < state.multiBuyAmount; i += 1) {
+      if (!spendCoins(1)) break;
+      state.cricketFarm.potatoes += 1;
+      bought += 1;
+    }
+    if (!bought) {
+      pushEvent("Need coins", "You need 1 coin per potato slice.");
       renderHud();
       return;
     }
-    state.cricketFarm.potatoes += 1;
+    spawnPopup(190, 56, `+${bought} potato${bought === 1 ? "" : "es"}`);
     renderCricketFarm();
     renderQuickActionPrices();
   });
 
   elements.addCricketBoxButton?.addEventListener("click", () => {
-    const cost = 10 + state.cricketFarm.boxes.length * 5;
-    if (!spendCoins(cost)) {
+    let bought = 0;
+    for (let i = 0; i < state.multiBuyAmount; i += 1) {
+      const cost = 10 + state.cricketFarm.boxes.length * 5;
+      if (!spendCoins(cost)) break;
+      state.cricketFarm.boxes.push({ id: state.cricketFarm.boxes.length + 1, crickets: 0, minimized: false, breedingTimer: 0 });
+      bought += 1;
+    }
+    if (!bought) {
+      const cost = 10 + state.cricketFarm.boxes.length * 5;
       pushEvent("Need coins", `You need ${cost} coins to add another cricket box.`);
       renderHud();
       return;
     }
-    state.cricketFarm.boxes.push({ id: state.cricketFarm.boxes.length + 1, crickets: 0, minimized: false, breedingTimer: 0 });
-    pushEvent("New box", "A new cricket breeder box was added.");
+    spawnPopup(198, 64, `+${bought} box${bought === 1 ? "" : "es"}`);
+    pushEvent("New box", `${bought} new cricket breeder box${bought === 1 ? "" : "es"} added.`);
     renderCricketFarm();
     renderQuickActionPrices();
     renderHud();
