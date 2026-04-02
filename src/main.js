@@ -161,7 +161,8 @@ function spawnFrog(stage = "adult") {
     inHide: false,
     stage,
     age: 0,
-    breedReady: false,
+    breedReady: stage === "adult",
+    breedCooldown: rand(20, 45),
     restTargetHideId: null
   };
 }
@@ -372,6 +373,7 @@ function simulate(dt) {
         frog.hunger = 8;
         frog.totalCricketsEaten = 0;
         frog.breedReady = true;
+        frog.breedCooldown = rand(10, 22);
         spawnPopup(frog.x, frog.y - 8, "awake");
       }
       continue;
@@ -381,6 +383,7 @@ function simulate(dt) {
     frog.hopTimer -= dt;
     frog.restTimer -= dt;
     frog.poopTimer -= dt;
+    frog.breedCooldown = Math.max(0, (frog.breedCooldown ?? 0) - dt);
     frog.tongueTimer = Math.max(0, frog.tongueTimer - dt * 2.8);
 
     let targetType = null;
@@ -530,13 +533,15 @@ function simulate(dt) {
     frog.y = clamp(frog.y, 36, WORLD_SIZE - 36);
   }
 
-  const readyFrogs = state.frogs.filter((frog) => frog.stage === "adult" && frog.breedReady && !frog.inHide);
+  const readyFrogs = state.frogs.filter((frog) => frog.stage === "adult" && frog.breedReady && !frog.inHide && (frog.breedCooldown ?? 0) <= 0);
   if (readyFrogs.length >= 2) {
     for (let egg = 0; egg < 5; egg += 1) {
       state.frogEggs.push({ x: 58 + rand(-14, 14), y: 150 + rand(-8, 8), age: 0, hatchTimer: 8 });
     }
     readyFrogs[0].breedReady = false;
     readyFrogs[1].breedReady = false;
+    readyFrogs[0].breedCooldown = rand(45, 70);
+    readyFrogs[1].breedCooldown = rand(45, 70);
     pushEvent("Frog eggs", "A pair of frogs laid eggs in the pond.");
   }
 
