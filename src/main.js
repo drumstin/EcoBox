@@ -222,6 +222,12 @@ function loadGame() {
     if (!raw) return;
     const parsed = JSON.parse(raw);
     Object.assign(state, parsed);
+    if (Array.isArray(state.frogs)) {
+      state.frogs = state.frogs.map((frog) => ({
+        ...frog,
+        morph: typeof frog.morph === "number" ? frog.morph : Math.floor(rand(0, 5))
+      }));
+    }
   } catch {
     pushEvent("Load failed", "Starting with a fresh habitat.");
   }
