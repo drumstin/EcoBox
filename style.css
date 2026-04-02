@@ -335,8 +335,17 @@ p {
 .multi-buy-tabs {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+.compact-multibuy-bar {
+  grid-template-columns: auto 1fr;
+}
+
+.compact-multibuy-bar .multi-buy-tabs {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .multi-buy-tab {
@@ -829,6 +838,10 @@ p {
 
   .quick-actions {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .compact-multibuy-bar {
+    grid-template-columns: 1fr;
   }
 
   .featured-action {
