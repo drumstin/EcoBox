@@ -18,55 +18,60 @@ const FROG_HIDE_CAVES = [
   { id: "log-b", x: 56, y: 154, w: 24, h: 12, exitX: 82, exitY: 152, capacity: 5 }
 ];
 
-const state = {
-  tick: 0,
-  coins: 10,
-  humidity: 78,
-  cleanliness: 86,
-  groundCover: 18,
-  waste: 4,
-  level: 1,
-  lampTimer: 0,
-  mistBurstTimer: 60,
-  mistPauseTimer: 0,
-  decorationsPlaced: 0,
-  frogs: [],
-  frogEggs: [],
-  tadpoles: [],
-  crickets: [],
-  pillBugs: [],
-  pillBugEggs: [],
-  droppings: [],
-  fungusPatches: [],
-  popups: [],
-  cricketFarmOpen: false,
-  multiBuyAmount: 1,
-  cricketFarm: {
-    carrots: 0,
-    potatoes: 0,
-    boxes: [
-      { id: 1, crickets: 0, minimized: false, breedingTimer: 0 }
+function createInitialState() {
+  return {
+    tick: 0,
+    coins: 10,
+    humidity: 78,
+    cleanliness: 86,
+    groundCover: 18,
+    waste: 4,
+    level: 1,
+    lampTimer: 0,
+    mistBurstTimer: 60,
+    mistPauseTimer: 0,
+    decorationsPlaced: 0,
+    frogs: [],
+    frogEggs: [],
+    tadpoles: [],
+    crickets: [],
+    pillBugs: [],
+    pillBugEggs: [],
+    droppings: [],
+    fungusPatches: [],
+    popups: [],
+    cricketFarmOpen: false,
+    multiBuyAmount: 1,
+    cricketFarm: {
+      carrots: 0,
+      potatoes: 0,
+      boxes: [
+        { id: 1, crickets: 0, minimized: false, breedingTimer: 0 }
+      ]
+    },
+    events: [
+      { label: "EcoBox online", detail: "Empty frog habitat ready for your first resident." },
+      { label: "Starter funds", detail: "You have 10 coins to begin stocking the enclosure." }
+    ],
+    upgrades: [
+      { id: "frog", name: "Tree Frog", description: "Adds 1 frog to the habitat", cost: FROG_COST, level: 0, maxLevel: 24, currency: "coins" },
+      { id: "crickets", name: "Cricket Cup", description: "Release live feeder crickets", cost: CRICKET_COST, level: 0, maxLevel: 999, currency: "coins" },
+      { id: "pillbug", name: "Pill Bug Crew", description: "Adds 1 waste-eating pill bug", cost: PILL_BUG_COST, level: 0, maxLevel: 20, currency: "coins" },
+      { id: "mist", name: "Mister", description: "Keeps humidity high", cost: 6, level: 0, maxLevel: 8, currency: "coins" },
+      { id: "plants", name: "Leafy Vines", description: "Grows one spreading vine across the habitat", cost: 7, level: 0, maxLevel: 5, currency: "coins" },
+      { id: "decor", name: "Pretty Hide", description: "Adds bark hides and stones", cost: 4, level: 0, maxLevel: 8, currency: "coins" }
     ]
-  },
-  events: [
-    { label: "EcoBox online", detail: "Empty frog habitat ready for your first resident." },
-    { label: "Starter funds", detail: "You have 10 coins to begin stocking the enclosure." }
-  ],
-  upgrades: [
-    { id: "frog", name: "Tree Frog", description: "Adds 1 frog to the habitat", cost: FROG_COST, level: 0, maxLevel: 24, currency: "coins" },
-    { id: "crickets", name: "Cricket Cup", description: "Release live feeder crickets", cost: CRICKET_COST, level: 0, maxLevel: 999, currency: "coins" },
-    { id: "pillbug", name: "Pill Bug Crew", description: "Adds 1 waste-eating pill bug", cost: PILL_BUG_COST, level: 0, maxLevel: 20, currency: "coins" },
-    { id: "mist", name: "Mister", description: "Keeps humidity high", cost: 6, level: 0, maxLevel: 8, currency: "coins" },
-    { id: "plants", name: "Leafy Vines", description: "Grows one spreading vine across the habitat", cost: 7, level: 0, maxLevel: 5, currency: "coins" },
-    { id: "decor", name: "Pretty Hide", description: "Adds bark hides and stones", cost: 4, level: 0, maxLevel: 8, currency: "coins" }
-  ]
-};
+  };
+}
+
+const state = createInitialState();
 
 const elements = {
   canvas: document.getElementById("tank-canvas"),
   overlay: document.getElementById("tank-overlay"),
   tankFx: document.getElementById("tank-fx"),
   saveButton: document.getElementById("save-button"),
+  resetButton: document.getElementById("reset-button"),
   toggleFarmButton: document.getElementById("toggle-farm-button"),
   cricketFarmPanel: document.getElementById("cricket-farm-panel"),
   cricketFarmBoxes: document.getElementById("cricket-farm-boxes"),
@@ -210,6 +215,13 @@ function loadGame() {
   } catch {
     pushEvent("Load failed", "Starting with a fresh habitat.");
   }
+}
+
+function resetGame() {
+  localStorage.removeItem(SAVE_KEY);
+  Object.assign(state, createInitialState());
+  pushEvent("Reset", "Started a fresh habitat.");
+  renderHud();
 }
 
 function resizeCanvas() {
@@ -1651,6 +1663,7 @@ function bindUi() {
   });
 
   elements.saveButton.addEventListener("click", saveGame);
+  elements.resetButton.addEventListener("click", resetGame);
 }
 
 function tick() {
