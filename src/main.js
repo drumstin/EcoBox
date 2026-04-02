@@ -35,6 +35,8 @@ const elements = {
   canvas: document.getElementById("tank-canvas"),
   overlay: document.getElementById("tank-overlay"),
   saveButton: document.getElementById("save-button"),
+  buyFrogButton: document.getElementById("buy-frog-button"),
+  buyPillBugButton: document.getElementById("buy-pillbug-button"),
   collectButton: document.getElementById("collect-button"),
   feedButton: document.getElementById("feed-button"),
   cleanButton: document.getElementById("clean-button"),
@@ -671,6 +673,32 @@ function renderHud() {
 }
 
 function bindUi() {
+  elements.buyFrogButton.addEventListener("click", () => {
+    if (!spendCoins(FROG_COST)) {
+      pushEvent("Need coins", "You need 5 coins to buy a frog.");
+      renderHud();
+      return;
+    }
+    state.frogs.push(spawnFrog());
+    const frogUpgrade = getUpgrade("frog");
+    if (frogUpgrade) frogUpgrade.level += 1;
+    pushEvent("New frog", "A tree frog hopped into the habitat.");
+    renderHud();
+  });
+
+  elements.buyPillBugButton.addEventListener("click", () => {
+    if (!spendCoins(PILL_BUG_COST)) {
+      pushEvent("Need coins", "You need 1 coin to add a pill bug.");
+      renderHud();
+      return;
+    }
+    state.pillBugs.push(spawnPillBug());
+    const pillBugUpgrade = getUpgrade("pillbug");
+    if (pillBugUpgrade) pillBugUpgrade.level += 1;
+    pushEvent("Cleanup crew", "A pill bug joined the habitat floor.");
+    renderHud();
+  });
+
   elements.collectButton.addEventListener("click", () => {
     const gained = Math.max(1, state.frogs.length + Math.floor((getUpgrade("decor")?.level ?? 0) / 2));
     state.coins += gained;

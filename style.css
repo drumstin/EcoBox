@@ -219,7 +219,7 @@ p {
 .quick-actions {
   margin-top: 12px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
@@ -237,6 +237,10 @@ p {
   background: var(--blue);
 }
 
+.action-frog {
+  background: linear-gradient(180deg, #a8f294, #63c955);
+}
+
 .action-collect {
   background: linear-gradient(180deg, #8ff0a0, #52c86d);
 }
@@ -245,12 +249,30 @@ p {
   background: linear-gradient(180deg, #ffc37d, #f39b43);
 }
 
+.action-pillbug {
+  background: linear-gradient(180deg, #d7d0c6, #9b9184);
+}
+
 .action-clean {
   background: linear-gradient(180deg, #b8eeff, #72cce9);
 }
 
 .action-boost {
   background: linear-gradient(180deg, #ffe58e, #f0bf46);
+}
+
+.featured-action {
+  grid-column: span 2;
+}
+
+.action-icon {
+  display: block;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.action-label {
+  display: block;
 }
 
 .pixel-button.secondary {
@@ -262,8 +284,13 @@ p {
   cursor: not-allowed;
 }
 
+.pixel-button:hover {
+  filter: brightness(1.03);
+}
+
 .pixel-button:active {
-  transform: translateY(2px);
+  transform: translateY(2px) scale(0.985);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 3px 8px rgba(0, 0, 0, 0.16);
 }
 
 .status-strip {
@@ -393,6 +420,10 @@ p {
 
   .quick-actions {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .featured-action {
+    grid-column: span 2;
   }
 
   .status-card {
