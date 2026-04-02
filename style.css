@@ -267,10 +267,126 @@ p {
 
 .action-icon {
   display: block;
-  font-size: 1.15rem;
-  line-height: 1;
-  margin-bottom: 4px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.22);
+  width: 24px;
+  height: 24px;
+  margin: 0 auto 6px;
+  position: relative;
+}
+
+.action-icon::before,
+.action-icon::after {
+  content: "";
+  position: absolute;
+}
+
+.action-icon-frog::before {
+  left: 4px;
+  top: 6px;
+  width: 16px;
+  height: 12px;
+  border-radius: 10px;
+  background: #73d65f;
+  box-shadow: 0 -4px 0 #b8ff9f;
+}
+
+.action-icon-frog::after {
+  left: 2px;
+  top: 16px;
+  width: 20px;
+  height: 4px;
+  border-radius: 4px;
+  background: #5bb04a;
+}
+
+.action-icon-cricket::before {
+  left: 7px;
+  top: 8px;
+  width: 10px;
+  height: 8px;
+  border-radius: 8px;
+  background: #4a3528;
+}
+
+.action-icon-cricket::after {
+  left: 14px;
+  top: 10px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #74553f;
+}
+
+.action-icon-pillbug::before {
+  left: 5px;
+  top: 8px;
+  width: 14px;
+  height: 10px;
+  border-radius: 10px;
+  background: #7b756c;
+}
+
+.action-icon-pillbug::after {
+  left: 7px;
+  top: 10px;
+  width: 10px;
+  height: 2px;
+  background: rgba(255,255,255,0.35);
+  box-shadow: 0 3px 0 rgba(255,255,255,0.22), 0 6px 0 rgba(255,255,255,0.15);
+}
+
+.action-icon-coin::before {
+  left: 6px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffd866;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
+.action-icon-coin::after {
+  left: 10px;
+  top: 9px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(140, 98, 18, 0.45);
+}
+
+.action-icon-clean::before {
+  left: 7px;
+  top: 5px;
+  width: 10px;
+  height: 6px;
+  border-radius: 6px 6px 2px 2px;
+  background: #b8eeff;
+}
+
+.action-icon-clean::after {
+  left: 10px;
+  top: 11px;
+  width: 4px;
+  height: 9px;
+  border-radius: 3px;
+  background: #72cce9;
+}
+
+.action-icon-lamp::before {
+  left: 8px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffe58e;
+}
+
+.action-icon-lamp::after {
+  left: 11px;
+  top: 12px;
+  width: 2px;
+  height: 8px;
+  background: #d4a94a;
+  box-shadow: -5px -2px 0 -1px rgba(255, 229, 142, 0.75), 5px -2px 0 -1px rgba(255, 229, 142, 0.75);
 }
 
 .action-label {

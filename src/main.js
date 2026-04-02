@@ -18,6 +18,8 @@ const state = {
   frogs: [],
   crickets: [],
   pillBugs: [],
+  droppings: [],
+  fungusPatches: [],
   events: [
     { label: "EcoBox online", detail: "Empty frog habitat ready for your first resident." },
     { label: "Starter funds", detail: "You have 10 coins to begin stocking the enclosure." }
@@ -78,7 +80,8 @@ function spawnFrog() {
     hunger: rand(25, 50),
     tongueTimer: 0,
     tongueTargetX: 0,
-    tongueTargetY: 0
+    tongueTargetY: 0,
+    poopTimer: rand(12, 26)
   };
 }
 
@@ -118,7 +121,9 @@ function saveGame() {
     upgrades: state.upgrades,
     frogs: state.frogs,
     crickets: state.crickets,
-    pillBugs: state.pillBugs
+    pillBugs: state.pillBugs,
+    droppings: state.droppings,
+    fungusPatches: state.fungusPatches
   }));
   pushEvent("Saved", "Local habitat state stored on this device.");
   renderHud();
@@ -192,6 +197,7 @@ function simulate(dt) {
     frog.hunger += dt * 3.2;
     frog.hopTimer -= dt;
     frog.restTimer -= dt;
+    frog.poopTimer -= dt;
     frog.tongueTimer = Math.max(0, frog.tongueTimer - dt * 2.8);
 
     let targetType = null;
@@ -310,10 +316,28 @@ function simulate(dt) {
       }
     }
 
+    if (frog.poopTimer <= 0) {
+      state.droppings.push({ x: frog.x + rand(-4, 4), y: frog.y + rand(4, 8), age: 0 });
+      frog.poopTimer = rand(18, 34);
+    }
+
     if (frog.x < 36 || frog.x > WORLD_SIZE - 36) frog.vx *= -1;
     if (frog.y < 36 || frog.y > WORLD_SIZE - 36) frog.vy *= -1;
     frog.x = clamp(frog.x, 36, WORLD_SIZE - 36);
     frog.y = clamp(frog.y, 36, WORLD_SIZE - 36);
+  }
+
+  for (const dropping of state.droppings) {
+    dropping.age += dt;
+  }
+
+  for (let i = state.droppings.length - 1; i >= 0; i -= 1) {
+    const dropping = state.droppings[i];
+    if (dropping.age >= 30) {
+      state.fungusPatches.push({ x: dropping.x, y: dropping.y, size: rand(4, 7) });
+      state.droppings.splice(i, 1);
+      pushEvent("Fungus sprouted", "Neglected droppings turned into fungus.");
+    }
   }
 
   for (const cricket of state.crickets) {
@@ -337,16 +361,49 @@ function simulate(dt) {
     pillBug.scootTimer -= dt;
     pillBug.restTimer -= dt;
 
-    if (pillBug.restTimer <= 0 && pillBug.scootTimer <= 0) {
-      pillBug.vx = rand(-0.2, 0.2);
-      pillBug.vy = rand(-0.12, 0.12);
-      pillBug.scootTimer = rand(0.35, 1.1);
-      pillBug.restTimer = rand(0.8, 1.8);
+    let nearestDropping = null;
+    let nearestDist = Infinity;
+    for (const dropping of state.droppings) {
+      const dx = dropping.x - pillBug.x;
+      const dy = dropping.y - pillBug.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < nearestDist) {
+        nearestDist = dist;
+        nearestDropping = dropping;
+      }
     }
 
-    if (pillBug.scootTimer > 0) {
-      pillBug.x += pillBug.vx * dt * 54;
-      pillBug.y += pillBug.vy * dt * 54;
+    if (nearestDropping && nearestDist < 90) {
+      const dx = nearestDropping.x - pillBug.x;
+      const dy = nearestDropping.y - pillBug.y;
+      pillBug.vx = clamp(Math.sign(dx) * 0.18, -0.18, 0.18);
+      pillBug.vy = clamp(Math.sign(dy) * 0.12, -0.12, 0.12);
+      pillBug.x += pillBug.vx * dt * 42;
+      pillBug.y += pillBug.vy * dt * 42;
+    } else {
+      if (pillBug.restTimer <= 0 && pillBug.scootTimer <= 0) {
+        pillBug.vx = rand(-0.2, 0.2);
+        pillBug.vy = rand(-0.12, 0.12);
+        pillBug.scootTimer = rand(0.35, 1.1);
+        pillBug.restTimer = rand(0.8, 1.8);
+      }
+
+      if (pillBug.scootTimer > 0) {
+        pillBug.x += pillBug.vx * dt * 54;
+        pillBug.y += pillBug.vy * dt * 54;
+      }
+    }
+
+    for (let i = state.droppings.length - 1; i >= 0; i -= 1) {
+      const dropping = state.droppings[i];
+      const dx = dropping.x - pillBug.x;
+      const dy = dropping.y - pillBug.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 8) {
+        state.droppings.splice(i, 1);
+        state.waste = Math.max(0, state.waste - 0.6);
+        break;
+      }
     }
 
     if (state.waste > 0 && Math.random() < 0.01) {
@@ -654,6 +711,34 @@ function drawPillBug(pillBug) {
   ctx.fill();
 }
 
+function drawDroppingsAndFungus() {
+  for (const dropping of state.droppings) {
+    ctx.fillStyle = "#4b321d";
+    ctx.beginPath();
+    ctx.ellipse(dropping.x, dropping.y, 2.8, 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#6a4728";
+    ctx.beginPath();
+    ctx.arc(dropping.x + 0.6, dropping.y - 0.5, 0.9, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  for (const fungus of state.fungusPatches) {
+    ctx.fillStyle = "#d8c7ff";
+    ctx.beginPath();
+    ctx.arc(fungus.x, fungus.y, fungus.size * 0.45, 0, Math.PI * 2);
+    ctx.arc(fungus.x + fungus.size * 0.4, fungus.y - 1, fungus.size * 0.3, 0, Math.PI * 2);
+    ctx.arc(fungus.x - fungus.size * 0.35, fungus.y + 0.5, fungus.size * 0.26, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#9a86cf";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(fungus.x, fungus.y);
+    ctx.lineTo(fungus.x, fungus.y + fungus.size * 0.6);
+    ctx.stroke();
+  }
+}
+
 function drawCreatures() {
   for (const cricket of state.crickets) {
     drawCricket(cricket);
@@ -688,6 +773,7 @@ function renderHabitat() {
 
   drawHabitatBase();
   drawWaste();
+  drawDroppingsAndFungus();
   drawCreatures();
 
   if (state.frogs.length === 0) {
@@ -893,7 +979,9 @@ function tick() {
       upgrades: state.upgrades,
       frogs: state.frogs,
       crickets: state.crickets,
-      pillBugs: state.pillBugs
+      pillBugs: state.pillBugs,
+      droppings: state.droppings,
+      fungusPatches: state.fungusPatches
     }));
   }
   requestAnimationFrame(tick);
@@ -903,6 +991,8 @@ loadGame();
 state.frogs = Array.isArray(state.frogs) ? state.frogs : [];
 state.crickets = Array.isArray(state.crickets) ? state.crickets : [];
 state.pillBugs = Array.isArray(state.pillBugs) ? state.pillBugs : [];
+state.droppings = Array.isArray(state.droppings) ? state.droppings : [];
+state.fungusPatches = Array.isArray(state.fungusPatches) ? state.fungusPatches : [];
 bindUi();
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
