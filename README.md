@@ -1,28 +1,26 @@
 # EcoBox
 
-EcoBox is a mobile-first, web-based idle ecosystem game with an 8-bit style.
+EcoBox is a mobile-first, web-based idle frog terrarium game.
 
-## Core concept
+## Current features
 
-Players build and maintain a small tank ecosystem. The goal is to balance life, resources, and tank health while unlocking upgrades that improve automation, production, and stability.
+- 32-bit-style frog habitat presentation
+- Frog, cricket, and pill bug ecosystem loop
+- Droppings, cleanup behavior, and fungus growth
+- Cricket farm popup with breeder boxes
+- Multi-buy quick actions
+- Local save support
 
-## Current starter build
+## Local workflow
 
-- Pixel-art inspired UI
-- Mobile-friendly canvas tank view
-- Idle resource generation loop
-- Ecosystem stats (energy, oxygen, cleanliness, population)
-- Upgrade shop scaffold
-- Save button and local autosave
+This is a static web app. Open `index.html` directly or serve it with any static server.
 
-## Run locally
+### Cache busting for Pages
 
-Because this is a static web app, you can open `index.html` directly or serve the folder with any static server.
+Before pushing releases, stamp the current git revision into asset URLs:
 
-## Next ideas
+```bash
+bash scripts/stamp-assets.sh
+```
 
-- Add more species and food chains
-- Introduce day/night cycles
-- Add rare events and disasters
-- Expand upgrade tree and automation
-- Add achievements and prestige systems
+This updates `index.html` so browsers fetch the latest `style.css` and `src/main.js` after deploys.
