@@ -7,6 +7,17 @@
   <link rel="stylesheet" href="style.css?v=503d575" />
 </head>
 <body>
+  <div id="confirm-modal" class="confirm-modal" hidden>
+    <div class="confirm-card pixel-frame">
+      <h2>Reset EcoBox?</h2>
+      <p>This will wipe the current habitat and start fresh.</p>
+      <div class="confirm-actions">
+        <button id="confirm-reset-button" class="pixel-button reset-button" type="button">Yes, Reset</button>
+        <button id="cancel-reset-button" class="pixel-button secondary save-button" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <main class="app-shell">
     <header class="topbar panel pixel-frame">
       <div>

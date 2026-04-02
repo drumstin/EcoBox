@@ -72,6 +72,9 @@ const elements = {
   tankFx: document.getElementById("tank-fx"),
   saveButton: document.getElementById("save-button"),
   resetButton: document.getElementById("reset-button"),
+  confirmModal: document.getElementById("confirm-modal"),
+  confirmResetButton: document.getElementById("confirm-reset-button"),
+  cancelResetButton: document.getElementById("cancel-reset-button"),
   toggleFarmButton: document.getElementById("toggle-farm-button"),
   cricketFarmPanel: document.getElementById("cricket-farm-panel"),
   cricketFarmBoxes: document.getElementById("cricket-farm-boxes"),
@@ -217,12 +220,23 @@ function loadGame() {
   }
 }
 
+function openResetConfirm() {
+  if (elements.confirmModal) {
+    elements.confirmModal.hidden = false;
+  }
+}
+
+function closeResetConfirm() {
+  if (elements.confirmModal) {
+    elements.confirmModal.hidden = true;
+  }
+}
+
 function resetGame() {
-  const confirmed = window.confirm("Reset EcoBox and lose this habitat? This cannot be undone.");
-  if (!confirmed) return;
   localStorage.removeItem(SAVE_KEY);
   Object.assign(state, createInitialState());
   pushEvent("Reset", "Started a fresh habitat.");
+  closeResetConfirm();
   renderHud();
 }
 
@@ -1665,7 +1679,9 @@ function bindUi() {
   });
 
   elements.saveButton.addEventListener("click", saveGame);
-  elements.resetButton.addEventListener("click", resetGame);
+  elements.resetButton.addEventListener("click", openResetConfirm);
+  elements.confirmResetButton.addEventListener("click", resetGame);
+  elements.cancelResetButton.addEventListener("click", closeResetConfirm);
 }
 
 function tick() {
