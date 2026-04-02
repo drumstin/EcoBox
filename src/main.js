@@ -306,10 +306,11 @@ function drawHabitatBase() {
   }
 
   const mistLevel = getUpgrade("mist")?.level ?? 0;
-  drawPixelRect(188, 38, 16, 14, "#8aa3aa", "#4a5860");
+  drawPixelRect(182, 30, 24, 8, "#4d5a48", "#283022");
+  drawPixelRect(194, 38, 4, 12, "#6b775f", "transparent");
   for (let i = 0; i < 2 + mistLevel * 2; i += 1) {
-    const drift = ((state.tick * 18) + i * 15) % 70;
-    drawPixelCircle(192 + (i % 3) * 5, 68 + drift, 3, "rgba(220,245,255,0.6)");
+    const drift = ((state.tick * 12) + i * 11) % 54;
+    drawPixelCircle(186 + (i % 4) * 5, 48 + drift, 4, "rgba(230,250,235,0.28)");
   }
 
   for (let i = 0; i < 5; i += 1) {
