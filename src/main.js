@@ -78,6 +78,8 @@ const elements = {
   multiBuyTabs: document.getElementById("multi-buy-tabs"),
   buyFrogButton: document.getElementById("buy-frog-button"),
   buyFrogPrice: document.getElementById("buy-frog-price"),
+  sellFrogButton: document.getElementById("sell-frog-button"),
+  sellFrogPrice: document.getElementById("sell-frog-price"),
   buyPillBugButton: document.getElementById("buy-pillbug-button"),
   buyPillBugPrice: document.getElementById("buy-pillbug-price"),
   collectButton: document.getElementById("collect-button"),
@@ -1401,6 +1403,7 @@ function renderQuickActionPrices() {
   if (elements.buyFrogPrice) elements.buyFrogPrice.textContent = `${FROG_COST * state.multiBuyAmount} coins`;
   if (elements.feedPrice) elements.feedPrice.textContent = `${CRICKET_COST * state.multiBuyAmount} coins`;
   if (elements.buyPillBugPrice) elements.buyPillBugPrice.textContent = `${PILL_BUG_COST * state.multiBuyAmount} coins`;
+  if (elements.sellFrogPrice) elements.sellFrogPrice.textContent = `5 frogs → 100 coins`;
   if (elements.collectPrice) elements.collectPrice.textContent = `free`;
   if (elements.cleanPrice) elements.cleanPrice.textContent = `free`;
   if (elements.boostPrice) elements.boostPrice.textContent = `3 coins`;
@@ -1497,6 +1500,28 @@ function bindUi() {
     }
     spawnPopup(120, 120, `+${bought} frog${bought === 1 ? "" : "s"}`);
     pushEvent("New frogs", `${bought} tree frog${bought === 1 ? "" : "s"} joined the habitat.`);
+    renderHud();
+  });
+
+  elements.sellFrogButton.addEventListener("click", () => {
+    const sellable = state.frogs.filter((frog) => frog.stage !== "froglet");
+    if (sellable.length < 5) {
+      pushEvent("Need frogs", "You need 5 grown frogs to sell.");
+      renderHud();
+      return;
+    }
+    let removed = 0;
+    state.frogs = state.frogs.filter((frog) => {
+      if (frog.stage === "froglet") return true;
+      if (removed < 5) {
+        removed += 1;
+        return false;
+      }
+      return true;
+    });
+    state.coins += 100;
+    spawnPopup(120, 120, "+100 coins");
+    pushEvent("Frogs sold", "Sold 5 frogs for 100 coins.");
     renderHud();
   });
 

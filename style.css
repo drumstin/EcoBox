@@ -440,6 +440,10 @@ p {
   background: linear-gradient(180deg, #8ff0a0, #52c86d);
 }
 
+.action-sellfrog {
+  background: linear-gradient(180deg, #ffd59a, #d78b39);
+}
+
 .action-feed {
   background: linear-gradient(180deg, #ffc37d, #f39b43);
 }
