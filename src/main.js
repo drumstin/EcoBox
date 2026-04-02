@@ -72,7 +72,10 @@ function spawnFrog() {
     jumping: false,
     jumpArc: 0,
     facing: Math.random() < 0.5 ? -1 : 1,
-    hunger: rand(25, 50)
+    hunger: rand(25, 50),
+    tongueTimer: 0,
+    tongueTargetX: 0,
+    tongueTargetY: 0
   };
 }
 
@@ -186,6 +189,7 @@ function simulate(dt) {
     frog.hunger += dt * 3.2;
     frog.hopTimer -= dt;
     frog.restTimer -= dt;
+    frog.tongueTimer = Math.max(0, frog.tongueTimer - dt * 3.6);
 
     let targetCricket = null;
     let closestDist = Infinity;
@@ -237,6 +241,9 @@ function simulate(dt) {
       const dy = cricket.y - frog.y;
       const dist = Math.hypot(dx, dy);
       if (dist < 14) {
+        frog.tongueTimer = 1;
+        frog.tongueTargetX = cricket.x;
+        frog.tongueTargetY = cricket.y;
         state.crickets.splice(i, 1);
         frog.hunger = Math.max(0, frog.hunger - 18);
         state.coins += 1;
@@ -394,9 +401,13 @@ function drawHabitatBase() {
   const mistLevel = getUpgrade("mist")?.level ?? 0;
   drawPixelRect(182, 30, 24, 8, "#4d5a48", "#283022");
   drawPixelRect(194, 38, 4, 12, "#6b775f", "transparent");
-  for (let i = 0; i < 2 + mistLevel * 2; i += 1) {
-    const drift = ((state.tick * 12) + i * 11) % 54;
-    drawPixelCircle(186 + (i % 4) * 5, 48 + drift, 4, "rgba(230,250,235,0.28)");
+  for (let i = 0; i < 3 + mistLevel * 3; i += 1) {
+    const drift = ((state.tick * 8) + i * 9) % 52;
+    const puffX = 176 + (i % 5) * 8;
+    const puffY = 46 + drift;
+    drawPixelCircle(puffX, puffY, 5, "rgba(235,245,238,0.12)");
+    drawPixelCircle(puffX + 4, puffY + 2, 4, "rgba(235,245,238,0.10)");
+    drawPixelCircle(puffX - 3, puffY + 4, 3, "rgba(235,245,238,0.08)");
   }
 
   for (let i = 0; i < 5; i += 1) {
@@ -408,9 +419,20 @@ function drawFrog(frog) {
   const x = Math.round(frog.x);
   const y = Math.round(frog.y - frog.jumpArc * 6);
   const faceX = frog.facing >= 0 ? x + 11 : x - 1;
+  const tongueBaseX = frog.facing >= 0 ? x + 10 : x + 1;
+  const tongueBaseY = y + 5;
 
   if (frog.jumpArc > 0.05) {
     drawPixelRect(x + 2, y + 11, 8, 2, "rgba(30,20,10,0.25)", "transparent");
+  }
+
+  if (frog.tongueTimer > 0.01) {
+    const targetX = Math.round(frog.tongueTargetX);
+    const targetY = Math.round(frog.tongueTargetY);
+    const midX = Math.round((tongueBaseX + targetX) / 2);
+    const midY = Math.round((tongueBaseY + targetY) / 2);
+    drawPixelRect(Math.min(tongueBaseX, midX), Math.min(tongueBaseY, midY), Math.max(2, Math.abs(midX - tongueBaseX) + 2), 2, "#f58aa0", "transparent");
+    drawPixelRect(Math.min(midX, targetX), Math.min(midY, targetY), Math.max(2, Math.abs(targetX - midX) + 2), 2, "#ff9db0", "transparent");
   }
 
   drawPixelRect(x, y, 12, 10, "#73d65f", "#2f6f2a");
