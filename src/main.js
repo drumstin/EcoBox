@@ -932,11 +932,9 @@ function drawHabitatBase() {
 
   ctx.fillStyle = "#65472d";
   ctx.beginPath();
-  ctx.ellipse(64, 160, 10, 5, 0.1, 0, Math.PI * 2);
   ctx.ellipse(170, 154, 8, 4.5, -0.12, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = "#7c5a38";
-  ctx.fillRect(58, 155, 12, 4);
   ctx.fillRect(164, 150, 10, 4);
 
   for (let i = 0; i < 18; i += 1) {
